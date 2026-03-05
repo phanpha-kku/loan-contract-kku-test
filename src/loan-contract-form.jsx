@@ -302,6 +302,34 @@ function ContractPreview({ d }) {
 }
 
 // ─── Main App ─────────────────────────────────────────────────
+// ── Reusable UI Components (defined OUTSIDE App to prevent re-render) ──
+const IS_STYLE = { width:"100%", background:"#0F1117", border:"1px solid #2D3148", color:"#E8EAF0",
+  borderRadius:8, padding:"9px 12px", fontSize:14, fontFamily:"inherit", outline:"none", boxSizing:"border-box" };
+const LS_STYLE = { display:"block", fontSize:12, color:"#6B7280", marginBottom:5, fontWeight:500 };
+
+function Field({ label, value, onChange, type="text", placeholder="" }) {
+  return (
+    <div style={{ marginBottom:14 }}>
+      <label style={LS_STYLE}>{label}</label>
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} style={IS_STYLE}/>
+    </div>
+  );
+}
+function Grid2({ children }) {
+  return <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>{children}</div>;
+}
+function Card({ title, color="#818CF8", children }) {
+  return (
+    <div style={{ background:"#0F1117", border:"1px solid #2D3148", borderRadius:10, padding:14, marginBottom:14 }}>
+      <div style={{ fontWeight:600, fontSize:13, color, marginBottom:12 }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+function SH({ text, color="#60A5FA" }) {
+  return <div style={{ fontWeight:700, fontSize:15, color, borderBottom:"1px solid #2D3148", paddingBottom:8, marginBottom:18 }}>{text}</div>;
+}
+
 export default function App() {
   const [form, setForm] = useState(INIT);
   const [step, setStep] = useState(1);
@@ -398,22 +426,7 @@ export default function App() {
   const DROP = { ...IS, cursor:"pointer", appearance:"none", backgroundImage:dropArrow,
     backgroundRepeat:"no-repeat", backgroundPosition:"right 12px center", paddingRight:36 };
 
-  const Field = ({ label, fkey, type="text", placeholder="" }) => (
-    <div style={{ marginBottom:14 }}>
-      <label style={LS}>{label}</label>
-      <input type={type} value={form[fkey]} onChange={e=>set(fkey,e.target.value)} placeholder={placeholder} style={IS}/>
-    </div>
-  );
-  const Grid2 = ({ children }) => <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>{children}</div>;
-  const Card = ({ title, color="#818CF8", children }) => (
-    <div style={{ background:"#0F1117", border:"1px solid #2D3148", borderRadius:10, padding:14, marginBottom:14 }}>
-      <div style={{ fontWeight:600, fontSize:13, color, marginBottom:12 }}>{title}</div>
-      {children}
-    </div>
-  );
-  const SH = (t, c="#60A5FA") => (
-    <div style={{ fontWeight:700, fontSize:15, color:c, borderBottom:"1px solid #2D3148", paddingBottom:8, marginBottom:18 }}>{t}</div>
-  );
+
 
   return (
     <div style={{ fontFamily:"'Sarabun','TH Sarabun New',sans-serif", background:"#0F1117", minHeight:"100vh", color:"#E8EAF0" }}>
@@ -471,14 +484,14 @@ export default function App() {
 
             {/* ── STEP 1 ── */}
             {step===1 && <>
-              {SH("👤 ข้อมูลส่วนงานและผู้ยืม")}
+              <SH text="👤 ข้อมูลส่วนงานและผู้ยืม"/>
               <Grid2>
-                <Field label="ส่วนงาน / คณะ" fkey="unit" placeholder="คณะเทคโนโลยี"/>
-                <Field label="โทรศัพท์" fkey="phone" placeholder="043-202-XXX"/>
-                <Field label="เลขที่หนังสือ (ต่อท้าย อว 660301.12.1.1/)" fkey="docNo"/>
+                <Field label="ส่วนงาน / คณะ" value={form.unit} onChange={e=>set("unit",e.target.value)} placeholder="คณะเทคโนโลยี"/>
+                <Field label="โทรศัพท์" value={form.phone} onChange={e=>set("phone",e.target.value)} placeholder="043-202-XXX"/>
+                <Field label="เลขที่หนังสือ (ต่อท้าย อว 660301.12.1.1/)" value={form.docNo} onChange={e=>set("docNo",e.target.value)}/>
                 {/* Contract No - auto running, read-only */}
                 <div style={{ marginBottom:14 }}>
-                  <label style={LS}>เลขที่สัญญา (Auto Running)</label>
+                  <label style={LS_STYLE}>เลขที่สัญญา (Auto Running)</label>
                   <div style={{ display:"flex", gap:8 }}>
                     <div style={{ ...IS, flex:1, display:"flex", alignItems:"center", justifyContent:"space-between",
                       background:"rgba(37,99,235,.08)", border:"1px solid rgba(37,99,235,.35)" }}>
@@ -496,42 +509,42 @@ export default function App() {
                 </div>
                 {/* Contract date - read only today */}
                 <div style={{ marginBottom:14 }}>
-                  <label style={LS}>วันที่ทำสัญญา</label>
+                  <label style={LS_STYLE}>วันที่ทำสัญญา</label>
                   <div style={{ ...IS, display:"flex", alignItems:"center", justifyContent:"space-between",
                     background:"rgba(255,255,255,.04)", border:"1px solid #374151", cursor:"not-allowed" }}>
                     <span style={{ fontWeight:600 }}>{toThaiDate(form.contractDate)}</span>
                     <span style={{ fontSize:11, color:"#4B5563" }}>🔒 วันปัจจุบัน</span>
                   </div>
                 </div>
-                <Field label="วันสิ้นสุดวันจัดกิจกรรม" fkey="eventEndDate" type="date"/>
+                <Field label="วันสิ้นสุดวันจัดกิจกรรม" value={form.eventEndDate} onChange={e=>set("eventEndDate",e.target.value)} type="date"/>
               </Grid2>
-              <Field label="ชื่อ-สกุล ผู้ยืม" fkey="borrowerName" placeholder="นายสมชาย ใจดี"/>
+              <Field label="ชื่อ-สกุล ผู้ยืม" value={form.borrowerName} onChange={e=>set("borrowerName",e.target.value)} placeholder="นายสมชาย ใจดี"/>
               <Grid2>
                 <div style={{ marginBottom:14 }}>
-                  <label style={LS}>ตำแหน่ง</label>
+                  <label style={LS_STYLE}>ตำแหน่ง</label>
                   <select value={form.position} onChange={e=>set("position",e.target.value)} style={DROP}>
                     <option value="">-- เลือกตำแหน่ง --</option>
                     {POSITIONS.map(p=><option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
                 <div style={{ marginBottom:14 }}>
-                  <label style={LS}>สังกัด</label>
+                  <label style={LS_STYLE}>สังกัด</label>
                   <select value={form.department} onChange={e=>set("department",e.target.value)} style={DROP}>
                     <option value="">-- เลือกสังกัด --</option>
                     {DEPARTMENTS.map(d=><option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
               </Grid2>
-              <Field label="อีเมล (e-mail)" fkey="email" type="email" placeholder="name@kku.ac.th"/>
+              <Field label="อีเมล (e-mail)" value={form.email} onChange={e=>set("email",e.target.value)} type="email" placeholder="name@kku.ac.th"/>
             </>}
 
             {/* ── STEP 2 ── */}
             {step===2 && <>
-              {SH("💰 รายละเอียดการยืมเงิน")}
-              <Field label="เลขที่หนังสืออ้างอิง (อว...)" fkey="refDocNo"/>
-              <Field label="ชื่อกิจกรรม / โครงการ" fkey="project" placeholder="โครงการ..."/>
+              <SH text="💰 รายละเอียดการยืมเงิน"/>
+              <Field label="เลขที่หนังสืออ้างอิง (อว...)" value={form.refDocNo} onChange={e=>set("refDocNo",e.target.value)}/>
+              <Field label="ชื่อกิจกรรม / โครงการ" value={form.project} onChange={e=>set("project",e.target.value)} placeholder="โครงการ..."/>
               <div style={{ marginBottom:14 }}>
-                <label style={LS}>แหล่งเงินงบประมาณ</label>
+                <label style={LS_STYLE}>แหล่งเงินงบประมาณ</label>
                 <div style={{ display:"flex", gap:20 }}>
                   {["งบประมาณแผ่นดิน","งบประมาณเงินรายได้"].map(t=>(
                     <label key={t} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:14 }}>
@@ -542,18 +555,18 @@ export default function App() {
                 </div>
               </div>
               <Grid2>
-                <Field label="จำนวนเงินรวม (บาท)" fkey="totalAmount" type="number" placeholder="0.00"/>
+                <Field label="จำนวนเงินรวม (บาท)" value={form.totalAmount} onChange={e=>set("totalAmount",e.target.value)} type="number" placeholder="0.00"/>
                 <div style={{ marginBottom:14 }}>
-                  <label style={LS}>จำนวนเงิน (ตัวอักษร)</label>
+                  <label style={LS_STYLE}>จำนวนเงิน (ตัวอักษร)</label>
                   <input value={form.totalAmountText||(form.totalAmount?toThaiNum(form.totalAmount):"")}
-                    onChange={e=>set("totalAmountText",e.target.value)} style={IS} placeholder="อัตโนมัติ"/>
+                    onChange={e=>set("totalAmountText",e.target.value)} style={IS_STYLE} placeholder="อัตโนมัติ"/>
                 </div>
-                <Field label="วันครบกำหนดคืนเงิน" fkey="dueDate" type="date"/>
+                <Field label="วันครบกำหนดคืนเงิน" value={form.dueDate} onChange={e=>set("dueDate",e.target.value)} type="date"/>
               </Grid2>
               <Card title="📅 งวดที่ 1" color="#FBBF24">
                 <Grid2>
-                  <Field label="จำนวนเงิน (บาท)" fkey="inst1Amount" type="number"/>
-                  <Field label="วันที่ต้องใช้เงิน" fkey="inst1NeedDate" type="date"/>
+                  <Field label="จำนวนเงิน (บาท)" value={form.inst1Amount} onChange={e=>set("inst1Amount",e.target.value)} type="number"/>
+                  <Field label="วันที่ต้องใช้เงิน" value={form.inst1NeedDate} onChange={e=>set("inst1NeedDate",e.target.value)} type="date"/>
                 </Grid2>
               </Card>
               <div style={{ background:"#0F1117", border:"1px solid #2D3148", borderRadius:10, padding:14 }}>
@@ -563,17 +576,17 @@ export default function App() {
                   <span style={{ fontSize:14, fontWeight:600, color:"#9CA3AF" }}>📅 มีงวดที่ 2</span>
                 </label>
                 {form.useInst2 && <Grid2>
-                  <Field label="จำนวนเงิน (บาท)" fkey="inst2Amount" type="number"/>
-                  <Field label="วันที่ต้องใช้เงิน" fkey="inst2NeedDate" type="date"/>
+                  <Field label="จำนวนเงิน (บาท)" value={form.inst2Amount} onChange={e=>set("inst2Amount",e.target.value)} type="number"/>
+                  <Field label="วันที่ต้องใช้เงิน" value={form.inst2NeedDate} onChange={e=>set("inst2NeedDate",e.target.value)} type="date"/>
                 </Grid2>}
               </div>
             </>}
 
             {/* ── STEP 3: แผนการยืม ── */}
             {step===3 && <>
-              {SH("📋 แผนการยืมเงิน (เอกสารแนบ)")}
-              <Field label="ชื่อโครงการ (ว่างไว้ = ดึงจากหน้าหลัก)" fkey="planProject"/>
-              <Field label="จำนวนเงินโครงการที่ได้รับอนุมัติ (บาท)" fkey="planTotalAmount" type="number" placeholder="ดึงจากหน้าหลักถ้าว่าง"/>
+              <SH text="📋 แผนการยืมเงิน (เอกสารแนบ)"/>
+              <Field label="ชื่อโครงการ (ว่างไว้ = ดึงจากหน้าหลัก)" value={form.planProject} onChange={e=>set("planProject",e.target.value)}/>
+              <Field label="จำนวนเงินโครงการที่ได้รับอนุมัติ (บาท)" value={form.planTotalAmount} onChange={e=>set("planTotalAmount",e.target.value)} type="number" placeholder="ดึงจากหน้าหลักถ้าว่าง"/>
 
               {/* Sync button */}
               <div style={{ display:"flex", justifyContent:"flex-end", marginBottom:12 }}>
@@ -606,14 +619,14 @@ export default function App() {
                     <Grid2>
                       {/* วันที่ */}
                       <div style={{ marginBottom:12 }}>
-                        <label style={LS}>วันที่ต้องใช้เงิน</label>
+                        <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                         <input type="date" value={r.needDate} onChange={e=>updateRow(ri,"needDate",e.target.value)}
                           style={{ ...IS, background:r.needDate?"rgba(52,211,153,.07)":"#0F1117",
                             border:`1px solid ${r.needDate?"rgba(52,211,153,.35)":"#2D3148"}` }}/>
                       </div>
                       {/* รวม */}
                       <div style={{ marginBottom:12 }}>
-                        <label style={LS}>จำนวนเงินรวม (บาท)</label>
+                        <label style={LS_STYLE}>จำนวนเงินรวม (บาท)</label>
                         <div style={{ ...IS, background:"rgba(37,99,235,.08)", border:"1px solid rgba(37,99,235,.3)",
                           display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                           <span style={{ fontWeight:700, color:"#60A5FA", fontSize:15 }}>{fmtNum(total) || "0"}</span>
@@ -674,9 +687,9 @@ export default function App() {
 
                     {/* เหตุผล */}
                     <div style={{ marginTop:12 }}>
-                      <label style={LS}>เหตุผลความจำเป็น</label>
+                      <label style={LS_STYLE}>เหตุผลความจำเป็น</label>
                       <input type="text" value={r.reason} onChange={e=>updateRow(ri,"reason",e.target.value)}
-                        style={IS} placeholder="ระบุเหตุผล"/>
+                        style={IS_STYLE} placeholder="ระบุเหตุผล"/>
                     </div>
                   </div>
                 );
@@ -690,38 +703,38 @@ export default function App() {
 
             {/* ── STEP 4: ผู้เกี่ยวข้อง ── */}
             {step===4 && <>
-              {SH("✍️ ข้อมูลผู้เกี่ยวข้อง 4 ฝ่าย")}
+              <SH text="✍️ ข้อมูลผู้เกี่ยวข้อง 4 ฝ่าย"/>
               <Card title="[1] เจ้าหน้าที่การเงินคณะ/หน่วยงาน" color="#60A5FA">
                 <Grid2>
-                  <Field label="ชื่อเจ้าหน้าที่การเงิน" fkey="fin1Name"/>
-                  <Field label="ความเห็นเพิ่มเติม (ถ้ามี)" fkey="fin1Note"/>
+                  <Field label="ชื่อเจ้าหน้าที่การเงิน" value={form.fin1Name} onChange={e=>set("fin1Name",e.target.value)}/>
+                  <Field label="ความเห็นเพิ่มเติม (ถ้ามี)" value={form.fin1Note} onChange={e=>set("fin1Note",e.target.value)}/>
                 </Grid2>
               </Card>
               <Card title="[2] หัวหน้างานคลังคณะฯ / ผู้ได้รับมอบหมาย" color="#818CF8">
                 <Grid2>
-                  <Field label="ชื่อหัวหน้างานคลัง" fkey="fin2Name"/>
-                  <Field label="ความเห็นเพิ่มเติม (ถ้ามี)" fkey="fin2Note"/>
+                  <Field label="ชื่อหัวหน้างานคลัง" value={form.fin2Name} onChange={e=>set("fin2Name",e.target.value)}/>
+                  <Field label="ความเห็นเพิ่มเติม (ถ้ามี)" value={form.fin2Note} onChange={e=>set("fin2Note",e.target.value)}/>
                 </Grid2>
               </Card>
               <Card title="[3] ผู้อำนวยการกองบริหารงานคณะฯ (ผู้เสนอ)" color="#34D399">
                 <Grid2>
-                  <Field label="ชื่อผู้อำนวยการกองบริหาร" fkey="dir3Name"/>
-                  <Field label="วันที่เสนอ" fkey="dir3Date" type="date"/>
+                  <Field label="ชื่อผู้อำนวยการกองบริหาร" value={form.dir3Name} onChange={e=>set("dir3Name",e.target.value)}/>
+                  <Field label="วันที่เสนอ" value={form.dir3Date} onChange={e=>set("dir3Date",e.target.value)} type="date"/>
                 </Grid2>
               </Card>
               <Card title="[4] คณบดี / ผู้อนุมัติ" color="#FBBF24">
                 <Grid2>
-                  <Field label="ชื่อคณบดี / ผู้อนุมัติ" fkey="approverName"/>
-                  <Field label="วันที่อนุมัติ" fkey="approverDate" type="date"/>
-                  <Field label="จำนวนที่อนุมัติ (บาท) — ว่าง = ตามยอดขอ" fkey="approvedAmount" type="number"/>
-                  <Field label="ความเห็นเพิ่มเติม (ถ้ามี)" fkey="approverNote"/>
+                  <Field label="ชื่อคณบดี / ผู้อนุมัติ" value={form.approverName} onChange={e=>set("approverName",e.target.value)}/>
+                  <Field label="วันที่อนุมัติ" value={form.approverDate} onChange={e=>set("approverDate",e.target.value)} type="date"/>
+                  <Field label="จำนวนที่อนุมัติ (บาท) — ว่าง = ตามยอดขอ" value={form.approvedAmount} onChange={e=>set("approvedAmount",e.target.value)} type="number"/>
+                  <Field label="ความเห็นเพิ่มเติม (ถ้ามี)" value={form.approverNote} onChange={e=>set("approverNote",e.target.value)}/>
                 </Grid2>
               </Card>
             </>}
 
             {/* ── STEP 5: Preview & Print ── */}
             {step===5 && <>
-              {SH("🖨️ ตรวจสอบและพิมพ์สัญญา")}
+              <SH text="🖨️ ตรวจสอบและพิมพ์สัญญา"/>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:20 }}>
                 {[
                   ["ผู้ยืม", form.borrowerName||"-"],
