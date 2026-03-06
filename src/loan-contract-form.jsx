@@ -103,12 +103,19 @@ function ContractPreview({ d }) {
       <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
 
         {/* Header row */}
-        <div style={{ display:"flex", alignItems:"flex-start", marginBottom:2 }}>
-          <img src={LOGO_URI} alt="logo" style={{ height:44, marginRight:8, flexShrink:0 }}/>
-          <div style={{ flex:1 }}>
-            <div style={LINE}>ส่วนงาน <Blank val={d.unit} w={220}/> โทร. <Blank val={d.phone} w={80}/></div>
-            <div style={LINE}>ที่ อว 660301.12.1.1<Blank val={d.docNo} w={90}/> วันที่ <Blank val={toThaiDate(d.contractDate)} w={160}/></div>
+        <div style={{ display:"flex", alignItems:"flex-start", marginBottom:2, gap:6 }}>
+          <img src={LOGO_URI} alt="logo" style={{ height:44, marginRight:6, flexShrink:0 }}/>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={LINE}>ส่วนงาน <Blank val={d.unit} w={200}/>&nbsp;&nbsp;โทร. <Blank val={d.phone} w={80}/></div>
+            <div style={LINE}>ที่ อว 660301.12.1.1<Blank val={d.docNo} w={80}/>&nbsp;&nbsp;วันที่ <Blank val={toThaiDate(d.contractDate)} w={150}/></div>
           </div>
+          <table style={{ borderCollapse:"collapse", fontSize:12, flexShrink:0, width:120 }}>
+            <tbody>
+              <tr><td style={{ ...BDR, padding:"3px 6px", textAlign:"center", fontWeight:"bold", whiteSpace:"nowrap" }}>เลขที่ <Blank val={d.contractNo} w={55}/></td></tr>
+              <tr><td style={{ ...BDR, padding:"3px 6px", textAlign:"center", whiteSpace:"nowrap", fontSize:11 }}>วันครบกำหนด</td></tr>
+              <tr><td style={{ ...BDR, padding:"3px 6px", textAlign:"center" }}><Blank val={toThaiDate(d.dueDate)} w={90}/></td></tr>
+            </tbody>
+          </table>
         </div>
 
         {/* Main table */}
@@ -117,16 +124,12 @@ function ContractPreview({ d }) {
 
             {/* Title */}
             <tr>
-              <td colSpan={2} style={{ ...BDR, padding:"3px 8px", textAlign:"center" }}>
+              <td colSpan={3} style={{ ...BDR, padding:"3px 8px", textAlign:"center" }}>
                 <strong style={{ fontSize:14 }}>สัญญาการยืมเงิน(กรณียืมเงินรายได้มหาวิทยาลัย)</strong>
-              </td>
-              <td rowSpan={2} style={{ ...BDR, padding:"3px 8px", textAlign:"center", whiteSpace:"nowrap", verticalAlign:"middle" }}>
-                <div>เลขที่ <Blank val={d.contractNo} w={70}/></div>
-                <div>วันครบกำหนด <Blank val={toThaiDate(d.dueDate)} w={70}/></div>
               </td>
             </tr>
             <tr>
-              <td colSpan={2} style={{ ...BDR, padding:"2px 8px", textAlign:"center" }}>
+              <td colSpan={3} style={{ ...BDR, padding:"2px 8px", textAlign:"center" }}>
                 ยื่นต่อ คณบดี
               </td>
             </tr>
