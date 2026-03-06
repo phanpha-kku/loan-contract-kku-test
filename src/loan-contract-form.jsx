@@ -88,9 +88,9 @@ function Chk({ on }) {
 }
 
 function ContractPreview({ d }) {
-  const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:13, color:"#000", lineHeight:2.0 };
-  const TD = { border:"1px solid #555", padding:"6px 8px", verticalAlign:"top" };
-  const ROW = { display:"block", marginBottom:8, lineHeight:2.2, wordBreak:"break-word" };
+  const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:12, color:"#000", lineHeight:1.7 };
+  const TD = { border:"1px solid #555", padding:"4px 6px", verticalAlign:"top" };
+  const ROW = { display:"block", marginBottom:3, lineHeight:1.85, wordBreak:"break-word" };
 
   // calc totals per planRow
   const rowTotal = (pr) => (pr.items||[]).reduce((s,it) => s + (parseFloat(it.amount)||0), 0);
@@ -99,13 +99,13 @@ function ContractPreview({ d }) {
     <div id="contract-print" style={S}>
 
       {/* ── PAGE 1 ── */}
-      <div className="print-page" style={{ padding:"6mm 10mm 5mm 12mm", minHeight:"277mm", boxSizing:"border-box" }}>
+      <div className="print-page" style={{ padding:"4mm 8mm 4mm 10mm", minHeight:"277mm", boxSizing:"border-box" }}>
 
         {/* Header */}
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:4 }}>
           <div style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
             <img src={LOGO_URI} alt="TE KKU"
-              style={{ height:50, objectFit:"contain", flexShrink:0 }}/>
+              style={{ height:38, objectFit:"contain", flexShrink:0 }}/>
             <div>
               <div><strong>ส่วนงาน</strong> <Blank val={d.unit} w={250}/> <strong>โทร.</strong> <Blank val={d.phone} w={90}/></div>
               <div><strong>ที่</strong> อว 660301.12<Blank val={d.docNo} w={110}/> &nbsp;<strong>วันที่</strong> <Blank val={toThaiDate(d.contractDate)} w={150}/></div>
@@ -119,7 +119,7 @@ function ContractPreview({ d }) {
           </table>
         </div>
 
-        <table style={{ width:"100%", borderCollapse:"collapse", marginBottom:5 }}>
+        <table style={{ width:"100%", borderCollapse:"collapse", marginBottom:3 }}>
           <tbody>
 
             {/* Title */}
@@ -157,7 +157,7 @@ function ContractPreview({ d }) {
                 <span>บาท มีความจำเป็นต้องใช้เงินวันที่</span><Blank val={toThaiDate(d.inst2NeedDate)} w={105}/>
                 <span>ส่งคืนวันที่</span><Blank val="" w={105}/>
               </div>}
-              <div style={{ textAlign:"justify", margin:"5px 0", lineHeight:1.9, fontSize:13 }}>
+              <div style={{ textAlign:"justify", margin:"3px 0", lineHeight:1.7, fontSize:12 }}>
                 ข้าพเจ้าสัญญาว่าจะปฏิบัติตามระเบียบของทางราชการและประกาศของมหาวิทยาลัยที่เกี่ยวข้องอย่างเคร่งครัด
                 และจะนำใบสำคัญคู่จ่ายที่ถูกต้องพร้อมทั้งเงินเหลือจ่าย(ถ้ามี) ส่งใช้ภายในกำหนดไว้
                 และหากข้าพเจ้าไม่ส่งคืนเงินยืมตามกำหนดและพ้นวันครบกำหนดคืนเงินยืมทดรองจ่าย
@@ -175,7 +175,7 @@ function ContractPreview({ d }) {
             <tr>
               <td style={{ ...TD, width:"50%" }}>
                 <strong>[1] ความเห็นของเจ้าหน้าที่การเงินคณะ/หน่วยงาน</strong>
-                <div style={{ lineHeight:1.85, margin:"4px 0 6px" }}>
+                <div style={{ lineHeight:1.65, margin:"3px 0 4px" }}>
                   ได้ตรวจสอบสิทธิของผู้ยืมเงินตามระเบียบฯ และพิจารณาความเหมาะสมของแผนการยืมเงินแล้วเห็นควรอนุมัติ
                 </div>
                 <div style={ROW}><span>ความเห็นเพิ่มเติม (ถ้ามี)</span><Blank val={d.fin1Note} w={160}/></div>
@@ -187,7 +187,7 @@ function ContractPreview({ d }) {
               </td>
               <td style={{ ...TD, width:"50%" }}>
                 <strong>[2] ความเห็นหัวหน้างานคลังคณะฯ/ผู้ได้รับมอบหมาย</strong>
-                <div style={{ lineHeight:1.85, margin:"4px 0 6px" }}>
+                <div style={{ lineHeight:1.65, margin:"3px 0 4px" }}>
                   เห็นชอบการยืมเงินของบุคลากรและได้ตรวจสอบว่าแผนการยืมเงิน(ตามเอกสารแนบ)เหมาะสม
                   โดยจะกำกับติดตามการใช้จ่ายเงินและส่งคืนเงินยืมตามกำหนดเวลาจนครบจำนวน
                 </div>
@@ -204,7 +204,7 @@ function ContractPreview({ d }) {
             <tr>
               <td style={TD}>
                 <strong>[3] เรียน คณบดี</strong>
-                <div style={{ lineHeight:1.85, margin:"4px 0 6px" }}>
+                <div style={{ lineHeight:1.65, margin:"3px 0 4px" }}>
                   ได้ตรวจสอบรายการยืมเงินของผู้ยืมถูกต้องตามประกาศที่เกี่ยวข้อง เห็นควรอนุมัติตามเสนอ
                 </div>
                 <div style={{ textAlign:"center", marginTop:8 }}>
@@ -237,14 +237,14 @@ function ContractPreview({ d }) {
         </table>
 
         {/* หมายเหตุ */}
-        <div style={{ fontSize:12.5, lineHeight:1.7 }}>
+        <div style={{ fontSize:11.5, lineHeight:1.55 }}>
           <strong>หมายเหตุ</strong> : 1. ค่าใช้จ่ายในการเดินทางไปราชการ ให้ผู้ยืมส่งใบสำคัญคู่จ่ายให้เร็วที่สุดแต่ไม่เกิน 15 วัน นับจากวันเดินทางกลับจากไปราชการ<br/>
           <span style={{ paddingLeft:52 }}>2. ค่าใช้จ่ายในการฝึกอบรม สัมมนา ศึกษาดูงาน ให้ผู้ยืมส่งใบสำคัญคู่จ่าย ภายใน 30 วันนับจากวันสิ้นสุดกิจกรรม</span>
         </div>
       </div>
 
       {/* ── PAGE 2: แผนการยืมเงิน ── */}
-      <div style={{ padding:"6mm 10mm 5mm 12mm", minHeight:"277mm", boxSizing:"border-box" }}>
+      <div style={{ padding:"4mm 8mm 4mm 10mm", minHeight:"277mm", boxSizing:"border-box" }}>
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
           <tbody>
             <tr><td colSpan={5} style={{ ...TD, textAlign:"center" }}>
@@ -511,7 +511,7 @@ export default function App() {
             position:absolute!important;left:0!important;top:0!important;
             width:100%!important;background:white!important;
             font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;
-            font-size:12.5pt!important;line-height:2.0!important;
+            font-size:11.5pt!important;line-height:1.7!important;
           }
           #contract-print *{
             font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;
