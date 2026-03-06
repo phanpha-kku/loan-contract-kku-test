@@ -72,9 +72,9 @@ const DEPARTMENTS = ["สำนักงาน","สาขาเทคโนโ�
 function Blank({ val, w = 120 }) {
   return (
     <span style={{ display:"inline-block", borderBottom:"1px solid #000", minWidth:w,
-      padding:"0 2px", minHeight:16, verticalAlign:"bottom", lineHeight:"18px",
-      whiteSpace:"nowrap", overflow:"visible" }}>
-      {val || ""}
+      padding:"0 4px", minHeight:20, verticalAlign:"bottom", lineHeight:"22px",
+      whiteSpace:"normal", overflow:"visible", wordBreak:"break-word" }}>
+      {val || "\u00a0"}
     </span>
   );
 }
@@ -88,9 +88,9 @@ function Chk({ on }) {
 }
 
 function ContractPreview({ d }) {
-  const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:13, color:"#000", lineHeight:1.6 };
+  const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:13, color:"#000", lineHeight:2.0 };
   const TD = { border:"1px solid #555", padding:"6px 8px", verticalAlign:"top" };
-  const ROW = { display:"block", marginBottom:4, lineHeight:1.9 };
+  const ROW = { display:"block", marginBottom:8, lineHeight:2.2, wordBreak:"break-word" };
 
   // calc totals per planRow
   const rowTotal = (pr) => (pr.items||[]).reduce((s,it) => s + (parseFloat(it.amount)||0), 0);
@@ -508,18 +508,19 @@ export default function App() {
           body *{visibility:hidden!important}
           #contract-print,#contract-print *{visibility:visible!important}
           #contract-print{
-            position:fixed!important;left:0!important;top:0!important;
+            position:absolute!important;left:0!important;top:0!important;
             width:100%!important;background:white!important;
             font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;
-            font-size:12.5pt!important;line-height:1.7!important;
+            font-size:12.5pt!important;line-height:2.0!important;
           }
           #contract-print *{
             font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;
             max-width:100%!important;overflow:visible!important;
+            line-height:inherit!important;
           }
           #contract-print table{width:100%!important;border-collapse:collapse!important}
-          #contract-print td,#contract-print th{word-break:break-word!important}
-          .print-page{page-break-after:always}
+          #contract-print td,#contract-print th{word-break:break-word!important;vertical-align:top!important}
+          .print-page{page-break-after:always;break-after:page}
         }
       `}</style>
 
