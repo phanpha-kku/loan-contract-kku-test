@@ -460,6 +460,9 @@ export default function App() {
     }
 
     setSubmitting(false);
+    // Wait for fonts to load before printing
+    try { await document.fonts.ready; } catch {}
+    await new Promise(r => setTimeout(r, 500));
     window.print();
   };
 
@@ -476,7 +479,7 @@ export default function App() {
   return (
     <div style={{ fontFamily:"'Sarabun','TH Sarabun New',sans-serif", background:"#FFF8F0", minHeight:"100vh", color:"#2D1010" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap&subset=thai');
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:5px}
         ::-webkit-scrollbar-track{background:#1A1D27}
@@ -484,7 +487,8 @@ export default function App() {
         @media print{
           body *{visibility:hidden!important}
           #contract-print,#contract-print *{visibility:visible!important}
-          #contract-print{position:fixed!important;left:0!important;top:0!important;width:100%!important;background:white!important}
+          #contract-print{position:fixed!important;left:0!important;top:0!important;width:100%!important;background:white!important;font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important}
+          #contract-print *{font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;letter-spacing:0!important;word-spacing:0!important}
           .print-page{page-break-after:always}
         }
       `}</style>
