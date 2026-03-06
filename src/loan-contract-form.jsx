@@ -99,7 +99,7 @@ function ContractPreview({ d }) {
     <div id="contract-print" style={S}>
 
       {/* ── PAGE 1 ── */}
-      <div className="print-page" style={{ padding:"12mm 18mm 8mm 22mm", minHeight:"277mm", boxSizing:"border-box" }}>
+      <div className="print-page" style={{ padding:"6mm 10mm 5mm 12mm", minHeight:"277mm", boxSizing:"border-box" }}>
 
         {/* Header */}
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
@@ -244,7 +244,7 @@ function ContractPreview({ d }) {
       </div>
 
       {/* ── PAGE 2: แผนการยืมเงิน ── */}
-      <div style={{ padding:"12mm 18mm 8mm 22mm", minHeight:"277mm", boxSizing:"border-box" }}>
+      <div style={{ padding:"6mm 10mm 5mm 12mm", minHeight:"277mm", boxSizing:"border-box" }}>
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
           <tbody>
             <tr><td colSpan={5} style={{ ...TD, textAlign:"center" }}>
@@ -504,7 +504,7 @@ export default function App() {
         ::-webkit-scrollbar-track{background:#1A1D27}
         ::-webkit-scrollbar-thumb{background:#3A3D4D;border-radius:3px}
         @media print{
-          @page{margin:10mm 12mm}
+          @page{margin:6mm 8mm}
           body *{visibility:hidden!important}
           #contract-print,#contract-print *{visibility:visible!important}
           #contract-print{
