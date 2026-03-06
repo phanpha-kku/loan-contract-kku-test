@@ -356,19 +356,17 @@ export default function App() {
 
   const generateContractNo = async () => {
     try {
-      // Use shared storage so all users share the same counter
-      const key = "shared_cnt_" + currentYear;
-      let seq = 1;
-      try {
-        const res = await window.storage.get(key, true); // shared=true
-        if (res?.value) seq = parseInt(res.value) + 1;
-      } catch {}
-      await window.storage.set(key, String(seq), true); // shared=true
-      return `${currentYear}${String(seq).padStart(5,"0")}`;
-    } catch {
-      // fallback: timestamp-based unique number
-      return `${currentYear}${String(Date.now()).slice(-5)}`;
-    }
+      const url = scriptUrl.trim();
+      if (url) {
+        // Get next sequence number from Google Sheet via Apps Script
+        const params = new URLSearchParams({ action: "getNextNo", year: String(currentYear) });
+        const res = await fetch(`${url}?${params.toString()}`, { mode: "cors" });
+        const data = await res.json();
+        if (data.no) return data.no;
+      }
+    } catch {}
+    // fallback: timestamp-based
+    return `${currentYear}${String(Date.now()).slice(-5)}`;
   };
 
   // Auto-sync plan rows when entering step 3
