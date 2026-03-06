@@ -88,10 +88,10 @@ function Chk({ on }) {
 }
 
 function ContractPreview({ d }) {
-  const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:13, color:"#000", lineHeight:1.6 };
+  const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:13, color:"#000", lineHeight:1.5 };
   const BDR = { border:"1px solid #444" };
-  const TD = { ...BDR, padding:"3px 6px", verticalAlign:"top" };
-  const LINE = { display:"block", marginBottom:2, lineHeight:1.7 };
+  const TD = { ...BDR, padding:"2px 6px", verticalAlign:"top" };
+  const LINE = { display:"block", marginBottom:1, lineHeight:1.6 };
   const UL = { borderBottom:"1px solid #000", display:"inline-block", minWidth:80, padding:"0 3px", verticalAlign:"bottom" };
 
   const rowTotal = (pr) => (pr.items||[]).reduce((s,it) => s + (parseFloat(it.amount)||0), 0);
@@ -101,7 +101,7 @@ function ContractPreview({ d }) {
     <div id="contract-print" style={S}>
 
       {/* ── PAGE 1 ── */}
-      <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
+      <div className="print-page" style={{ padding:"4mm 10mm 3mm 10mm", boxSizing:"border-box" }}>
 
         {/* Header row */}
         <div style={{ display:"flex", alignItems:"stretch", marginBottom:6, gap:0 }}>
@@ -143,7 +143,7 @@ function ContractPreview({ d }) {
             </tr>
 
             {/* Borrower info */}
-            <tr><td colSpan={3} style={{ ...BDR, padding:"4px 8px" }}>
+            <tr><td colSpan={3} style={{ ...BDR, padding:"3px 8px" }}>
               <div style={LINE}>
                 ข้าพเจ้า <Blank val={d.borrowerName} w={140}/> ตำแหน่ง <Blank val={d.position} w={110}/> สังกัด <Blank val={d.department} w={100}/> e-mail <Blank val={d.email} w={130}/>
               </div>
@@ -167,13 +167,10 @@ function ContractPreview({ d }) {
               <div style={LINE}>
                 <Chk on={!!d.useInst2}/> งวดที่ 2 จำนวน <Blank val={d.useInst2?fmtNum(d.inst2Amount):""} w={90}/> บาท มีความจำเป็นต้องใช้เงินวันที่ <Blank val={d.useInst2?toThaiDate(d.inst2NeedDate):""} w={95}/> ส่งคืนวันที่ <Blank val="" w={95}/>
               </div>
-              <div style={{ textAlign:"justify", lineHeight:1.55, fontSize:12.5, margin:"2px 0 4px" }}>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ข้าพเจ้าสัญญาว่าจะปฏิบัติตามระเบียบของทางราชการและประกาศของมหาวิทยาลัยที่เกี่ยวข้องอย่างเคร่งครัดและจะนำใบสำคัญคู่จ่ายที่ถูกต้อง
-                พร้อมทั้งเงินเหลือจ่าย(ถ้ามี) ส่งใช้ภายในกำหนดไว้และหากข้าพเจ้าไม่ส่งคืนเงินยืมตามกำหนดและพ้นวันครบกำหนดคืนเงินยืมทดรองจ่ายข้าพเจ้ายินดีให้
-                มหาวิทยาลัยขอนแก่น คิดดอกเบี้ย 7.5% ต่อปี และยินยอมให้หักเงินเดือน ค่าจ้าง เบี้ยหวัด บำเหน็จ บำนาญหรือเงินอื่นใดที่ข้าพเจ้าจะพึงได้รับจากทาง
-                ราชการ เพื่อชดใช้จำนวนเงินที่ยืมไปจนครบ ได้ทันที
+              <div style={{ textAlign:"justify", lineHeight:1.5, fontSize:12.5, margin:"2px 0 3px" }}>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ข้าพเจ้าสัญญาว่าจะปฏิบัติตามระเบียบของทางราชการและประกาศของมหาวิทยาลัยที่เกี่ยวข้องอย่างเคร่งครัดและจะนำใบสำคัญคู่จ่ายที่ถูกต้อง พร้อมทั้งเงินเหลือจ่าย(ถ้ามี) ส่งใช้ภายในกำหนดไว้และหากข้าพเจ้าไม่ส่งคืนเงินยืมตามกำหนดและพ้นวันครบกำหนดคืนเงินยืมทดรองจ่ายข้าพเจ้ายินดีให้มหาวิทยาลัยขอนแก่น คิดดอกเบี้ย 7.5% ต่อปี และยินยอมให้หักเงินเดือน ค่าจ้าง เบี้ยหวัด บำเหน็จ บำนาญหรือเงินอื่นใดที่ข้าพเจ้าจะพึงได้รับจากทางราชการ เพื่อชดใช้จำนวนเงินที่ยืมไปจนครบ ได้ทันที
               </div>
-              <div style={{ textAlign:"center", lineHeight:1.8 }}>
+              <div style={{ textAlign:"center", lineHeight:1.6, marginTop:2 }}>
                 <div>ลงชื่อ <Blank val="" w={160}/> ผู้ยืม</div>
                 <div>(<Blank val={d.borrowerName} w={160}/>)</div>
               </div>
@@ -183,12 +180,11 @@ function ContractPreview({ d }) {
             <tr>
               <td style={{ ...TD, width:"50%", fontSize:12.5 }}>
                 <strong>[1] ความเห็นของเจ้าหน้าที่การเงินคณะ/หน่วยงาน</strong>
-                <div style={{ lineHeight:1.5, margin:"2px 0 3px", fontSize:12 }}>
-                  <Chk on={false}/> ได้ตรวจสอบสิทธิของผู้ยืมเงินตามระเบียบฯ และพิจารณาความ<br/>
-                  เหมาะสมของแผนการยืมเงินแล้วเห็นควรอนุมัติ
+                <div style={{ lineHeight:1.5, margin:"2px 0 2px", fontSize:12 }}>
+                  <Chk on={false}/> ได้ตรวจสอบสิทธิของผู้ยืมเงินตามระเบียบฯ และพิจารณาความเหมาะสมของแผนการยืมเงินแล้วเห็นควรอนุมัติ
                 </div>
                 <div style={LINE}><Chk on={false}/> ความเห็นเพิ่มเติม (ถ้ามี) <Blank val={d.fin1Note} w={130}/></div>
-                <div style={{ textAlign:"center", marginTop:6, lineHeight:1.7 }}>
+                <div style={{ textAlign:"center", marginTop:4, lineHeight:1.6 }}>
                   <div>ลงชื่อ <Blank val="" w={110}/></div>
                   <div>(<Blank val={d.fin1Name} w={110}/>)</div>
                   <div style={{ fontSize:11 }}>เจ้าหน้าที่งานคลัง คณะ/หน่วยงาน</div>
@@ -196,13 +192,11 @@ function ContractPreview({ d }) {
               </td>
               <td colSpan={2} style={{ ...TD, fontSize:12.5 }}>
                 <strong>[2] ความเห็น หัวหน้างานคลังคณะฯ/ผู้ได้รับมอบหมาย</strong>
-                <div style={{ lineHeight:1.5, margin:"2px 0 3px", fontSize:12 }}>
-                  <Chk on={false}/> เห็นชอบการยืมเงินของบุคลากรและได้ตรวจสอบว่าแผนการยืมเงิน(ตาม<br/>
-                  เอกสารแนบ)เหมาะสม โดยจะกำกับติดตามการใช้จ่ายเงินและส่งคืนเงินยืม<br/>
-                  ตามกำหนดเวลาจนครบจำนวน
+                <div style={{ lineHeight:1.5, margin:"2px 0 2px", fontSize:12 }}>
+                  <Chk on={false}/> เห็นชอบการยืมเงินของบุคลากรและได้ตรวจสอบว่าแผนการยืมเงิน(ตามเอกสารแนบ)เหมาะสม โดยจะกำกับติดตามการใช้จ่ายเงินและส่งคืนเงินยืมตามกำหนดเวลาจนครบจำนวน
                 </div>
                 <div style={LINE}><Chk on={false}/> ความเห็นเพิ่มเติม (ถ้ามี) <Blank val={d.fin2Note} w={110}/></div>
-                <div style={{ textAlign:"center", marginTop:6, lineHeight:1.7 }}>
+                <div style={{ textAlign:"center", marginTop:4, lineHeight:1.6 }}>
                   <div>ลงชื่อ <Blank val="" w={130}/></div>
                   <div>(<Blank val={d.fin2Name} w={130}/>)</div>
                   <div style={{ fontSize:11 }}>หัวหน้างานคลังคณะฯ</div>
@@ -214,10 +208,10 @@ function ContractPreview({ d }) {
             <tr>
               <td style={{ ...TD, fontSize:12.5 }}>
                 <strong>[3] เรียน คณบดี</strong>
-                <div style={{ lineHeight:1.5, margin:"2px 0 3px", fontSize:12 }}>
-                  &nbsp;&nbsp;ได้ตรวจสอบรายการยืมเงินของผู้ยืมถูกต้องตามประกาศที่เกี่ยวข้อง เห็น<br/>ควรอนุมัติตามเสนอ
+                <div style={{ lineHeight:1.5, margin:"2px 0 2px", fontSize:12 }}>
+                  ได้ตรวจสอบรายการยืมเงินของผู้ยืมถูกต้องตามประกาศที่เกี่ยวข้อง เห็นควรอนุมัติตามเสนอ
                 </div>
-                <div style={{ textAlign:"center", marginTop:4, lineHeight:1.7 }}>
+                <div style={{ textAlign:"center", marginTop:3, lineHeight:1.6 }}>
                   <div>ลงชื่อ <Blank val="" w={110}/> ผู้เสนอ</div>
                   <div>(<Blank val={d.dir3Name} w={110}/>)</div>
                   <div style={{ fontSize:11 }}>ตำแหน่ง ผู้อำนวยการกองบริหารงานคณะฯ</div>
@@ -233,7 +227,7 @@ function ContractPreview({ d }) {
                 </div>
                 <div style={LINE}>(<Blank val={toThaiNum(d.approvedAmount || d.totalAmount)} w={200}/>)</div>
                 <div style={LINE}><Chk on={false}/> ความเห็นเพิ่มเติม (ถ้ามี) <Blank val={d.approverNote} w={120}/></div>
-                <div style={{ textAlign:"center", marginTop:4, lineHeight:1.7 }}>
+                <div style={{ textAlign:"center", marginTop:3, lineHeight:1.6 }}>
                   <div>ลงชื่อ <Blank val="" w={120}/> ผู้อนุมัติ</div>
                   <div>(<Blank val={d.approverName} w={120}/>)</div>
                   <div>วันที่ <Blank val={toThaiDate(d.approverDate)} w={110}/></div>
