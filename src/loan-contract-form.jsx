@@ -95,6 +95,7 @@ function ContractPreview({ d }) {
   const UL = { borderBottom:"1px solid #000", display:"inline-block", minWidth:80, padding:"0 3px", verticalAlign:"bottom" };
 
   const rowTotal = (pr) => (pr.items||[]).reduce((s,it) => s + (parseFloat(it.amount)||0), 0);
+  const ROW = { display:"flex", alignItems:"center", gap:8, marginBottom:2 };
 
   return (
     <div id="contract-print" style={S}>
