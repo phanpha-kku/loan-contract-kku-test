@@ -104,11 +104,17 @@ function ContractPreview({ d }) {
       <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
 
         {/* Header row */}
-        <div style={{ display:"flex", alignItems:"flex-start", marginBottom:2, gap:6 }}>
-          <img src={LOGO_URI} alt="logo" style={{ height:44, marginRight:6, flexShrink:0 }}/>
+        <div style={{ display:"flex", alignItems:"center", marginBottom:4, gap:8 }}>
+          <img src={LOGO_URI} alt="logo" style={{ height:44, flexShrink:0 }}/>
           <div style={{ flex:1, minWidth:0 }}>
-            <div style={LINE}>ส่วนงาน <Blank val={d.unit} w={200}/>&nbsp;&nbsp;โทร. <Blank val={d.phone} w={80}/></div>
-            <div style={LINE}>ที่ อว 660301.12.1.1<Blank val={d.docNo} w={80}/>&nbsp;&nbsp;วันที่ <Blank val={toThaiDate(d.contractDate)} w={150}/></div>
+            <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:2 }}>
+              <span>ส่วนงาน <Blank val={d.unit} w={160}/></span>
+              <span>โทร. <Blank val={d.phone} w={80}/></span>
+            </div>
+            <div style={{ display:"flex", alignItems:"baseline", gap:8 }}>
+              <span>ที่ อว 660301.12.1.1<Blank val={d.docNo} w={60}/></span>
+              <span>วันที่ <Blank val={toThaiDate(d.contractDate)} w={130}/></span>
+            </div>
           </div>
           <table style={{ borderCollapse:"collapse", fontSize:12, flexShrink:0, width:120 }}>
             <tbody>
