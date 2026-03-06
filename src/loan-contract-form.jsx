@@ -72,7 +72,8 @@ const DEPARTMENTS = ["สำนักงาน","สาขาเทคโนโ�
 function Blank({ val, w = 120 }) {
   return (
     <span style={{ display:"inline-block", borderBottom:"1px solid #000", minWidth:w,
-      padding:"0 3px", minHeight:18, verticalAlign:"bottom", lineHeight:"20px" }}>
+      padding:"0 2px", minHeight:16, verticalAlign:"bottom", lineHeight:"18px",
+      whiteSpace:"nowrap", overflow:"visible" }}>
       {val || ""}
     </span>
   );
@@ -87,9 +88,9 @@ function Chk({ on }) {
 }
 
 function ContractPreview({ d }) {
-  const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:13.5, color:"#000", lineHeight:1.8 };
+  const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:13, color:"#000", lineHeight:1.6 };
   const TD = { border:"1px solid #555", padding:"6px 8px", verticalAlign:"top" };
-  const ROW = { display:"flex", flexWrap:"wrap", gap:"2px 4px", alignItems:"baseline", marginBottom:3 };
+  const ROW = { display:"block", marginBottom:4, lineHeight:1.9 };
 
   // calc totals per planRow
   const rowTotal = (pr) => (pr.items||[]).reduce((s,it) => s + (parseFloat(it.amount)||0), 0);
@@ -354,19 +355,37 @@ export default function App() {
   const currentYear = new Date().getFullYear() + 543;
   const [submitting, setSubmitting] = useState(false);
 
-  const generateContractNo = async () => {
-    try {
+  const generateContractNo = () => {
+    return new Promise((resolve) => {
       const url = scriptUrl.trim();
-      if (url) {
-        // Get next sequence number from Google Sheet via Apps Script
-        const params = new URLSearchParams({ action: "getNextNo", year: String(currentYear) });
-        const res = await fetch(`${url}?${params.toString()}`, { mode: "cors" });
-        const data = await res.json();
-        if (data.no) return data.no;
+      if (!url) {
+        resolve(`${currentYear}${String(Date.now()).slice(-5)}`);
+        return;
       }
-    } catch {}
-    // fallback: timestamp-based
-    return `${currentYear}${String(Date.now()).slice(-5)}`;
+      // Use JSONP-style: inject script tag to bypass CORS
+      const cbName = `_cb_${Date.now()}`;
+      const params = new URLSearchParams({ action: "getNextNo", year: String(currentYear), callback: cbName });
+      window[cbName] = (data) => {
+        delete window[cbName];
+        script.remove();
+        if (data && data.no) resolve(data.no);
+        else resolve(`${currentYear}${String(Date.now()).slice(-5)}`);
+      };
+      const script = document.createElement("script");
+      script.src = `${url}?${params.toString()}`;
+      script.onerror = () => {
+        delete window[cbName];
+        resolve(`${currentYear}${String(Date.now()).slice(-5)}`);
+      };
+      document.head.appendChild(script);
+      setTimeout(() => {
+        if (window[cbName]) {
+          delete window[cbName];
+          script.remove();
+          resolve(`${currentYear}${String(Date.now()).slice(-5)}`);
+        }
+      }, 5000);
+    });
   };
 
   // Auto-sync plan rows when entering step 3
@@ -479,16 +498,27 @@ export default function App() {
   return (
     <div style={{ fontFamily:"'Sarabun','TH Sarabun New',sans-serif", background:"#FFF8F0", minHeight:"100vh", color:"#2D1010" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap&subset=thai');
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:5px}
         ::-webkit-scrollbar-track{background:#1A1D27}
         ::-webkit-scrollbar-thumb{background:#3A3D4D;border-radius:3px}
         @media print{
+          @page{margin:10mm 12mm}
           body *{visibility:hidden!important}
           #contract-print,#contract-print *{visibility:visible!important}
-          #contract-print{position:fixed!important;left:0!important;top:0!important;width:100%!important;background:white!important;font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important}
-          #contract-print *{font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;letter-spacing:0!important;word-spacing:0!important}
+          #contract-print{
+            position:fixed!important;left:0!important;top:0!important;
+            width:100%!important;background:white!important;
+            font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;
+            font-size:12.5pt!important;line-height:1.7!important;
+          }
+          #contract-print *{
+            font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;
+            max-width:100%!important;overflow:visible!important;
+          }
+          #contract-print table{width:100%!important;border-collapse:collapse!important}
+          #contract-print td,#contract-print th{word-break:break-word!important}
           .print-page{page-break-after:always}
         }
       `}</style>
