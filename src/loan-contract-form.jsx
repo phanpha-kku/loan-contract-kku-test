@@ -73,7 +73,7 @@ function Blank({ val, w = 120 }) {
   return (
     <span style={{ display:"inline-block", borderBottom:"1px solid #000", minWidth:w,
       padding:"0 4px", minHeight:20, verticalAlign:"bottom", lineHeight:"22px",
-      whiteSpace:"normal", overflow:"visible", wordBreak:"break-word" }}>
+      whiteSpace:"nowrap", overflow:"visible" }}>
       {val || "\u00a0"}
     </span>
   );
@@ -104,32 +104,27 @@ function ContractPreview({ d }) {
       <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
 
         {/* Header row */}
-        <table style={{ width:"100%", borderCollapse:"collapse", marginBottom:4 }}>
-          <tbody>
-            <tr>
-              <td style={{ verticalAlign:"middle", width:52, paddingRight:6 }} rowSpan={2}>
-                <img src={LOGO_URI} alt="logo" style={{ height:44, display:"block" }}/>
-              </td>
-              <td style={{ verticalAlign:"bottom", whiteSpace:"nowrap", paddingBottom:2 }}>
-                ส่วนงาน&nbsp;<Blank val={d.unit} w={180}/>&nbsp;&nbsp;&nbsp;โทร.&nbsp;<Blank val={d.phone} w={90}/>
-              </td>
-              <td style={{ verticalAlign:"bottom", whiteSpace:"nowrap", paddingBottom:2, width:140, textAlign:"center" }} rowSpan={2}>
-                <table style={{ borderCollapse:"collapse", fontSize:12, width:"100%" }}>
-                  <tbody>
-                    <tr><td style={{ ...BDR, padding:"3px 6px", textAlign:"center", fontWeight:"bold", whiteSpace:"nowrap" }}>เลขที่&nbsp;<Blank val={d.contractNo} w={55}/></td></tr>
-                    <tr><td style={{ ...BDR, padding:"3px 6px", textAlign:"center", fontSize:11 }}>วันครบกำหนด</td></tr>
-                    <tr><td style={{ ...BDR, padding:"3px 6px", textAlign:"center" }}><Blank val={toThaiDate(d.dueDate)} w={90}/></td></tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style={{ verticalAlign:"bottom", whiteSpace:"nowrap", paddingBottom:2 }}>
-                ที่ อว 660301.12.1.1<Blank val={d.docNo} w={60}/>&nbsp;&nbsp;&nbsp;วันที่&nbsp;<Blank val={toThaiDate(d.contractDate)} w={140}/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div style={{ display:"flex", alignItems:"stretch", marginBottom:6, gap:0 }}>
+          {/* Logo */}
+          <img src={LOGO_URI} alt="logo" style={{ height:44, marginRight:10, flexShrink:0, alignSelf:"center" }}/>
+          {/* Text block */}
+          <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", gap:4 }}>
+            <div style={{ whiteSpace:"nowrap" }}>
+              ส่วนงาน&nbsp;<Blank val={d.unit} w={160}/>&nbsp;&nbsp;&nbsp;โทร.&nbsp;<Blank val={d.phone} w={80}/>
+            </div>
+            <div style={{ whiteSpace:"nowrap" }}>
+              ที่ อว 660301.12.1.1&nbsp;<Blank val={d.docNo} w={50}/>&nbsp;&nbsp;&nbsp;วันที่&nbsp;<Blank val={toThaiDate(d.contractDate)} w={130}/>
+            </div>
+          </div>
+          {/* Contract number box */}
+          <table style={{ borderCollapse:"collapse", fontSize:12, flexShrink:0, marginLeft:8 }}>
+            <tbody>
+              <tr><td style={{ ...BDR, padding:"3px 10px", textAlign:"center", fontWeight:"bold", whiteSpace:"nowrap" }}>เลขที่&nbsp;<Blank val={d.contractNo} w={60}/></td></tr>
+              <tr><td style={{ ...BDR, padding:"3px 10px", textAlign:"center", fontSize:11 }}>วันครบกำหนด</td></tr>
+              <tr><td style={{ ...BDR, padding:"3px 10px", textAlign:"center" }}><Blank val={toThaiDate(d.dueDate)} w={90}/></td></tr>
+            </tbody>
+          </table>
+        </div>
 
         {/* Main table */}
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
