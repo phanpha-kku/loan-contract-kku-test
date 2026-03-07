@@ -268,7 +268,7 @@ function ContractPreview({ d }) {
       </div>
 
       {/* ── PAGE 2: แผนการยืมเงิน ── */}
-      <div style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
+      <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
           <tbody>
             <tr><td colSpan={5} style={{ ...TD, textAlign:"center" }}>
@@ -548,8 +548,10 @@ export default function App() {
         }
       `}</style>
 
-      {/* Hidden print zone */}
-      <div style={{ display:"none" }}><ContractPreview d={form}/></div>
+      {/* Hidden print zone - must use visibility:hidden (not display:none) so page-break works */}
+      <div style={{ position:"fixed", top:0, left:0, width:"100%", visibility:"hidden", pointerEvents:"none", zIndex:-1 }}>
+        <ContractPreview d={form}/>
+      </div>
 
       {!preview ? (
         <div style={{ maxWidth:800, margin:"0 auto", padding:"24px 16px" }}>
