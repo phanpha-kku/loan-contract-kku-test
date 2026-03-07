@@ -268,7 +268,7 @@ function ContractPreview({ d }) {
       </div>
 
       {/* ── PAGE 2: แผนการยืมเงิน ── */}
-      <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
+      <div style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
           <tbody>
             <tr><td colSpan={5} style={{ ...TD, textAlign:"center" }}>
