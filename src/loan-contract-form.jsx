@@ -101,7 +101,7 @@ function ContractPreview({ d, printable }) {
     <div id={printable ? "contract-print" : undefined} style={S}>
 
       {/* ── PAGE 1 ── */}
-      <div className="print-page" style={{ padding:"4mm 10mm 3mm 10mm", boxSizing:"border-box" }}>
+      <div className="print-page" style={{ padding:"4mm 10mm 3mm 10mm", boxSizing:"border-box", pageBreakAfter:"always", breakAfter:"page" }}>
 
         {/* Header row */}
         <div style={{ display:"flex", alignItems:"stretch", marginBottom:6, gap:0 }}>
@@ -268,7 +268,7 @@ function ContractPreview({ d, printable }) {
       </div>
 
       {/* ── PAGE 2: แผนการยืมเงิน ── */}
-      <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box", pageBreakBefore:"always", breakBefore:"page" }}>
+      <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box", pageBreakBefore:"always", breakBefore:"page", pageBreakInside:"avoid" }}>
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
           <tbody>
             <tr><td colSpan={5} style={{ ...TD, textAlign:"center" }}>
@@ -504,9 +504,51 @@ export default function App() {
 
     setSubmitting(false);
 
-    // Use direct window.print() — works reliably on Safari/Chrome/Firefox
-    // The @media print CSS already handles page breaks and visibility
-    window.print();
+    // Use iframe-based print — most reliable cross-browser page break support
+    const printEl = document.getElementById("contract-print");
+    if (!printEl) { window.print(); return; }
+
+    // Remove old iframe if exists
+    const oldFrame = document.getElementById("print-iframe");
+    if (oldFrame) oldFrame.remove();
+
+    const iframe = document.createElement("iframe");
+    iframe.id = "print-iframe";
+    iframe.style.cssText = "position:fixed;top:0;left:0;width:0;height:0;border:0;opacity:0;";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8"/>
+<title>สัญญาการยืมเงิน</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:13px;color:#000;background:#fff}
+  @page{margin:6mm 8mm;size:A4 portrait}
+  .print-page{
+    display:block;
+    page-break-after:always;
+    break-after:page;
+    width:100%;
+  }
+  .print-page:last-child{
+    page-break-after:avoid;
+    break-after:avoid;
+  }
+  table{border-collapse:collapse;width:100%}
+  td,th{word-break:break-word;vertical-align:top}
+</style>
+</head><body>${printEl.innerHTML}</body></html>`);
+    doc.close();
+
+    // Wait for fonts then print
+    await new Promise(r => setTimeout(r, 1500));
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    setTimeout(() => iframe.remove(), 3000);
   };
 
   // ─── Styles ─
