@@ -268,7 +268,7 @@ function ContractPreview({ d }) {
       </div>
 
       {/* ── PAGE 2: แผนการยืมเงิน ── */}
-      <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
+      <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box", pageBreakBefore:"always", breakBefore:"page" }}>
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
           <tbody>
             <tr><td colSpan={5} style={{ ...TD, textAlign:"center" }}>
@@ -503,10 +503,34 @@ export default function App() {
     }
 
     setSubmitting(false);
-    // Wait for fonts to load before printing
-    try { await document.fonts.ready; } catch {}
-    await new Promise(r => setTimeout(r, 500));
-    window.print();
+
+    // Open new window and inject contract HTML for reliable page-break
+    const printEl = document.getElementById("contract-print");
+    if (!printEl) { window.print(); return; }
+
+    const win = window.open("", "_blank", "width=900,height=700");
+    win.document.write(`<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8"/>
+<title>สัญญาการยืมเงิน</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:13px;color:#000;background:#fff}
+  @page{margin:6mm 8mm;size:A4}
+  .print-page{page-break-after:always;break-after:page;page-break-before:auto;display:block;}
+  .print-page:last-child{page-break-after:avoid;break-after:avoid;}
+  .print-page:not(:first-child){page-break-before:always;break-before:page;}
+  table{border-collapse:collapse;width:100%}
+  td,th{word-break:break-word;vertical-align:top}
+</style>
+</head><body>
+${printEl.innerHTML}
+</body></html>`);
+    win.document.close();
+    await new Promise(r => setTimeout(r, 1200));
+    win.print();
+    win.close();
   };
 
   // ─── Styles ─
@@ -527,11 +551,15 @@ export default function App() {
         ::-webkit-scrollbar{width:5px}
         ::-webkit-scrollbar-track{background:#1A1D27}
         ::-webkit-scrollbar-thumb{background:#3A3D4D;border-radius:3px}
+        @media screen{
+          #contract-print{ display:none; }
+        }
         @media print{
           @page{margin:6mm 8mm}
           body *{visibility:hidden!important}
           #contract-print,#contract-print *{visibility:visible!important}
           #contract-print{
+            display:block!important;
             position:absolute!important;left:0!important;top:0!important;
             width:100%!important;background:white!important;
             font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif!important;
@@ -544,14 +572,14 @@ export default function App() {
           }
           #contract-print table{width:100%!important;border-collapse:collapse!important}
           #contract-print td,#contract-print th{word-break:break-word!important;vertical-align:top!important}
-          .print-page{page-break-after:always;break-after:page}
+          .print-page{page-break-after:always!important;break-after:page!important;page-break-before:auto!important;display:block!important;}
+          .print-page:last-child{page-break-after:avoid!important;break-after:avoid!important;}
+          .print-page:not(:first-child){page-break-before:always!important;break-before:page!important;}
         }
       `}</style>
 
-      {/* Hidden print zone - must use visibility:hidden (not display:none) so page-break works */}
-      <div style={{ position:"fixed", top:0, left:0, width:"100%", visibility:"hidden", pointerEvents:"none", zIndex:-1 }}>
-        <ContractPreview d={form}/>
-      </div>
+      {/* Print zone - hidden via CSS, shown only when printing */}
+      <ContractPreview d={form}/>
 
       {!preview ? (
         <div style={{ maxWidth:800, margin:"0 auto", padding:"24px 16px" }}>
