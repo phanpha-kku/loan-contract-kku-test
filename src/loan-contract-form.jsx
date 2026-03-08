@@ -517,6 +517,11 @@ export default function App() {
     iframe.style.cssText = "position:fixed;top:0;left:0;width:0;height:0;border:0;opacity:0;";
     document.body.appendChild(iframe);
 
+    // Extract each page separately for guaranteed page breaks
+    const pages = printEl.querySelectorAll(".print-page");
+    const page1Html = pages[0] ? pages[0].innerHTML : printEl.innerHTML;
+    const page2Html = pages[1] ? pages[1].innerHTML : "";
+
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open();
     doc.write(`<!DOCTYPE html>
@@ -526,22 +531,22 @@ export default function App() {
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:13px;color:#000;background:#fff}
+  html,body{font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:13px;color:#000;background:#fff}
   @page{margin:6mm 8mm;size:A4 portrait}
-  .print-page{
+  .page-wrap{
     display:block;
+    width:100%;
     page-break-after:always;
     break-after:page;
-    width:100%;
   }
-  .print-page:last-child{
-    page-break-after:avoid;
-    break-after:avoid;
-  }
+  .page-wrap:last-child{page-break-after:avoid;break-after:avoid;}
   table{border-collapse:collapse;width:100%}
   td,th{word-break:break-word;vertical-align:top}
 </style>
-</head><body>${printEl.innerHTML}</body></html>`);
+</head><body>
+<div class="page-wrap" style="padding:4mm 10mm 3mm 10mm">${page1Html}</div>
+<div class="page-wrap" style="padding:5mm 10mm 4mm 12mm">${page2Html}</div>
+</body></html>`);
     doc.close();
 
     // Wait for fonts then print
