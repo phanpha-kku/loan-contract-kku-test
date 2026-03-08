@@ -87,7 +87,7 @@ function Chk({ on }) {
   );
 }
 
-function ContractPreview({ d }) {
+function ContractPreview({ d, printable }) {
   const S = { fontFamily:"'Sarabun','TH Sarabun New',Tahoma,sans-serif", fontSize:13, color:"#000", lineHeight:1.5 };
   const BDR = { border:"1px solid #444" };
   const TD = { ...BDR, padding:"2px 6px", verticalAlign:"top" };
@@ -98,7 +98,7 @@ function ContractPreview({ d }) {
   const ROW = { display:"flex", alignItems:"center", gap:8, marginBottom:2 };
 
   return (
-    <div id="contract-print" style={S}>
+    <div id={printable ? "contract-print" : undefined} style={S}>
 
       {/* ── PAGE 1 ── */}
       <div className="print-page" style={{ padding:"4mm 10mm 3mm 10mm", boxSizing:"border-box" }}>
@@ -504,33 +504,9 @@ export default function App() {
 
     setSubmitting(false);
 
-    // Open new window and inject contract HTML for reliable page-break
-    const printEl = document.getElementById("contract-print");
-    if (!printEl) { window.print(); return; }
-
-    const win = window.open("", "_blank", "width=900,height=700");
-    win.document.write(`<!DOCTYPE html>
-<html><head>
-<meta charset="utf-8"/>
-<title>สัญญาการยืมเงิน</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet"/>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:13px;color:#000;background:#fff}
-  @page{margin:6mm 8mm;size:A4}
-  .print-page{page-break-after:always;break-after:page;page-break-before:auto;display:block;}
-  .print-page:last-child{page-break-after:avoid;break-after:avoid;}
-  .print-page:not(:first-child){page-break-before:always;break-before:page;}
-  table{border-collapse:collapse;width:100%}
-  td,th{word-break:break-word;vertical-align:top}
-</style>
-</head><body>
-${printEl.innerHTML}
-</body></html>`);
-    win.document.close();
-    await new Promise(r => setTimeout(r, 1200));
-    win.print();
-    win.close();
+    // Use direct window.print() — works reliably on Safari/Chrome/Firefox
+    // The @media print CSS already handles page breaks and visibility
+    window.print();
   };
 
   // ─── Styles ─
@@ -579,7 +555,7 @@ ${printEl.innerHTML}
       `}</style>
 
       {/* Print zone - hidden via CSS, shown only when printing */}
-      <ContractPreview d={form}/>
+      <ContractPreview d={form} printable={true}/>
 
       {!preview ? (
         <div style={{ maxWidth:800, margin:"0 auto", padding:"24px 16px" }}>
