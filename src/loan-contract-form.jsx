@@ -194,7 +194,7 @@ function Chk({ on }) {
 
 function ContractPreview({ d }) {
   const font = "'Sarabun','TH Sarabun New',Tahoma,sans-serif";
-  const S = { fontFamily:font, fontSize:"9.5pt", color:"#000", lineHeight:1.45 };
+  const S = { fontFamily:font, fontSize:"9.5pt", color:"#000", lineHeight:1.5 };
 
   const thaiDate = (iso, short=false) => {
     if (!iso) return "";
@@ -219,7 +219,7 @@ function ContractPreview({ d }) {
 
   const B = { border:"1px solid #666" };
   // กล่อง [1][2][3][4] — ขนาดเท่ากัน 50% ทุกช่อง, height ถูก control โดย table-layout:fixed
-  const BOX = { ...B, padding:"5px 7px", verticalAlign:"top", width:"50%", fontSize:"9pt", lineHeight:1.45 };
+  const BOX = { ...B, padding:"6px 7px", verticalAlign:"top", width:"50%", fontSize:"9pt", lineHeight:1.55 };
   const BOXINNER = { display:"flex", flexDirection:"column", height:"100%" };
 
   const SigCenter = ({name="", label=""}) => (
@@ -287,7 +287,7 @@ function ContractPreview({ d }) {
 
             {/* body — full width */}
             <tr>
-              <td colSpan={2} style={{...B, padding:"2px 8px", lineHeight:1.35}}>
+              <td colSpan={2} style={{...B, padding:"3px 8px", lineHeight:1.55}}>
                 <div style={{display:"flex",flexWrap:"wrap",gap:"0 3px",alignItems:"baseline"}}>
                   <span>ข้าพเจ้า</span><F v={d.borrowerName} w={148}/>
                   <span>ตำแหน่ง</span><F v={d.position} w={125}/>
@@ -479,22 +479,7 @@ function ContractPreview({ d }) {
                 <div style={{fontSize:"8.5pt"}}>ผู้ยืม</div>
               </td>
             </tr>
-            {/* รับรอง */}
-            <tr>
-              <td colSpan={5} style={{...B,padding:"4px 8px",fontSize:"9pt"}}>
-                <div style={{marginBottom:3}}>ขอรับรองว่าแผนการยืมเงินทดรองจ่ายเป็นความจริง</div>
-                <div style={{display:"flex",gap:60}}>
-                  <div>
-                    <div>ลงชื่อ <F v="" w={128}/> ผู้ยืม</div>
-                    <div>(<F v={d.borrowerName||""} w={128}/>)</div>
-                  </div>
-                  <div>
-                    <div>ลงชื่อ <F v="" w={128}/> ผู้บังคับบัญชา</div>
-                    <div>(<F v={d.approverName||""} w={128}/>)</div>
-                  </div>
-                </div>
-              </td>
-            </tr>
+
             <tr>
               <td colSpan={5} style={{...B,padding:"2px 8px",fontSize:"8pt"}}>
                 <strong>หมายเหตุ</strong> : หากช่วงระยะเวลาการใช้จ่ายเงินไม่เกิน 15 วัน ให้ยืมได้เพียง 1 งวด หากเกิน 15 วัน แต่ไม่เกิน 3 เดือน ให้ยืมได้ไม่เกิน 2 งวด
