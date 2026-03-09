@@ -624,7 +624,7 @@ export default function App() {
     return new Promise((resolve) => {
       const url = scriptUrl.trim();
       if (!url) {
-        resolve(`${currentYear}${String(Date.now()).slice(-5)}`);
+        resolve(`${currentYear}000`);
         return;
       }
       // Use JSONP-style: inject script tag to bypass CORS
@@ -634,20 +634,20 @@ export default function App() {
         delete window[cbName];
         script.remove();
         if (data && data.no) resolve(data.no);
-        else resolve(`${currentYear}${String(Date.now()).slice(-5)}`);
+        else resolve(`${currentYear}000`);
       };
       const script = document.createElement("script");
       script.src = `${url}?${params.toString()}`;
       script.onerror = () => {
         delete window[cbName];
-        resolve(`${currentYear}${String(Date.now()).slice(-5)}`);
+        resolve(`${currentYear}000`);
       };
       document.head.appendChild(script);
       setTimeout(() => {
         if (window[cbName]) {
           delete window[cbName];
           script.remove();
-          resolve(`${currentYear}${String(Date.now()).slice(-5)}`);
+          resolve(`${currentYear}000`);
         }
       }, 5000);
     });
@@ -1089,8 +1089,11 @@ ${printEl.innerHTML}
                 </div>
                 <div style={{ marginBottom:14 }}>
                   <label style={LS_STYLE}>จำนวนเงิน (ตัวอักษร)</label>
-                  <input value={form.totalAmountText||(form.totalAmount?toThaiNum(form.totalAmount):"")}
-                    onChange={e=>set("totalAmountText",e.target.value)} style={IS_STYLE} placeholder="อัตโนมัติ"/>
+                  <div style={{ ...IS_STYLE, background:"rgba(192,57,43,.06)", border:"1px solid rgba(192,57,43,.3)",
+                    display:"flex", alignItems:"center", justifyContent:"space-between", cursor:"not-allowed" }}>
+                    <span style={{ fontWeight:500 }}>{form.totalAmount ? toThaiNum((parseFloat(form.inst1Amount)||0)+(form.useInst2?(parseFloat(form.inst2Amount)||0):0)) : "—"}</span>
+                    <span style={{ fontSize:11, color:"#C07070", flexShrink:0 }}>🔒 อัตโนมัติ</span>
+                  </div>
                 </div>
               </Grid2>
               <Card title="📅 งวดที่ 1" color="#C0392B">
