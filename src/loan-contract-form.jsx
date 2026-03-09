@@ -194,239 +194,315 @@ function Chk({ on }) {
 
 function ContractPreview({ d }) {
   const font = "'Sarabun','TH Sarabun New',Tahoma,sans-serif";
-  const S = { fontFamily:font, fontSize:"11pt", color:"#000", lineHeight:1.5 };
-  const BDR = { border:"1px solid #555" };
-  const TD = { ...BDR, padding:"3px 6px", verticalAlign:"top", fontSize:"10.5pt" };
-  const UL = (w=100) => ({ borderBottom:"1px solid #000", display:"inline-block",
-    minWidth:w, padding:"0 2px", verticalAlign:"bottom", lineHeight:"18px" });
+  const S = { fontFamily:font, fontSize:"10.5pt", color:"#000", lineHeight:1.45 };
+
+  // Helper: Thai date from YYYY-MM-DD
+  const thaiDate = (iso, short=false) => {
+    if (!iso) return "";
+    const [y,m,day] = iso.split("-");
+    const ml = ["","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+    const ms = ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    return `${parseInt(day)} ${short?ms[parseInt(m)]:ml[parseInt(m)]} ${parseInt(y)+543}`;
+  };
+
+  // Underline field: value or blank line
+  const F = ({v="", w=80, center=false}) => (
+    <span style={{
+      display:"inline-block", borderBottom:"1px solid #000",
+      minWidth:w, padding:"0 3px", verticalAlign:"bottom",
+      lineHeight:"16px", textAlign: center?"center":"left",
+      whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis"
+    }}>{v||"\u00a0"}</span>
+  );
+
+  // Checkbox
   const Chk = ({on}) => (
-    <span style={{ display:"inline-block", width:11, height:11, border:"1px solid #000",
-      verticalAlign:"middle", textAlign:"center", lineHeight:"10px", fontSize:9, marginRight:3 }}>
+    <span style={{display:"inline-block",width:10,height:10,border:"1px solid #000",
+      verticalAlign:"middle",textAlign:"center",lineHeight:"9px",fontSize:8,marginRight:2,flexShrink:0}}>
       {on?"✓":""}
     </span>
   );
 
-  const rowTotal = (pr) => (pr.items||[]).reduce((s,it) => s+(parseFloat(it.amount)||0), 0);
-  const grandTotal = (d.planRows||[]).reduce((s,pr) => s+rowTotal(pr), 0);
+  // Divider line
+  const HR = () => <div style={{borderBottom:"1px solid #000",margin:"2px 0"}}/>;
+
+  const grandTotal = (d.planRows||[]).reduce((s,pr)=>
+    s+(pr.items||[]).reduce((ss,it)=>ss+(parseFloat(it.amount)||0),0),0);
+
+  // Cell style for approval boxes
+  const BOX = { border:"1px solid #555", padding:"5px 7px", verticalAlign:"top", width:"50%", fontSize:"9.5pt" };
+  const BDR = { border:"1px solid #555" };
 
   return (
     <div id="contract-print" style={S}>
 
       {/* ══ PAGE 1 ══ */}
-      <div className="print-page" style={{ padding:"8mm 12mm 6mm 12mm", boxSizing:"border-box", width:"210mm", minHeight:"297mm" }}>
+      <div className="print-page" style={{ padding:"10mm 14mm 8mm 14mm", boxSizing:"border-box", width:"210mm", minHeight:"297mm" }}>
 
-        {/* Header */}
-        <div style={{ display:"flex", alignItems:"stretch", marginBottom:4, gap:0 }}>
-          <img src={LOGO_URI} alt="logo" style={{ height:48, marginRight:8, flexShrink:0, alignSelf:"center" }}/>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:"9.5pt" }}>ส่วนงาน <span style={UL(200)}>{d.unit||""}</span>&nbsp;&nbsp;โทร. <span style={UL(80)}>{d.phone||""}</span></div>
-            <div style={{ fontSize:"9.5pt" }}>ที่ อว 660301.12.1.1 <span style={UL(160)}>&nbsp;</span>&nbsp;&nbsp;วันที่ <span style={UL(130)}>{d.contractDate ? (() => { const [y,m,day]=d.contractDate.split("-"); const months=["","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"]; return `${parseInt(day)} ${months[parseInt(m)]} ${parseInt(y)+543}`; })() : ""}</span></div>
+        {/* ── Header ── */}
+        <div style={{ display:"flex", alignItems:"flex-start", marginBottom:6 }}>
+          {/* Logo + unit */}
+          <div style={{ display:"flex", alignItems:"center", flex:1 }}>
+            <img src={LOGO_URI} alt="logo" style={{ height:44, marginRight:8, flexShrink:0 }}/>
+            <div style={{ fontSize:"9pt", lineHeight:1.6 }}>
+              <div>ส่วนงาน <F v={d.unit||"คณะเทคโนโลยี"} w={160}/>&nbsp;&nbsp;โทร. <F v={d.phone||""} w={70}/></div>
+              <div>ที่ อว 660301.12.1.1 <F v="" w={120}/>&nbsp;&nbsp;&nbsp;วันที่ <F v={thaiDate(d.contractDate)} w={120}/></div>
+            </div>
           </div>
-          <table style={{ borderCollapse:"collapse", fontSize:"9.5pt", flexShrink:0, marginLeft:8 }}>
+          {/* Contract no box */}
+          <table style={{ borderCollapse:"collapse", fontSize:"9pt", marginLeft:8, flexShrink:0 }}>
             <tbody>
-              <tr><td style={{ ...BDR, padding:"2px 8px", textAlign:"center", fontWeight:700 }}>เลขที่ {d.contractNo||"…………………"}</td></tr>
-              <tr><td style={{ ...BDR, padding:"2px 8px", textAlign:"center" }}>วันครบกำหนด {d.dueDate ? (() => { const [y,m,day]=d.dueDate.split("-"); const months=["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."]; return `${parseInt(day)} ${months[parseInt(m)]} ${parseInt(y)+543}`; })() : "……………………"}</td></tr>
+              <tr><td style={{ border:"1px solid #555", padding:"3px 10px", fontWeight:700, textAlign:"center", whiteSpace:"nowrap" }}>
+                เลขที่ {d.contractNo||"…………………………"}
+              </td></tr>
+              <tr><td style={{ border:"1px solid #555", padding:"3px 10px", textAlign:"center", whiteSpace:"nowrap" }}>
+                วันครบกำหนด <F v={thaiDate(d.dueDate,true)||"……………………"} w={80}/>
+              </td></tr>
             </tbody>
           </table>
         </div>
 
-        {/* Main contract table */}
-        <table style={{ borderCollapse:"collapse", width:"100%", fontSize:"10.5pt" }}>
+        {/* ── Main table ── */}
+        <table style={{ borderCollapse:"collapse", width:"100%", fontSize:"10pt" }}>
           <tbody>
-            {/* Title row */}
+
+            {/* Title */}
             <tr>
-              <td colSpan={2} style={{ ...BDR, textAlign:"center", padding:"4px 8px", fontWeight:700, fontSize:"12pt" }}>
+              <td colSpan={2} style={{ border:"1px solid #555", textAlign:"center", padding:"4px 8px", fontWeight:700, fontSize:"11.5pt" }}>
                 สัญญาการยืมเงิน(กรณียืมเงินรายได้มหาวิทยาลัย)
               </td>
             </tr>
             <tr>
-              <td colSpan={2} style={{ ...BDR, textAlign:"center", padding:"2px 8px", fontSize:"10pt" }}>
+              <td colSpan={2} style={{ border:"1px solid #555", textAlign:"center", padding:"2px 8px" }}>
                 ยื่นต่อ คณบดี
               </td>
             </tr>
 
-            {/* Body */}
+            {/* Body content */}
             <tr>
-              <td colSpan={2} style={{ ...BDR, padding:"4px 8px" }}>
-                <div>ข้าพเจ้า <span style={UL(160)}>{d.borrowerName||""}</span> ตำแหน่ง <span style={UL(140)}>{d.position||""}</span> สังกัด <span style={UL(100)}>{d.department||""}</span> e-mail <span style={UL(140)}>{d.email||""}</span></div>
-                <div>มีความประสงค์ขอยืมเงินจาก มหาวิทยาลัยขอนแก่น ตามหนังสือที่ อว <span style={UL(200)}>{d.refDocNo||""}</span> ที่ได้รับอนุมัติให้ดำเนินกิจกรรม/โครงการ <span style={UL(260)}>{d.project||""}</span></div>
-                <div style={{ marginTop:2 }}>
-                  จากแหล่งเงินงบประมาณ &nbsp;&nbsp;
-                  <Chk on={d.budgetType==="แผ่นดิน"}/> งบประมาณแผ่นดิน &nbsp;&nbsp;
-                  <Chk on={d.budgetType==="รายได้"||!d.budgetType}/> งบประมาณเงินรายได้
+              <td colSpan={2} style={{ border:"1px solid #555", padding:"5px 8px", lineHeight:1.7 }}>
+
+                {/* Line 1: borrower info */}
+                <div style={{ display:"flex", flexWrap:"wrap", gap:"0 4px", alignItems:"baseline" }}>
+                  <span>ข้าพเจ้า</span><F v={d.borrowerName} w={150}/>
+                  <span>ตำแหน่ง</span><F v={d.position} w={130}/>
+                  <span>สังกัด</span><F v={d.department} w={90}/>
+                  <span>e-mail</span><F v={d.email} w={130}/>
                 </div>
-                <div style={{ marginTop:2 }}>
-                  เป็นเงินจำนวน <span style={UL(120)}>{d.totalAmount ? Number(d.totalAmount).toLocaleString("th-TH") : ""}</span> บาท (<span style={UL(200)}>{d.totalAmountText||""}</span>) โดยมีแผนการยืมเงิน(ตามรายละเอียดแนบ)
+
+                {/* Line 2: ref doc */}
+                <div style={{ display:"flex", flexWrap:"wrap", gap:"0 4px", alignItems:"baseline" }}>
+                  <span>มีความประสงค์ขอยืมเงินจาก มหาวิทยาลัยขอนแก่น ตามหนังสือที่ อว</span>
+                  <F v={d.refDocNo} w={160}/>
+                  <span>ที่ได้รับอนุมัติให้ดำเนินกิจกรรม/โครงการ</span>
                 </div>
-                <div style={{ marginTop:2 }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;งวดที่ 1 จำนวน <span style={UL(100)}>{d.inst1Amount ? Number(d.inst1Amount).toLocaleString("th-TH") : ""}</span> บาท
-                  &nbsp;มีความจำเป็นต้องใช้เงินวันที่ <span style={UL(90)}>{d.inst1NeedDate||""}</span>
-                  &nbsp;ส่งคืนวันที่ <span style={UL(90)}>{d.inst1ReturnDate||""}</span>
+                <div><F v={d.project} w={500}/></div>
+
+                {/* Budget type */}
+                <div style={{ display:"flex", alignItems:"center", gap:12, marginTop:2 }}>
+                  <span>จากแหล่งเงินงบประมาณ</span>
+                  <span><Chk on={d.budgetType==="แผ่นดิน"}/> งบประมาณแผ่นดิน</span>
+                  <span><Chk on={d.budgetType==="รายได้"||!d.budgetType}/> งบประมาณเงินรายได้</span>
                 </div>
-                <div>
-                  &nbsp;&nbsp;&nbsp;&nbsp;งวดที่ 2 จำนวน <span style={UL(100)}>{d.inst2Amount ? Number(d.inst2Amount).toLocaleString("th-TH") : ""}</span> บาท
-                  &nbsp;มีความจำเป็นต้องใช้เงินวันที่ <span style={UL(90)}>{d.inst2NeedDate||""}</span>
-                  &nbsp;ส่งคืนวันที่ <span style={UL(90)}>{d.inst2ReturnDate||""}</span>
+
+                {/* Amount */}
+                <div style={{ display:"flex", flexWrap:"wrap", gap:"0 4px", alignItems:"baseline" }}>
+                  <span>เป็นเงินจำนวน</span>
+                  <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={100}/>
+                  <span>บาท (</span><F v={d.totalAmountText||""} w={180}/><span>) โดยมีแผนการยืมเงิน(ตามรายละเอียดแนบ)</span>
                 </div>
-                <div style={{ marginTop:3, textAlign:"justify", fontSize:"10pt" }}>
-                  ข้าพเจ้าสัญญาว่าจะปฏิบัติตามระเบียบของทางราชการและประกาศของมหาวิทยาลัยที่เกี่ยวข้องอย่างเคร่งครัดและจะนำใบสำคัญคู่จ่ายที่ถูกต้อง
-                  พร้อมทั้งเงินเหลือจ่าย(ถ้ามี) ส่งใช้ภายในกำหนดไว้และหากข้าพเจ้าไม่ส่งคืนเงินยืมตามกำหนดและพ้นวันครบกำหนดคืนเงินยืมทดรองจ่าย
-                  ข้าพเจ้ายินดีให้มหาวิทยาลัยขอนแก่น คิดดอกเบี้ย 7.5% ต่อปี และยินยอมให้หักเงินเดือน ค่าจ้าง เบี้ยหวัด บำเหน็จ บำนาญหรือเงินอื่นใด
-                  ที่ข้าพเจ้าจะพึงได้รับจากทางราชการ เพื่อชดใช้จำนวนเงินที่ยืมไปจนครบ ได้ทันที
+
+                {/* Installments */}
+                <div style={{ display:"flex", flexWrap:"wrap", gap:"0 4px", alignItems:"baseline" }}>
+                  <span style={{marginLeft:16}}><Chk on={!!d.inst1Amount}/> งวดที่ 1 จำนวน</span>
+                  <F v={d.inst1Amount?Number(d.inst1Amount).toLocaleString("th-TH"):""} w={90}/>
+                  <span>บาท มีความจำเป็นต้องใช้เงินวันที่</span>
+                  <F v={thaiDate(d.inst1NeedDate,true)} w={90}/>
+                  <span>ส่งคืนวันที่</span>
+                  <F v={thaiDate(d.inst1ReturnDate,true)} w={100}/>
                 </div>
-                <div style={{ marginTop:4, display:"flex", justifyContent:"flex-end" }}>
-                  <div style={{ textAlign:"center" }}>
-                    <div>ลงชื่อ <span style={UL(160)}>&nbsp;</span> ผู้ยืม</div>
-                    <div>(<span style={UL(160)}>{d.borrowerName||""}</span>)</div>
-                    <div style={{ fontSize:"9pt" }}>พนักงาน/ หน่วยงาน/พนักงาน</div>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:"0 4px", alignItems:"baseline" }}>
+                  <span style={{marginLeft:16}}><Chk on={!!d.inst2Amount}/> งวดที่ 2 จำนวน</span>
+                  <F v={d.inst2Amount?Number(d.inst2Amount).toLocaleString("th-TH"):""} w={90}/>
+                  <span>บาท มีความจำเป็นต้องใช้เงินวันที่</span>
+                  <F v={thaiDate(d.inst2NeedDate,true)} w={90}/>
+                  <span>ส่งคืนวันที่</span>
+                  <F v={thaiDate(d.inst2ReturnDate,true)} w={100}/>
+                </div>
+
+                {/* Pledge paragraph */}
+                <div style={{ textAlign:"justify", marginTop:4, fontSize:"9.5pt", lineHeight:1.55 }}>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ข้าพเจ้าสัญญาว่าจะปฏิบัติตามระเบียบของทางราชการและประกาศของมหาวิทยาลัยที่เกี่ยวข้องอย่างเคร่งครัดและจะนำใบสำคัญ
+                  คู่จ่ายที่ถูกต้อง พร้อมทั้งเงินเหลือจ่าย(ถ้ามี) ส่งใช้ภายในกำหนดไว้และหากข้าพเจ้าไม่ส่งคืนเงินยืมตามกำหนดและพ้นวันครบ
+                  กำหนดคืนเงินยืมทดรองจ่าย ข้าพเจ้ายินดีให้มหาวิทยาลัยขอนแก่น คิดดอกเบี้ย 7.5% ต่อปี และยินยอมให้หักเงินเดือน ค่าจ้าง เบี้ย
+                  หวัด บำเหน็จ บำนาญหรือเงินอื่นใด ที่ข้าพเจ้าจะพึงได้รับจากทางราชการ เพื่อชดใช้จำนวนเงินที่ยืมไปจนครบ ได้ทันที
+                </div>
+
+                {/* Signature - borrower */}
+                <div style={{ display:"flex", justifyContent:"flex-end", marginTop:6 }}>
+                  <div style={{ textAlign:"center", minWidth:200 }}>
+                    <div>ลงชื่อ <F v="" w={160}/> ผู้ยืม</div>
+                    <div>(<F v={d.borrowerName||""} w={160}/>)</div>
+                    <div style={{ fontSize:"8.5pt" }}>พนักงาน/ หน่วยงาน/พนักงาน</div>
                   </div>
                 </div>
               </td>
             </tr>
 
-            {/* Approval boxes row */}
+            {/* Approval row [1][2] */}
             <tr>
-              <td style={{ ...BDR, padding:"4px 6px", width:"50%", verticalAlign:"top" }}>
-                <div style={{ fontWeight:700 }}>[1] ความเห็นของเจ้าหน้าที่การเงินคณะ/หน่วยงาน</div>
-                <div style={{ fontSize:"9.5pt" }}>ได้ตรวจสอบสิทธิของผู้ยืมเงินตามระเบียบฯ และพิจารณาความเหมาะสมของแผนการยืมเงินแล้วเห็นควรอนุมัติ</div>
-                <div style={{ fontSize:"9.5pt" }}>ความเห็นเพิ่มเติม (ถ้ามี) <span style={UL(120)}>{d.fin1Comment||""}</span></div>
-                <div style={{ marginTop:6 }}>ลงชื่อ <span style={UL(120)}>&nbsp;</span></div>
-                <div style={{ paddingLeft:24 }}>(<span style={UL(120)}>{d.fin1Name||""}</span>) เจ้าหน้าที่งานคลัง คณะ/หน่วยงาน</div>
-              </td>
-              <td style={{ ...BDR, padding:"4px 6px", width:"50%", verticalAlign:"top" }}>
-                <div style={{ fontWeight:700 }}>[2] ความเห็น หัวหน้างานคลังคณะฯ/ผู้ได้รับมอบหมาย</div>
-                <div style={{ fontSize:"9.5pt" }}>เห็นชอบการยืมเงินของบุคลากรและได้ตรวจสอบว่าแผนการยืมเงิน(ตามเอกสารแนบ)เหมาะสม โดยจะกำกับติดตามการใช้จ่ายเงินและส่งคืนเงินยืมตามกำหนดเวลาจนครบจำนวน</div>
-                <div style={{ fontSize:"9.5pt" }}>ความเห็นเพิ่มเติม (ถ้ามี) <span style={UL(120)}>{d.fin2Comment||""}</span></div>
-                <div style={{ marginTop:6 }}>ลงชื่อ <span style={UL(120)}>&nbsp;</span></div>
-                <div style={{ paddingLeft:24 }}>(<span style={UL(120)}>{d.fin2Name||""}</span>) หัวหน้างานคลังคณะฯ</div>
-              </td>
-            </tr>
-
-            {/* Director + Approval row */}
-            <tr>
-              <td style={{ ...BDR, padding:"4px 6px", verticalAlign:"top" }}>
-                <div style={{ fontWeight:700 }}>[3] เรียน คณบดี</div>
-                <div style={{ fontSize:"9.5pt" }}>ได้ตรวจสอบรายการยืมเงินของผู้ยืมถูกต้องตามประกาศที่เกี่ยวข้อง เห็นควรอนุมัติตามเสนอ</div>
-                <div style={{ marginTop:8 }}>ลงชื่อ <span style={UL(140)}>&nbsp;</span> ผู้เสนอ</div>
-                <div style={{ paddingLeft:24 }}>(<span style={UL(140)}>{d.dir3Name||""}</span>)</div>
-                <div style={{ fontSize:"9pt" }}>ตำแหน่ง ผู้อำนวยการกองบริหารงานคณะฯ</div>
-              </td>
-              <td style={{ ...BDR, padding:"4px 6px", verticalAlign:"top" }}>
-                <div style={{ fontWeight:700, textAlign:"center" }}>[4] คำอนุมัติ</div>
-                <div style={{ fontSize:"9.5pt" }}>
-                  อนุมัติให้ยืมตามคำขอ จำนวน <span style={UL(80)}>{d.totalAmount ? Number(d.totalAmount).toLocaleString("th-TH") : ""}</span> บาท
-                  (<span style={UL(120)}>{d.totalAmountText||""}</span>)
+              <td style={BOX}>
+                <div style={{ fontWeight:700, marginBottom:3 }}>[1] ความเห็นของเจ้าหน้าที่การเงินคณะ/หน่วยงาน</div>
+                <div style={{ display:"flex", alignItems:"flex-start", gap:4, fontSize:"9pt" }}>
+                  <Chk on={false}/>
+                  <span>ได้ตรวจสอบสิทธิของผู้ยืมเงินตามระเบียบฯ และพิจารณาความเหมาะสมของแผนการยืมเงินแล้วเห็นควรอนุมัติ</span>
                 </div>
-                <div style={{ fontSize:"9.5pt" }}>ความเห็นเพิ่มเติม (ถ้ามี) <span style={UL(100)}>&nbsp;</span></div>
-                <div style={{ marginTop:8 }}>ลงชื่อ <span style={UL(130)}>&nbsp;</span> ผู้อนุมัติ</div>
-                <div style={{ paddingLeft:24 }}>(<span style={UL(130)}>{d.approverName||""}</span>)</div>
-                <div style={{ fontSize:"9pt" }}>วันที่ <span style={UL(120)}>&nbsp;</span></div>
+                <div style={{ fontSize:"9pt" }}><Chk on={false}/> ความเห็นเพิ่มเติม (ถ้ามี) <F v={d.fin1Comment||""} w={120}/></div>
+                <div style={{ marginTop:8 }}>ลงชื่อ <F v="" w={130}/></div>
+                <div>(<F v={d.fin1Name||""} w={130}/>) เจ้าหน้าที่งานคลัง คณะ/หน่วยงาน</div>
+              </td>
+              <td style={BOX}>
+                <div style={{ fontWeight:700, marginBottom:3 }}>[2] ความเห็น หัวหน้างานคลังคณะฯ/ผู้ได้รับมอบหมาย</div>
+                <div style={{ display:"flex", alignItems:"flex-start", gap:4, fontSize:"9pt" }}>
+                  <Chk on={false}/>
+                  <span>เห็นชอบการยืมเงินของบุคลากรและได้ตรวจสอบว่าแผนการยืมเงิน(ตามเอกสารแนบ)เหมาะสม โดยจะกำกับติดตามการใช้จ่ายเงินและส่งคืนเงินยืมตามกำหนดเวลาจนครบจำนวน</span>
+                </div>
+                <div style={{ fontSize:"9pt" }}><Chk on={false}/> ความเห็นเพิ่มเติม (ถ้ามี) <F v={d.fin2Comment||""} w={120}/></div>
+                <div style={{ marginTop:8 }}>ลงชื่อ <F v="" w={130}/></div>
+                <div>(<F v={d.fin2Name||""} w={130}/>) หัวหน้างานคลังคณะฯ</div>
               </td>
             </tr>
 
-            {/* Receipt row */}
+            {/* Approval row [3][4] */}
             <tr>
-              <td colSpan={2} style={{ ...BDR, padding:"4px 8px" }}>
-                <div style={{ fontWeight:700 }}>การรับเงิน</div>
-                <div>ได้รับเงินยืม <span style={UL(140)}>{d.totalAmount ? Number(d.totalAmount).toLocaleString("th-TH") : ""}</span> บาท (<span style={UL(180)}>{d.totalAmountText||""}</span>) เป็นการถูกต้องแล้ว</div>
-                <div>ลงชื่อ <span style={UL(140)}>&nbsp;</span> ผู้รับเงิน &nbsp;&nbsp; วันที่ <span style={UL(140)}>&nbsp;</span></div>
-                <div style={{ fontSize:"9pt", marginTop:3 }}>*** การโอนเงินเข้าบัญชีเงินฝากธนาคารของผู้ยืมเงินถือเป็นหลักฐานการรับเงิน ตามระเบียบเงินรายได้มหาวิทยาลัยขอนแก่น พ.ศ.2540 ข้อ 27.1 ***</div>
-                <div style={{ fontSize:"9pt" }}>***การรับคืนเอกสาร เพื่อป้องกันเอกสารสูญหาย โปรดรับต้นฉบับเอกสารการยืมเงินทดรองจ่าย ณ กองคลัง</div>
+              <td style={BOX}>
+                <div style={{ fontWeight:700, marginBottom:3 }}>[3] เรียน คณบดี</div>
+                <div style={{ fontSize:"9pt" }}>ได้ตรวจสอบรายการยืมเงินของผู้ยืมถูกต้องตามประกาศที่เกี่ยวข้อง เห็นควรอนุมัติตามเสนอ</div>
+                <div style={{ marginTop:10 }}>ลงชื่อ <F v="" w={130}/> ผู้เสนอ</div>
+                <div>(<F v={d.dir3Name||""} w={130}/>)</div>
+                <div style={{ fontSize:"8.5pt" }}>ตำแหน่ง ผู้อำนวยการกองบริหารงานคณะฯ</div>
+                <div style={{ fontSize:"8.5pt" }}>วันที่ <F v="" w={120}/></div>
+              </td>
+              <td style={BOX}>
+                <div style={{ fontWeight:700, textAlign:"center", marginBottom:3 }}>[4] คำอนุมัติ</div>
+                <div style={{ fontSize:"9pt" }}>
+                  <Chk on={false}/> อนุมัติให้ยืมตามคำขอ จำนวน <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={80}/> บาท
+                </div>
+                <div style={{ fontSize:"9pt" }}>(<F v={d.totalAmountText||""} w={200}/>)</div>
+                <div style={{ fontSize:"9pt" }}><Chk on={false}/> ความเห็นเพิ่มเติม (ถ้ามี) <F v="" w={100}/></div>
+                <div style={{ marginTop:6 }}>ลงชื่อ <F v="" w={130}/> ผู้อนุมัติ</div>
+                <div>(<F v={d.approverName||""} w={130}/>)</div>
+                <div style={{ fontSize:"8.5pt" }}>วันที่ <F v="" w={120}/></div>
               </td>
             </tr>
+
+            {/* Receipt */}
+            <tr>
+              <td colSpan={2} style={{ border:"1px solid #555", padding:"5px 8px" }}>
+                <div style={{ fontWeight:700, textAlign:"center", marginBottom:3 }}>การรับเงิน</div>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:"0 4px", alignItems:"baseline" }}>
+                  <span>ได้รับเงินยืม</span>
+                  <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={100}/>
+                  <span>บาท (</span><F v={d.totalAmountText||""} w={200}/><span>) เป็นการถูกต้องแล้ว</span>
+                </div>
+                <div style={{ display:"flex", gap:"0 4px", alignItems:"baseline" }}>
+                  <span>ลงชื่อ</span><F v="" w={150}/><span>ผู้รับเงิน&nbsp;&nbsp; วันที่</span><F v="" w={150}/>
+                </div>
+                <div style={{ fontSize:"8.5pt", marginTop:3 }}>*** การโอนเงินเข้าบัญชีเงินฝากธนาคารของผู้ยืมเงินถือเป็นหลักฐานการรับเงิน ตามระเบียบเงินรายได้มหาวิทยาลัยขอนแก่น พ.ศ.2540 ข้อ 27.1 ***</div>
+                <div style={{ fontSize:"8.5pt" }}>***การรับคืนเอกสาร เพื่อป้องกันเอกสารสูญหาย โปรดรับต้นฉบับเอกสารการยืมเงินทดรองจ่าย ณ กองคลัง</div>
+              </td>
+            </tr>
+
           </tbody>
         </table>
 
-        {/* Footer notes */}
-        <div style={{ marginTop:4, fontSize:"9pt" }}>
+        {/* Footer */}
+        <div style={{ marginTop:5, fontSize:"8.5pt", lineHeight:1.5 }}>
           <div><strong>หมายเหตุ</strong> : 1.ค่าใช้จ่ายในการเดินทางไปราชการ ให้ผู้ยืมส่งใบสำคัญคู่จ่ายให้เร็วที่สุดแต่ไม่เกิน 15 วัน นับจากวันเดินทางกลับจากไปราชการ</div>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.ค่าใช้จ่ายในการฝึกอบรม สัมมนา ศึกษาดูงาน ให้ผู้ยืมส่งใบสำคัญคู่จ่าย ภายใน 30 วันนับจากวันสิ้นสุดกิจกรรม</div>
+          <div style={{ paddingLeft:44 }}>2.ค่าใช้จ่ายในการฝึกอบรม สัมมนา ศึกษาดูงาน ให้ผู้ยืมส่งใบสำคัญคู่จ่าย ภายใน 30 วันนับจากวันสิ้นสุดกิจกรรม</div>
         </div>
       </div>
 
       {/* ══ PAGE 2 ══ */}
-      <div className="print-page" style={{ padding:"8mm 12mm 6mm 12mm", boxSizing:"border-box", width:"210mm", minHeight:"297mm" }}>
-        <table style={{ borderCollapse:"collapse", width:"100%", fontSize:"10.5pt" }}>
+      <div className="print-page" style={{ padding:"10mm 14mm 8mm 14mm", boxSizing:"border-box", width:"210mm", minHeight:"297mm" }}>
+        <table style={{ borderCollapse:"collapse", width:"100%", fontSize:"10pt" }}>
           <tbody>
             <tr>
-              <td colSpan={5} style={{ ...BDR, textAlign:"center", padding:"4px 8px", fontWeight:700, fontSize:"12pt" }}>
+              <td colSpan={5} style={{ border:"1px solid #555", textAlign:"center", padding:"5px 8px", fontWeight:700, fontSize:"11.5pt" }}>
                 แผนการยืมเงิน (เอกสารแนบสัญญาเงินยืม)
               </td>
             </tr>
             <tr>
-              <td colSpan={5} style={{ ...BDR, padding:"3px 8px", fontSize:"9.5pt" }}>
+              <td colSpan={5} style={{ border:"1px solid #555", padding:"4px 8px", fontSize:"9.5pt" }}>
                 เพื่อนำไปใช้จ่ายในการดำเนินการตามหน้าที่และการปฏิบัติงานของหน่วยงาน ตามระเบียบมหาวิทยาลัยขอนแก่น ว่าด้วยการยืมเงินทดรองจ่ายจากเงินรายได้ พ.ศ. 2555 และที่แก้ไขเพิ่มเติม
               </td>
             </tr>
             <tr>
-              <td colSpan={5} style={{ ...BDR, padding:"3px 8px" }}>
-                ชื่อโครงการ/กิจกรรม <span style={UL(300)}>{d.project||""}</span>
+              <td colSpan={5} style={{ border:"1px solid #555", padding:"4px 8px" }}>
+                <span>ชื่อโครงการ/กิจกรรม <F v={d.project||""} w={450}/></span>
               </td>
             </tr>
-            <tr>
-              {["งวดที่ยืม","วันที่\nมีความจำเป็นต้องใช้เงิน","กิจกรรม","จำนวนเงิน (บาท)","เหตุผลความจำเป็น"].map((h,i)=>(
-                <th key={i} style={{ ...BDR, padding:"3px 6px", textAlign:"center", fontWeight:700, fontSize:"9.5pt", whiteSpace:"pre-line" }}>{h}</th>
+            <tr style={{ fontSize:"9.5pt", fontWeight:700 }}>
+              {[["งวดที่ยืม","8%"],["วันที่\nมีความจำเป็น\nต้องใช้เงิน","16%"],["กิจกรรม","38%"],["จำนวนเงิน\n(บาท)","18%"],["เหตุผล\nความจำเป็น","20%"]].map(([h,w],i)=>(
+                <th key={i} style={{ border:"1px solid #555", padding:"3px 5px", textAlign:"center", whiteSpace:"pre-line", width:w, fontWeight:700 }}>{h}</th>
               ))}
             </tr>
             {(d.planRows||[]).map((pr,pi)=>(
               (pr.items||[]).map((it,ii)=>(
-                <tr key={`${pi}-${ii}`}>
-                  {ii===0 && <td rowSpan={pr.items.length} style={{ ...BDR, padding:"2px 6px", textAlign:"center", verticalAlign:"middle" }}>{pi+1}</td>}
-                  <td style={{ ...BDR, padding:"2px 6px", textAlign:"center" }}>{pr.needDate||""}</td>
-                  <td style={{ ...BDR, padding:"2px 6px" }}>{it.activity||""}</td>
-                  <td style={{ ...BDR, padding:"2px 6px", textAlign:"right" }}>{it.amount ? Number(it.amount).toLocaleString("th-TH") : ""}</td>
-                  <td style={{ ...BDR, padding:"2px 6px" }}>{it.reason||""}</td>
+                <tr key={`${pi}-${ii}`} style={{ fontSize:"9.5pt" }}>
+                  {ii===0 && <td rowSpan={(pr.items||[]).length} style={{ border:"1px solid #555", padding:"3px 5px", textAlign:"center", verticalAlign:"middle" }}>{pi+1}</td>}
+                  <td style={{ border:"1px solid #555", padding:"3px 5px", textAlign:"center" }}>{pr.needDate ? thaiDate(pr.needDate,true) : ""}</td>
+                  <td style={{ border:"1px solid #555", padding:"3px 5px" }}>{it.activity||""}</td>
+                  <td style={{ border:"1px solid #555", padding:"3px 5px", textAlign:"right" }}>{it.amount?Number(it.amount).toLocaleString("th-TH"):""}</td>
+                  <td style={{ border:"1px solid #555", padding:"3px 5px" }}>{it.reason||""}</td>
                 </tr>
               ))
             ))}
-            {/* Empty rows if needed */}
-            {Array.from({length: Math.max(0, 8 - (d.planRows||[]).reduce((s,pr)=>s+(pr.items||[]).length,0))}).map((_,i)=>(
-              <tr key={`empty-${i}`}>
-                <td style={{ ...BDR, padding:"6px" }}>&nbsp;</td>
-                <td style={BDR}>&nbsp;</td>
-                <td style={BDR}>&nbsp;</td>
-                <td style={BDR}>&nbsp;</td>
-                <td style={BDR}>&nbsp;</td>
+            {Array.from({length:Math.max(0,8-(d.planRows||[]).reduce((s,pr)=>s+(pr.items||[]).length,0))}).map((_,i)=>(
+              <tr key={`e${i}`}>
+                <td style={{ border:"1px solid #555", padding:"8px 5px" }}>&nbsp;</td>
+                <td style={{ border:"1px solid #555" }}>&nbsp;</td>
+                <td style={{ border:"1px solid #555" }}>&nbsp;</td>
+                <td style={{ border:"1px solid #555" }}>&nbsp;</td>
+                <td style={{ border:"1px solid #555" }}>&nbsp;</td>
               </tr>
             ))}
-            <tr>
-              <td colSpan={3} style={{ ...BDR, padding:"3px 8px", textAlign:"right", fontWeight:700 }}>รวมทั้งสิ้น</td>
-              <td style={{ ...BDR, padding:"3px 8px", textAlign:"right", fontWeight:700 }}>
-                {grandTotal ? grandTotal.toLocaleString("th-TH") : ""}
-              </td>
-              <td style={BDR}>&nbsp;</td>
+            <tr style={{ fontWeight:700, fontSize:"9.5pt" }}>
+              <td colSpan={3} style={{ border:"1px solid #555", padding:"3px 8px", textAlign:"right" }}>รวมทั้งสิ้น</td>
+              <td style={{ border:"1px solid #555", padding:"3px 8px", textAlign:"right" }}>{grandTotal?grandTotal.toLocaleString("th-TH"):""}</td>
+              <td style={{ border:"1px solid #555" }}>&nbsp;</td>
             </tr>
             <tr>
-              <td colSpan={5} style={{ ...BDR, padding:"4px 8px" }}>
-                <div style={{ display:"flex", gap:40, justifyContent:"center" }}>
-                  <div style={{ textAlign:"center" }}>
-                    <div>(<span style={UL(140)}>{d.borrowerName||""}</span>)</div>
+              <td colSpan={5} style={{ border:"1px solid #555", padding:"5px 8px" }}>
+                <div style={{ display:"flex", justifyContent:"space-around", textAlign:"center" }}>
+                  <div>
+                    <div>(<F v={d.borrowerName||""} w={140}/>)</div>
                     <div style={{ fontSize:"9pt" }}>ผู้ยืม</div>
                   </div>
-                  <div style={{ textAlign:"center" }}>
-                    <div>(<span style={UL(140)}>{d.approverName||""}</span>)</div>
+                  <div>
+                    <div>(<F v={d.approverName||""} w={140}/>)</div>
                     <div style={{ fontSize:"9pt" }}>ผู้อนุมัติ</div>
                   </div>
                 </div>
               </td>
             </tr>
             <tr>
-              <td colSpan={5} style={{ ...BDR, padding:"3px 8px" }}>
-                <div>ขอรับรองว่าแผนการยืมเงินทดรองจ่ายเป็นความจริง</div>
-                <div style={{ display:"flex", gap:60, marginTop:4 }}>
+              <td colSpan={5} style={{ border:"1px solid #555", padding:"5px 8px", fontSize:"9.5pt" }}>
+                <div style={{ marginBottom:4 }}>ขอรับรองว่าแผนการยืมเงินทดรองจ่ายเป็นความจริง</div>
+                <div style={{ display:"flex", gap:60 }}>
                   <div>
-                    <div>ลงชื่อ <span style={UL(130)}>&nbsp;</span> ผู้ยืม</div>
-                    <div style={{ paddingLeft:24 }}>(<span style={UL(130)}>{d.borrowerName||""}</span>)</div>
+                    <div>ลงชื่อ <F v="" w={130}/> ผู้ยืม</div>
+                    <div>(<F v={d.borrowerName||""} w={130}/>)</div>
                   </div>
                   <div>
-                    <div>ลงชื่อ <span style={UL(130)}>&nbsp;</span> ผู้บังคับบัญชา</div>
-                    <div style={{ paddingLeft:24 }}>(<span style={UL(130)}>{d.approverName||""}</span>)</div>
+                    <div>ลงชื่อ <F v="" w={130}/> ผู้บังคับบัญชา</div>
+                    <div>(<F v={d.approverName||""} w={130}/>)</div>
                   </div>
                 </div>
               </td>
             </tr>
             <tr>
-              <td colSpan={5} style={{ ...BDR, padding:"3px 8px", fontSize:"9pt" }}>
+              <td colSpan={5} style={{ border:"1px solid #555", padding:"4px 8px", fontSize:"8.5pt" }}>
                 <strong>หมายเหตุ</strong> : หากช่วงระยะเวลาการใช้จ่ายเงินไม่เกิน 15 วัน ให้ยืมได้เพียง 1 งวด หากเกิน 15 วัน แต่ไม่เกิน 3 เดือน ให้ยืมได้ไม่เกิน 2 งวด
               </td>
             </tr>
