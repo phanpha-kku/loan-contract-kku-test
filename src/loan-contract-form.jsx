@@ -194,7 +194,7 @@ function Chk({ on }) {
 
 function ContractPreview({ d }) {
   const font = "'Sarabun','TH Sarabun New',Tahoma,sans-serif";
-  const S = { fontFamily:font, fontSize:"10.5pt", color:"#000", lineHeight:1.45 };
+  const S = { fontFamily:font, fontSize:"9.5pt", color:"#000", lineHeight:1.4 };
 
   // Helper: Thai date from YYYY-MM-DD
   const thaiDate = (iso, short=false) => {
@@ -237,7 +237,7 @@ function ContractPreview({ d }) {
     <div id="contract-print" style={S}>
 
       {/* ══ PAGE 1 ══ */}
-      <div className="print-page" style={{ padding:"10mm 14mm 8mm 14mm", boxSizing:"border-box", width:"210mm", minHeight:"297mm" }}>
+      <div className="print-page" style={{ padding:"6mm 10mm 4mm 10mm", boxSizing:"border-box", width:"210mm", height:"297mm", overflow:"hidden" }}>
 
         {/* ── Header ── */}
         <div style={{ display:"flex", alignItems:"flex-start", marginBottom:6 }}>
@@ -424,7 +424,7 @@ function ContractPreview({ d }) {
       </div>
 
       {/* ══ PAGE 2 ══ */}
-      <div className="print-page" style={{ padding:"10mm 14mm 8mm 14mm", boxSizing:"border-box", width:"210mm", minHeight:"297mm" }}>
+      <div className="print-page" style={{ padding:"6mm 10mm 4mm 10mm", boxSizing:"border-box", width:"210mm", height:"297mm", overflow:"hidden" }}>
         <table style={{ borderCollapse:"collapse", width:"100%", fontSize:"10pt" }}>
           <tbody>
             <tr>
@@ -778,23 +778,41 @@ export default function App() {
 <html><head>
 <meta charset="utf-8"/>
 <title>สัญญาการยืมเงิน</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:210mm;margin:0 auto;font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:11.5pt;color:#000;background:#fff}
-  @page{margin:0;size:A4 portrait}
+  html{background:#fff}
+  body{
+    font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;
+    font-size:10pt;
+    color:#000;
+    background:#fff;
+    width:210mm;
+    margin:0 auto;
+  }
+  @page{
+    size:A4 portrait;
+    margin:0;
+  }
   .print-page{
     width:210mm;
-    min-height:297mm;
+    height:297mm;
     box-sizing:border-box;
     page-break-after:always;
     break-after:page;
     display:block;
+    overflow:hidden;
   }
-  .print-page:last-child{page-break-after:avoid;break-after:avoid;}
+  .print-page:last-child{
+    page-break-after:avoid;
+    break-after:avoid;
+  }
   table{border-collapse:collapse;width:100%}
   td,th{word-break:break-word;vertical-align:top}
-  img{max-width:100%}
+  img{max-width:100%;display:block}
+  span[style*="border-bottom"]{
+    max-width:100%;
+  }
 </style>
 </head><body>
 ${printEl.innerHTML}
