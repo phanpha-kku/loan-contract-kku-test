@@ -474,8 +474,9 @@ function ContractPreview({ d }) {
             </tr>
             {/* ผู้ยืมเท่านั้น */}
             <tr>
-              <td colSpan={5} style={{...B,padding:"3px 8px",textAlign:"center"}}>
-                <div>(<F v={d.borrowerName||""} w={155}/>)</div>
+              <td colSpan={5} style={{...B,padding:"6px 8px",textAlign:"center"}}>
+                <div>ลงชื่อ <F v="" w={155}/> ผู้ยืม</div>
+                <div style={{marginTop:4}}>(<F v={d.borrowerName||""} w={155}/>)</div>
                 <div style={{fontSize:"8.5pt"}}>ผู้ยืม</div>
               </td>
             </tr>
@@ -654,6 +655,48 @@ export default function App() {
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
+  const [stepErrors, setStepErrors] = useState([]);
+
+  const validateStep = (s) => {
+    const errs = [];
+    if (s === 1) {
+      if (!form.borrowerName.trim()) errs.push("กรุณากรอกชื่อ-สกุล ผู้ยืม");
+      if (!form.position) errs.push("กรุณาเลือกตำแหน่ง");
+      if (!form.department) errs.push("กรุณาเลือกสังกัด");
+      if (!form.email.trim()) errs.push("กรุณากรอกอีเมล");
+    }
+    if (s === 2) {
+      if (!form.refDocNo.trim()) errs.push("กรุณากรอกเลขที่หนังสืออ้างอิง");
+      if (!form.project.trim()) errs.push("กรุณากรอกชื่อกิจกรรม/โครงการ");
+      if (!form.eventStartDate) errs.push("กรุณาเลือกวันที่จัดกิจกรรม");
+      if (!form.eventEndDate) errs.push("กรุณาเลือกวันที่สิ้นสุดกิจกรรม");
+      if (!form.inst1Amount || parseFloat(form.inst1Amount) <= 0) errs.push("กรุณากรอกจำนวนเงินงวดที่ 1");
+      if (!form.inst1NeedDate) errs.push("กรุณาเลือกวันที่ต้องใช้เงินงวดที่ 1");
+      if (form.useInst2) {
+        if (!form.inst2Amount || parseFloat(form.inst2Amount) <= 0) errs.push("กรุณากรอกจำนวนเงินงวดที่ 2");
+        if (!form.inst2NeedDate) errs.push("กรุณาเลือกวันที่ต้องใช้เงินงวดที่ 2");
+      }
+    }
+    if (s === 3) {
+      form.planRows.forEach((r, ri) => {
+        if (!r.needDate) errs.push(`งวดที่ ${ri+1}: กรุณาเลือกวันที่ต้องใช้เงิน`);
+        const hasItem = r.items.some(it => it.name.trim() && parseFloat(it.amount) > 0);
+        if (!hasItem) errs.push(`งวดที่ ${ri+1}: กรุณากรอกรายการและจำนวนเงินอย่างน้อย 1 รายการ`);
+        const total = r.items.reduce((s,it)=>s+(parseFloat(it.amount)||0),0);
+        const cap = parseFloat(ri===0 ? form.inst1Amount : form.inst2Amount) || 0;
+        if (cap > 0 && total > cap) errs.push(`งวดที่ ${ri+1}: ยอดรวมเกินวงเงินที่กำหนด (${fmtNum(cap)} บาท)`);
+      });
+    }
+    return errs;
+  };
+
+  const handleNext = () => {
+    const errs = validateStep(step);
+    if (errs.length > 0) { setStepErrors(errs); return; }
+    setStepErrors([]);
+    setStep(s => Math.min(5, s+1));
+  };
+
   const updateRow = (ri, key, val) => setForm(p => {
     const rows = p.planRows.map((r, i) => i === ri ? { ...r, [key]: val } : r);
     return { ...p, planRows: rows };
@@ -689,17 +732,24 @@ export default function App() {
 
   const [scriptUrl, setScriptUrl] = useState("https://script.google.com/macros/s/AKfycbxkJyzKI205FmLSjVQQlEksPi1InQTN1Hr0VxFDrGKiW9yk0TRK3yNT3B5q28wdFxb9ug/exec");
   const [sendStatus, setSendStatus] = useState(null); // null | "sending" | "ok" | "err"
+  const [hasSent, setHasSent] = useState(false); // ป้องกันส่งซ้ำ
 
   const sendToSheet = async (contractNo) => {
     const url = scriptUrl.trim();
     if (!url) return;
+    const autoTotal = (parseFloat(form.inst1Amount)||0) + (form.useInst2 ? (parseFloat(form.inst2Amount)||0) : 0);
     const params = new URLSearchParams({
-      contractNo,
-      borrowerName: form.borrowerName,
       contractDate: form.contractDate,
-      totalAmount: form.totalAmount,
-      refDocNo: form.refDocNo || "",
+      borrowerName: form.borrowerName,
+      position: form.position || "",
+      department: form.department || "",
       email: form.email || "",
+      refDocNo: form.refDocNo || "",
+      project: form.project || "",
+      eventStartDate: form.eventStartDate || "",
+      eventEndDate: form.eventEndDate || "",
+      dueDate: form.dueDate || "",
+      totalAmount: autoTotal || form.totalAmount || "",
     });
     try {
       // Try fetch first (no-cors won't throw on network success)
@@ -730,7 +780,6 @@ export default function App() {
 
   const handlePrint = async () => {
     setSubmitting(true);
-    setSendStatus(null);
     let contractNo = form.contractNo;
     try {
       if (!contractNo) {
@@ -740,10 +789,11 @@ export default function App() {
       }
     } catch {}
 
-    // Send to Google Sheet + trigger email
-    if (scriptUrl.trim()) {
+    // ส่งข้อมูลครั้งแรกเท่านั้น
+    if (!hasSent && scriptUrl.trim()) {
       setSendStatus("sending");
       await sendToSheet(contractNo);
+      setHasSent(true);
     }
 
     setSubmitting(false);
@@ -871,8 +921,9 @@ ${printEl.innerHTML}
               <span style={{ fontSize:16 }}>📊</span>
               <span style={{ fontWeight:600, color:"#7A3B3B" }}>บันทึกอัตโนมัติ → Google Sheet + Email</span>
               {sendStatus==="sending" && <span style={{ color:"#C0392B", fontSize:12 }}>⏳ กำลังส่ง...</span>}
-              {sendStatus==="ok"      && <span style={{ color:"#27AE60", fontSize:12 }}>✅ ส่งข้อมูลสำเร็จ</span>}
+              {sendStatus==="ok"      && <span style={{ color:"#27AE60", fontSize:12 }}>✅ ส่งข้อมูลสำเร็จแล้ว (ไม่ส่งซ้ำ)</span>}
               {sendStatus==="err"     && <span style={{ color:"#E74C3C", fontSize:12 }}>❌ ส่งไม่สำเร็จ ตรวจสอบ URL</span>}
+              {hasSent && sendStatus!=="sending" && sendStatus!=="err" && sendStatus==="ok" && <span style={{ fontSize:11, color:"#888" }}> · พิมพ์ได้หลายรอบโดยไม่ส่งข้อมูลซ้ำ</span>}
             </div>
             <div style={{ fontSize:11, color:"#27AE60", marginTop:4, padding:"6px 10px",
               background:"rgba(39,174,96,.08)", border:"1px solid rgba(39,174,96,.25)", borderRadius:6 }}>
@@ -914,7 +965,6 @@ ${printEl.innerHTML}
                     <span style={{ fontSize:11, color:"#C07070" }}>🔒</span>
                   </div>
                 </div>
-                <Field label="โทรศัพท์" value={form.phone} onChange={e=>set("phone",e.target.value)} placeholder="043-202-XXX"/>
                 {/* Contract date - read only today */}
                 <div style={{ marginBottom:14 }}>
                   <label style={LS_STYLE}>วันที่ทำสัญญา</label>
@@ -991,8 +1041,22 @@ ${printEl.innerHTML}
                   <span style={{ fontWeight:600 }}>งบประมาณเงินรายได้</span>
                 </div>
               </div>
+              {(() => {
+                const autoTotal = (parseFloat(form.inst1Amount)||0) + (form.useInst2 ? (parseFloat(form.inst2Amount)||0) : 0);
+                if (autoTotal > 0 && form.totalAmount !== String(autoTotal)) setTimeout(()=>set("totalAmount", String(autoTotal)), 0);
+                return null;
+              })()}
               <Grid2>
-                <Field label="จำนวนเงินรวม (บาท)" value={form.totalAmount} onChange={e=>set("totalAmount",e.target.value)} type="number" placeholder="0.00"/>
+                <div style={{ marginBottom:14 }}>
+                  <label style={LS_STYLE}>จำนวนเงินรวม (บาท)</label>
+                  <div style={{ ...IS_STYLE, background:"rgba(192,57,43,.06)", border:"1px solid rgba(192,57,43,.3)",
+                    display:"flex", alignItems:"center", justifyContent:"space-between", cursor:"not-allowed" }}>
+                    <span style={{ fontWeight:700, color:"#C0392B", fontSize:15 }}>
+                      {fmtNum((parseFloat(form.inst1Amount)||0)+(form.useInst2?(parseFloat(form.inst2Amount)||0):0)) || "0"}
+                    </span>
+                    <span style={{ fontSize:11, color:"#C07070", flexShrink:0 }}>🔒 งวด 1 {form.useInst2 ? "+ งวด 2" : ""}</span>
+                  </div>
+                </div>
                 <div style={{ marginBottom:14 }}>
                   <label style={LS_STYLE}>จำนวนเงิน (ตัวอักษร)</label>
                   <input value={form.totalAmountText||(form.totalAmount?toThaiNum(form.totalAmount):"")}
@@ -1061,15 +1125,27 @@ ${printEl.innerHTML}
               {/* Plan rows */}
               {form.planRows.map((r,ri) => {
                 const total = r.items.reduce((s,it)=>s+(parseFloat(it.amount)||0),0);
+                const instCap = parseFloat(ri===0 ? form.inst1Amount : form.inst2Amount) || 0;
+                const isOver = instCap > 0 && total > instCap;
                 return (
-                  <div key={ri} style={{ background:"#FFF8F0", border:"1px solid #2D3148", borderRadius:10, padding:14, marginBottom:12 }}>
+                  <div key={ri} style={{ background:"#FFF8F0", border:`1px solid ${isOver?"#E74C3C":"#2D3148"}`, borderRadius:10, padding:14, marginBottom:12 }}>
                     {/* Row header */}
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
                       <span style={{ fontWeight:700, fontSize:14, color:"#C0392B" }}>งวดที่ {r.no}</span>
-                      {form.planRows.length>1 && (
-                        <button onClick={()=>delPlanRow(ri)}
-                          style={{ background:"rgba(239,68,68,.15)", border:"none", color:"#F87171", borderRadius:6, padding:"2px 10px", cursor:"pointer", fontSize:12, fontFamily:"inherit" }}>ลบงวด</button>
-                      )}
+                      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                        {instCap > 0 && (
+                          <span style={{ fontSize:12, color:isOver?"#C0392B":"#27AE60",
+                            background:isOver?"rgba(231,76,60,.1)":"rgba(39,174,96,.1)",
+                            border:`1px solid ${isOver?"rgba(231,76,60,.35)":"rgba(39,174,96,.35)"}`,
+                            borderRadius:6, padding:"2px 8px" }}>
+                            {isOver ? `⚠️ เกินวงเงิน! สูงสุด ${fmtNum(instCap)} บาท` : `วงเงินสูงสุด ${fmtNum(instCap)} บาท`}
+                          </span>
+                        )}
+                        {form.planRows.length>1 && (
+                          <button onClick={()=>delPlanRow(ri)}
+                            style={{ background:"rgba(239,68,68,.15)", border:"none", color:"#F87171", borderRadius:6, padding:"2px 10px", cursor:"pointer", fontSize:12, fontFamily:"inherit" }}>ลบงวด</button>
+                        )}
+                      </div>
                     </div>
                     <Grid2>
                       {/* วันที่ */}
@@ -1084,10 +1160,11 @@ ${printEl.innerHTML}
                       {/* รวม */}
                       <div style={{ marginBottom:12 }}>
                         <label style={LS_STYLE}>จำนวนเงินรวม (บาท)</label>
-                        <div style={{ ...IS, background:"rgba(192,57,43,.08)", border:"1px solid rgba(37,99,235,.3)",
+                        <div style={{ ...IS, background:isOver?"rgba(231,76,60,.12)":"rgba(192,57,43,.08)",
+                          border:`1px solid ${isOver?"rgba(231,76,60,.6)":"rgba(37,99,235,.3)"}`,
                           display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                           <span style={{ fontWeight:700, color:"#E74C3C", fontSize:15 }}>{fmtNum(total) || "0"}</span>
-                          <span style={{ fontSize:11, color:"#C07070" }}>คำนวณอัตโนมัติ</span>
+                          <span style={{ fontSize:11, color:isOver?"#E74C3C":"#C07070" }}>{isOver ? "⚠️ เกินวงเงิน" : "คำนวณอัตโนมัติ"}</span>
                         </div>
                       </div>
                     </Grid2>
@@ -1108,7 +1185,10 @@ ${printEl.innerHTML}
                         <span style={{ fontSize:11, color:"#C07070", textAlign:"right" }}>จำนวนเงิน (บาท)</span>
                         <span/>
                       </div>
-                      {r.items.map((it, ii) => (
+                      {r.items.map((it, ii) => {
+                        const otherTotal = r.items.reduce((s,x,j)=>j!==ii?s+(parseFloat(x.amount)||0):s,0);
+                        const maxForThis = instCap > 0 ? Math.max(0, instCap - otherTotal) : undefined;
+                        return (
                         <div key={ii} style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:6, alignItems:"center" }}>
                           <div style={{ display:"flex", alignItems:"center", gap:6 }}>
                             <span style={{ color:"#A05050", fontSize:12, minWidth:18, textAlign:"right", flexShrink:0 }}>{ii+1}.</span>
@@ -1119,8 +1199,13 @@ ${printEl.innerHTML}
                                 borderRadius:6, padding:"7px 8px", fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                           </div>
                           <input type="number" value={it.amount}
-                            onChange={e=>updateItem(ri,ii,"amount",e.target.value)}
+                            onChange={e=>{
+                              const val = e.target.value;
+                              if (instCap > 0 && maxForThis !== undefined && (parseFloat(val)||0) > maxForThis) return;
+                              updateItem(ri,ii,"amount",val);
+                            }}
                             placeholder="0"
+                            min="0"
                             style={{ width:"100%", background:"#FFF0E6", border:"1px solid #374151", color:"#2D1010",
                               borderRadius:6, padding:"7px 8px", fontSize:13, fontFamily:"inherit", outline:"none", textAlign:"right" }}/>
                           {r.items.length>1 ? (
@@ -1129,12 +1214,14 @@ ${printEl.innerHTML}
                                 borderRadius:6, width:32, height:34, cursor:"pointer", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"inherit" }}>×</button>
                           ) : <span/>}
                         </div>
-                      ))}
+                        );
+                      })}
                       {/* Total bar */}
                       <div style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px",
                         borderTop:"1px solid #2D3148", paddingTop:8, marginTop:4 }}>
                         <span style={{ fontSize:12, color:"#7A3B3B", fontWeight:600, paddingLeft:24 }}>รวม</span>
-                        <div style={{ background:"rgba(192,57,43,.08)", border:"1px solid rgba(37,99,235,.3)",
+                        <div style={{ background:isOver?"rgba(231,76,60,.12)":"rgba(192,57,43,.08)",
+                          border:`1px solid ${isOver?"rgba(231,76,60,.6)":"rgba(37,99,235,.3)"}`,
                           borderRadius:6, padding:"6px 8px", textAlign:"right", fontSize:13, fontWeight:700, color:"#E74C3C" }}>
                           {fmtNum(total) || "0"}
                         </div>
@@ -1196,20 +1283,29 @@ ${printEl.innerHTML}
 
           {/* Navigation */}
           <div style={{ display:"flex", justifyContent:"space-between", marginTop:14 }}>
-            <button onClick={()=>setStep(s=>Math.max(1,s-1))} disabled={step===1}
+            <button onClick={()=>{ setStepErrors([]); setStep(s=>Math.max(1,s-1)); }} disabled={step===1}
               style={{ background:step===1?"rgba(255,255,255,.03)":"rgba(255,255,255,.07)",
                 border:"1px solid #374151", color:step===1?"#DDB8A8":"#7A3B3B",
                 borderRadius:8, padding:"10px 20px", cursor:step===1?"not-allowed":"pointer", fontSize:14, fontFamily:"inherit" }}>
               ← ก่อนหน้า
             </button>
             {step<4 && (
-              <button onClick={()=>setStep(s=>Math.min(5,s+1))}
+              <button onClick={handleNext}
                 style={{ background:"#C0392B", border:"none", color:"white", borderRadius:8,
                   padding:"10px 24px", cursor:"pointer", fontSize:14, fontWeight:600, fontFamily:"inherit" }}>
                 ถัดไป →
               </button>
             )}
           </div>
+          {stepErrors.length > 0 && (
+            <div style={{ marginTop:10, background:"rgba(231,76,60,.1)", border:"1px solid rgba(231,76,60,.4)",
+              borderRadius:10, padding:"10px 14px" }}>
+              <div style={{ fontWeight:700, color:"#C0392B", marginBottom:6, fontSize:13 }}>⚠️ กรุณากรอกข้อมูลให้ครบก่อน</div>
+              {stepErrors.map((e,i) => (
+                <div key={i} style={{ fontSize:12, color:"#C0392B", paddingLeft:8, lineHeight:1.8 }}>• {e}</div>
+              ))}
+            </div>
+          )}
         </div>
 
       ) : (
