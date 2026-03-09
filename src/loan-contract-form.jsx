@@ -376,7 +376,7 @@ function ContractPreview({ d }) {
                 <div style={BOXINNER}>
                 <div style={{fontWeight:700, textAlign:"center", marginBottom:3}}>[4] คำอนุมัติ</div>
                 <div><Chk/> อนุมัติให้ยืมตามคำขอ จำนวน <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={72}/> บาท</div>
-                <div>(<F v={d.totalAmountText||""} w={192}/>)</div>
+                <div>(<F v={d.totalAmountText||(d.totalAmount?toThaiNum(parseFloat(d.totalAmount)):"")} w={192}/>)</div>
                 <div style={{marginTop:2}}><Chk/> ความเห็นเพิ่มเติม (ถ้ามี) <F v="" w={93}/></div>
                 <SigCenter name={d.approverName||""} label=""/>
                 <div style={{textAlign:"center",fontSize:"8.5pt"}}>ผู้อนุมัติ/คณบดี/รักษาการคณบดี</div>
@@ -468,9 +468,10 @@ function ContractPreview({ d }) {
             ))}
             {/* total */}
             <tr>
-              <td colSpan={3} style={{...B,padding:"2px 8px",textAlign:"right",fontWeight:700}}>รวมทั้งสิ้น</td>
+              <td colSpan={2} style={{...B,padding:"2px 8px",textAlign:"right",fontWeight:700}}>รวมทั้งสิ้น {grandTotal?`(${toThaiNum(grandTotal)})`:""}</td>
+              <td style={{...B,padding:"2px 8px"}}>&nbsp;</td>
               <td style={{...B,padding:"2px 8px",textAlign:"right",fontWeight:700}}>{grandTotal?grandTotal.toLocaleString("th-TH"):""}</td>
-              <td style={{...B,padding:"2px 4px",fontSize:"8pt"}}>{grandTotal?toThaiNum(grandTotal):""}</td>
+              <td style={{...B}}>&nbsp;</td>
             </tr>
             {/* ผู้ยืมเท่านั้น */}
             <tr>
@@ -753,17 +754,18 @@ export default function App() {
     if (!url) return;
     const autoTotal = (parseFloat(form.inst1Amount)||0) + (form.useInst2 ? (parseFloat(form.inst2Amount)||0) : 0);
     const params = new URLSearchParams({
-      contractDate: form.contractDate,
-      borrowerName: form.borrowerName,
-      position: form.position || "",
-      department: form.department || "",
-      email: form.email || "",
-      refDocNo: form.refDocNo || "",
-      project: form.project || "",
-      eventStartDate: form.eventStartDate || "",
-      eventEndDate: form.eventEndDate || "",
-      dueDate: form.dueDate || "",
-      totalAmount: autoTotal || form.totalAmount || "",
+      contractNo:      contractNo || "",
+      contractDate:    form.contractDate,
+      borrowerName:    form.borrowerName,
+      position:        form.position || "",
+      department:      form.department || "",
+      email:           form.email || "",
+      refDocNo:        form.refDocNo || "",
+      project:         form.project || "",
+      eventStartDate:  form.eventStartDate || "",
+      eventEndDate:    form.eventEndDate || "",
+      dueDate:         form.dueDate || "",
+      totalAmount:     autoTotal || form.totalAmount || "",
     });
     try {
       // Try fetch first (no-cors won't throw on network success)
