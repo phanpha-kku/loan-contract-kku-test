@@ -508,7 +508,11 @@ function Field({ label, value, onChange, type="text", placeholder="" }) {
   );
 }
 function Grid2({ children }) {
-  return <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>{children}</div>;
+  return (
+    <div className="grid2" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>
+      {children}
+    </div>
+  );
 }
 function Card({ title, color="#E74C3C", children }) {
   return (
@@ -597,6 +601,16 @@ function BorrowerSearch({ value, onSelect, set }) {
 }
 
 export default function App() {
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'viewport';
+      document.head.appendChild(meta);
+    }
+    meta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+  }, []);
+
   const [form, setForm] = useState(INIT);
   const [step, setStep] = useState(1);
   const [preview, setPreview] = useState(false);
@@ -875,6 +889,20 @@ ${printEl.innerHTML}
         ::-webkit-scrollbar-track{background:#1A1D27}
         ::-webkit-scrollbar-thumb{background:#3A3D4D;border-radius:3px}
 
+        @media (max-width: 600px) {
+          .grid2 {
+            grid-template-columns: 1fr !important;
+          }
+          .step-bar {
+            gap: 4px !important;
+          }
+          .step-label {
+            font-size: 10px !important;
+          }
+          .items-grid {
+            grid-template-columns: 1fr 90px 32px !important;
+          }
+        }
         @media print{
           @page{margin:6mm 8mm}
           body *{visibility:hidden!important}
@@ -903,7 +931,7 @@ ${printEl.innerHTML}
       </div>
 
       {!preview ? (
-        <div style={{ maxWidth:800, margin:"0 auto", padding:"24px 16px" }}>
+        <div style={{ maxWidth:800, margin:"0 auto", padding:"16px 12px" }}>
 
           {/* Header */}
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:28, gap:12 }}>
@@ -932,20 +960,20 @@ ${printEl.innerHTML}
           </div>
 
           {/* Stepper */}
-          <div style={{ display:"flex", alignItems:"flex-start", marginBottom:28 }}>
+          <div className="step-bar" style={{ display:"flex", alignItems:"flex-start", marginBottom:28, overflowX:"auto", paddingBottom:4 }}>
             {STEPS.map((s,i) => (
-              <div key={s.id} style={{ display:"flex", alignItems:"center", flex:1 }}>
-                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", flex:1 }}>
+              <div key={s.id} style={{ display:"flex", alignItems:"center", flex:1, minWidth:0 }}>
+                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", flex:1, minWidth:0 }}>
                   <div onClick={() => setStep(s.id)} style={{
                     width:34, height:34, borderRadius:"50%", display:"flex", alignItems:"center",
-                    justifyContent:"center", fontWeight:700, fontSize:12, cursor:"pointer",
+                    justifyContent:"center", fontWeight:700, fontSize:12, cursor:"pointer", flexShrink:0,
                     background: step===s.id?"#C0392B":step>s.id?"#922B21":"#FFF0E6",
                     border:`2px solid ${step===s.id?"#C0392B":step>s.id?"#922B21":"#DDB8A8"}`,
                     color: step>=s.id?"white":"#A05050"
                   }}>{step>s.id?"✓":s.icon}</div>
-                  <div style={{ fontSize:10, color:step===s.id?"#E74C3C":"#A05050", marginTop:4, textAlign:"center", maxWidth:64 }}>{s.label}</div>
+                  <div className="step-label" style={{ fontSize:10, color:step===s.id?"#E74C3C":"#A05050", marginTop:4, textAlign:"center", maxWidth:64 }}>{s.label}</div>
                 </div>
-                {i<STEPS.length-1 && <div style={{ height:2, flex:0.3, background:step>s.id?"#922B21":"#DDB8A8", marginBottom:16 }}/>}
+                {i<STEPS.length-1 && <div style={{ height:2, flex:0.3, minWidth:8, background:step>s.id?"#922B21":"#DDB8A8", marginBottom:16, flexShrink:0 }}/>}
               </div>
             ))}
           </div>
@@ -1180,7 +1208,7 @@ ${printEl.innerHTML}
                         </button>
                       </div>
                       {/* Items header */}
-                      <div style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:4 }}>
+                      <div className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:4 }}>
                         <span style={{ fontSize:11, color:"#C07070", paddingLeft:22 }}>ชื่อรายการ</span>
                         <span style={{ fontSize:11, color:"#C07070", textAlign:"right" }}>จำนวนเงิน (บาท)</span>
                         <span/>
@@ -1189,7 +1217,7 @@ ${printEl.innerHTML}
                         const otherTotal = r.items.reduce((s,x,j)=>j!==ii?s+(parseFloat(x.amount)||0):s,0);
                         const maxForThis = instCap > 0 ? Math.max(0, instCap - otherTotal) : undefined;
                         return (
-                        <div key={ii} style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:6, alignItems:"center" }}>
+                        <div key={ii} className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:6, alignItems:"center" }}>
                           <div style={{ display:"flex", alignItems:"center", gap:6 }}>
                             <span style={{ color:"#A05050", fontSize:12, minWidth:18, textAlign:"right", flexShrink:0 }}>{ii+1}.</span>
                             <input type="text" value={it.name}
@@ -1217,7 +1245,7 @@ ${printEl.innerHTML}
                         );
                       })}
                       {/* Total bar */}
-                      <div style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px",
+                      <div className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px",
                         borderTop:"1px solid #2D3148", paddingTop:8, marginTop:4 }}>
                         <span style={{ fontSize:12, color:"#7A3B3B", fontWeight:600, paddingLeft:24 }}>รวม</span>
                         <div style={{ background:isOver?"rgba(231,76,60,.12)":"rgba(192,57,43,.08)",
@@ -1250,7 +1278,7 @@ ${printEl.innerHTML}
             {/* ── STEP 5: Preview & Print ── */}
             {step===4 && <>
               <SH text="🖨️ ตรวจสอบและพิมพ์สัญญา"/>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:20 }}>
+              <div className="grid2" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:20 }}>
                 {[
                   ["ผู้ยืม", form.borrowerName||"-"],
                   ["ตำแหน่ง", form.position||"-"],
