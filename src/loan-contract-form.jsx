@@ -285,7 +285,7 @@ function ContractPreview({ d }) {
 
             {/* body — full width */}
             <tr>
-              <td colSpan={2} style={{...B, padding:"4px 8px", lineHeight:1.6}}>
+              <td colSpan={2} style={{...B, padding:"2px 8px", lineHeight:1.35}}>
                 <div style={{display:"flex",flexWrap:"wrap",gap:"0 3px",alignItems:"baseline"}}>
                   <span>ข้าพเจ้า</span><F v={d.borrowerName} w={148}/>
                   <span>ตำแหน่ง</span><F v={d.position} w={125}/>
@@ -328,7 +328,7 @@ function ContractPreview({ d }) {
                   มหาวิทยาลัยขอนแก่น คิดดอกเบี้ย 7.5% ต่อปี และยินยอมให้หักเงินเดือน ค่าจ้าง เบี้ยหวัด บำเหน็จ บำนาญหรือเงินอื่นใดที่ข้าพเจ้าจะพึงได้รับจากทาง
                   ราชการ เพื่อชดใช้จำนวนเงินที่ยืมไปจนครบ ได้ทันที
                 </div>
-                <div style={{textAlign:"center", marginTop:5}}>
+                <div style={{textAlign:"center", marginTop:1}}>
                   <div>ลงชื่อ <F v="" w={160}/> ผู้ยืม</div>
                   <div>(<F v={d.borrowerName||""} w={160}/>)</div>
                 </div>
