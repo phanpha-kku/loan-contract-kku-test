@@ -243,20 +243,13 @@ function ContractPreview({ d }) {
         display:"flex", flexDirection:"column"
       }}>
 
-        {/* ── HEADER: logo+unit ซ้าย | กรอบเลขที่ขวาบน ── */}
-        <div style={{display:"flex", alignItems:"flex-start", marginBottom:3, flexShrink:0}}>
-          <div style={{display:"flex", alignItems:"center", flex:1}}>
-            <img src={LOGO_URI} alt="logo" style={{height:42, marginRight:8, flexShrink:0}}/>
-            <div style={{fontSize:"9pt", lineHeight:1.65}}>
-              <div>ส่วนงาน <F v={d.unit||"คณะเทคโนโลยี"} w={165}/>&nbsp;&nbsp;โทร. <F v={d.phone||""} w={65}/></div>
-              <div>ที่ อว 660301.12.1.1 <F v="" w={105}/>&nbsp;&nbsp;วันที่ <F v={thaiDate(d.contractDate)} w={120}/></div>
-            </div>
-          </div>
-          {/* กรอบเลขที่ + วันครบกำหนด มุมขวาบน */}
-          <table style={{borderCollapse:"collapse", fontSize:"9pt", flexShrink:0, marginLeft:10}}>
+        {/* ── HEADER: ใช้ position:relative ให้กรอบเลขที่ absolute มุมขวาบนสุด ── */}
+        <div style={{position:"relative", marginBottom:3, flexShrink:0}}>
+          {/* กรอบเลขที่ + วันครบกำหนด — absolute มุมขวาบน */}
+          <table style={{borderCollapse:"collapse", fontSize:"9pt", position:"absolute", top:0, right:0}}>
             <tbody>
               <tr>
-                <td style={{...B, padding:"3px 14px", fontWeight:700, textAlign:"center", whiteSpace:"nowrap", minWidth:135}}>
+                <td style={{...B, padding:"3px 14px", fontWeight:700, textAlign:"center", whiteSpace:"nowrap", minWidth:140}}>
                   เลขที่ {d.contractNo||"…………………………"}
                 </td>
               </tr>
@@ -267,6 +260,14 @@ function ContractPreview({ d }) {
               </tr>
             </tbody>
           </table>
+          {/* logo + unit — เว้นที่ขวาให้กรอบ */}
+          <div style={{display:"flex", alignItems:"center", paddingRight:155}}>
+            <img src={LOGO_URI} alt="logo" style={{height:42, marginRight:8, flexShrink:0}}/>
+            <div style={{fontSize:"9pt", lineHeight:1.65}}>
+              <div>ส่วนงาน <F v={d.unit||"คณะเทคโนโลยี"} w={155}/>&nbsp;&nbsp;โทร. <F v={d.phone||""} w={60}/></div>
+              <div>ที่ อว 660301.12.1.1 <F v="" w={100}/>&nbsp;&nbsp;วันที่ <F v={thaiDate(d.contractDate)} w={115}/></div>
+            </div>
+          </div>
         </div>
 
         {/* ── MAIN TABLE — table-layout:fixed ให้ทุก row สูงเท่ากันได้ ── */}
