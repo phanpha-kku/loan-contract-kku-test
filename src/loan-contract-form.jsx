@@ -206,7 +206,7 @@ function ContractPreview({ d }) {
     <div id="contract-print" style={S}>
 
       {/* ── PAGE 1 ── */}
-      <div className="print-page" style={{ padding:"4mm 10mm 3mm 10mm", boxSizing:"border-box" }}>
+      <div className="print-page" style={{ padding:"8mm 12mm 6mm 12mm", boxSizing:"border-box", width:"210mm", minHeight:"297mm" }}>
 
         {/* Header row */}
         <div style={{ display:"flex", alignItems:"stretch", marginBottom:6, gap:0 }}>
@@ -373,7 +373,7 @@ function ContractPreview({ d }) {
       </div>
 
       {/* ── PAGE 2: แผนการยืมเงิน ── */}
-      <div className="print-page" style={{ padding:"5mm 10mm 4mm 12mm", boxSizing:"border-box" }}>
+      <div className="print-page" style={{ padding:"8mm 12mm 6mm 12mm", boxSizing:"border-box", width:"210mm", minHeight:"297mm" }}>
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
           <tbody>
             <tr><td colSpan={5} style={{ ...TD, textAlign:"center" }}>
@@ -710,12 +710,20 @@ export default function App() {
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:13px;color:#000;background:#fff}
-  @page{margin:6mm 8mm;size:A4}
-  .print-page{page-break-after:always;break-after:page;display:block;}
+  html,body{width:210mm;margin:0 auto;font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:11.5pt;color:#000;background:#fff}
+  @page{margin:0;size:A4 portrait}
+  .print-page{
+    width:210mm;
+    min-height:297mm;
+    box-sizing:border-box;
+    page-break-after:always;
+    break-after:page;
+    display:block;
+  }
   .print-page:last-child{page-break-after:avoid;break-after:avoid;}
   table{border-collapse:collapse;width:100%}
   td,th{word-break:break-word;vertical-align:top}
+  img{max-width:100%}
 </style>
 </head><body>
 ${printEl.innerHTML}
