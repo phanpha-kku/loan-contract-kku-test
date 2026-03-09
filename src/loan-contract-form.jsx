@@ -220,9 +220,10 @@ function ContractPreview({ d }) {
   const B = { border:"1px solid #666" };
   // กล่อง [1][2][3][4] — ขนาดเท่ากัน 50% ทุกช่อง, height ถูก control โดย table-layout:fixed
   const BOX = { ...B, padding:"5px 7px", verticalAlign:"top", width:"50%", fontSize:"9pt", lineHeight:1.45 };
+  const BOXINNER = { display:"flex", flexDirection:"column", height:"100%" };
 
   const SigCenter = ({name="", label=""}) => (
-    <div style={{textAlign:"center", marginTop:8}}>
+    <div style={{textAlign:"center", marginTop:"auto", paddingTop:8}}>
       <div>ลงชื่อ <F v="" w={118}/></div>
       <div>(<F v={name} w={118}/>)</div>
       {label && <div style={{fontSize:"8pt",marginTop:1}}>{label}</div>}
@@ -269,7 +270,7 @@ function ContractPreview({ d }) {
         </div>
 
         {/* ── MAIN TABLE — table-layout:fixed ให้ทุก row สูงเท่ากันได้ ── */}
-        <table style={{borderCollapse:"collapse", width:"100%", fontSize:"9.5pt", flex:1, tableLayout:"fixed"}}>
+        <table style={{borderCollapse:"collapse", width:"100%", height:"100%", fontSize:"9.5pt", flex:1, tableLayout:"fixed"}}>
           <colgroup><col style={{width:"50%"}}/><col style={{width:"50%"}}/></colgroup>
           <tbody>
 
@@ -335,36 +336,43 @@ function ContractPreview({ d }) {
               </td>
             </tr>
 
-            {/* ── [1][2] row — height เท่ากัน ── */}
-            <tr style={{height:"1px"}}>
-              <td style={{...BOX, height:"inherit"}}>
+            {/* ── [1][2] row — ขยายได้ ── */}
+            <tr>
+              <td style={{...BOX}}>
+                <div style={BOXINNER}>
                 <div style={{fontWeight:700, marginBottom:3}}>[1] ความเห็นของเจ้าหน้าที่การเงินคณะ/หน่วยงาน</div>
                 <div style={{display:"flex",gap:3,alignItems:"flex-start"}}>
                   <Chk/><span>ได้ตรวจสอบสิทธิของผู้ยืมเงินตามระเบียบฯ และพิจารณาความเหมาะสมของแผนการยืมเงินแล้วเห็นควรอนุมัติ</span>
                 </div>
                 <div style={{marginTop:2}}><Chk/> ความเห็นเพิ่มเติม (ถ้ามี) <F v={d.fin1Comment||""} w={110}/></div>
                 <SigCenter name={d.fin1Name||""} label="เจ้าหน้าที่งานคลัง คณะ/หน่วยงาน"/>
+                </div>
               </td>
-              <td style={{...BOX, height:"inherit"}}>
+              <td style={{...BOX}}>
+                <div style={BOXINNER}>
                 <div style={{fontWeight:700, marginBottom:3}}>[2] ความเห็น หัวหน้างานคลังคณะฯ/ผู้ได้รับมอบหมาย</div>
                 <div style={{display:"flex",gap:3,alignItems:"flex-start"}}>
                   <Chk/><span>เห็นชอบการยืมเงินของบุคลากรและได้ตรวจสอบว่าแผนการยืมเงิน(ตามเอกสารแนบ)เหมาะสม โดยจะกำกับติดตามการใช้จ่ายเงินและส่งคืนเงินยืมตามกำหนดเวลาจนครบจำนวน</span>
                 </div>
                 <div style={{marginTop:2}}><Chk/> ความเห็นเพิ่มเติม (ถ้ามี) <F v={d.fin2Comment||""} w={110}/></div>
                 <SigCenter name={d.fin2Name||""} label="หัวหน้างานคลังคณะฯ"/>
+                </div>
               </td>
             </tr>
 
-            {/* ── [3][4] row — height เท่ากัน ── */}
-            <tr style={{height:"1px"}}>
-              <td style={{...BOX, height:"inherit"}}>
+            {/* ── [3][4] row — ขยายได้ ── */}
+            <tr>
+              <td style={{...BOX}}>
+                <div style={BOXINNER}>
                 <div style={{fontWeight:700, marginBottom:3}}>[3] เรียน คณบดี</div>
                 <div>ได้ตรวจสอบรายการยืมเงินของผู้ยืมถูกต้องตามประกาศที่เกี่ยวข้อง เห็นควรอนุมัติตามเสนอ</div>
                 <SigCenter name={d.dir3Name||""} label=""/>
                 <div style={{textAlign:"center",fontSize:"8.5pt"}}>ตำแหน่ง ผู้อำนวยการกองบริหารงานคณะฯ</div>
                 <div style={{textAlign:"center",fontSize:"8.5pt",marginTop:2}}>วันที่ <F v="" w={112}/></div>
+                </div>
               </td>
-              <td style={{...BOX, height:"inherit"}}>
+              <td style={{...BOX}}>
+                <div style={BOXINNER}>
                 <div style={{fontWeight:700, textAlign:"center", marginBottom:3}}>[4] คำอนุมัติ</div>
                 <div><Chk/> อนุมัติให้ยืมตามคำขอ จำนวน <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={72}/> บาท</div>
                 <div>(<F v={d.totalAmountText||""} w={192}/>)</div>
@@ -372,6 +380,7 @@ function ContractPreview({ d }) {
                 <SigCenter name={d.approverName||""} label=""/>
                 <div style={{textAlign:"center",fontSize:"8.5pt"}}>ผู้อนุมัติ/คณบดี/รักษาการคณบดี</div>
                 <div style={{textAlign:"center",fontSize:"8.5pt",marginTop:2}}>วันที่ <F v="" w={112}/></div>
+                </div>
               </td>
             </tr>
 
