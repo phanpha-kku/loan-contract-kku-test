@@ -185,10 +185,17 @@ const STAFF_LIST = [
   {name:"นางสาวปริยชาต ศรีสุธรรม",position:"นักประชาสัมพันธ์",department:"กองบริหารงานคณะเทคโนโลยี",email:"prisri@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นางอนาลยา หนานสายออ",position:"อาจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"rusamee@kku.ac.th",type:"สายวิชาการ"},
   {name:"นางสาวยลดา สาเสน",position:"อาจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"yollsa@kku.ac.th",type:"สายวิชาการ"},
-];    const ms = ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-    return `${parseInt(day)} ${short?ms[parseInt(m)]:ml[parseInt(m)]} ${parseInt(y)+543}`;
-  };
+];
 
+const thaiDate = (iso, short=false) => {
+  if (!iso) return "";
+  const [y,m,day] = iso.split("-");
+  const ml = ["","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+  const ms = ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+  return `${parseInt(day)} ${short?ms[parseInt(m)]:ml[parseInt(m)]} ${parseInt(y)+543}`;
+};
+
+function ContractPreview({ d }) {
   const F = ({v="", w=80}) => (
     <span style={{
       display:"inline-block", borderBottom:"1px solid #000",
