@@ -97,125 +97,95 @@ const EXPENSE_ITEMS = [
 ];
 
 const STAFF_LIST = [
-  { name: "ธัญญา จันทร์ประสพชัย", email: "thacha3@kku.ac.th", type: "สายวิชาการ" },
-  { name: "พลฤทธิ์ จุลมนต์", email: "pholritt@kku.ac.th", type: "สายวิชาการ" },
-  { name: "อนาลยา หนานสายออ", email: "rusamee@kku.ac.th", type: "สายวิชาการ" },
-  { name: "อาทิตย์ อภิโชติธนกุล", email: "arthap@kku.ac.th", type: "สายวิชาการ" },
-  { name: "จิระโรจน์ สมจันทร์", email: "jirasom@kku.ac.th", type: "สายวิชาการ" },
-  { name: "อธิพงษ์ อามาตย์สมบัติ", email: "atipar@kku.ac.th", type: "สายวิชาการ" },
-  { name: "กฤติกา ตระกูลงาม", email: "krittr@kku.ac.th", type: "สายวิชาการ" },
-  { name: "เกียรติศักดิ์ ศรภิรมย์", email: "kiason@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ณัฐวิโรจน์ ศิลารัตน์", email: "natthawiroj@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ณัฐวุฒิ หอมทอง", email: "nudth@kku.ac.th", type: "สายวิชาการ" },
-  { name: "นุศรา สุระโคตร", email: "nussan@kku.ac.th", type: "สายวิชาการ" },
-  { name: "รุ่งโรจน์ อาจเวทย์", email: "rungroj@kku.ac.th", type: "สายวิชาการ" },
-  { name: "วิมล สุขพลำ", email: "wimosu@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ศรัญญา พรหมโคตร์", email: "sarunya@kku.ac.th", type: "สายวิชาการ" },
-  { name: "วิมลทิพย์ สิงห์เถื่อน", email: "vimosi@kku.ac.th", type: "สายวิชาการ" },
-  { name: "พิทักษ์สิทธิ์ ดิษบรรจง", email: "pitadi@kku.ac.th", type: "สายวิชาการ" },
-  { name: "พจน์ปรีชา พรไทย", email: "potppo@kku.ac.th", type: "สายวิชาการ" },
-  { name: "สุทธิพงษ์ ทวีลาภ", email: "sutthita@kku.ac.th", type: "สายวิชาการ" },
-  { name: "กรกช ฮามสุโพธิ์", email: "korham@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ขนิษฐา เฟียล่า", email: "khamoo@kku.ac.th", type: "สายวิชาการ" },
-  { name: "จิรวรรณ อภิรักษากร", email: "jirapi@kku.ac.th", type: "สายวิชาการ" },
-  { name: "นฤเบศ หล่อวณิชไพศาล", email: "narulo@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ปรีย์กมล กลั่นฤทธิ์", email: "kpreek@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ผกาวดี แก้วกันเนตร", email: "paknar@kku.ac.th", type: "สายวิชาการ" },
-  { name: "พรเทพ ถนนแก้ว", email: "portha@kku.ac.th", type: "สายวิชาการ" },
-  { name: "เพ็ญศรี ปลั่งกลาง", email: "penspl@kku.ac.th", type: "สายวิชาการ" },
-  { name: "มัลลิกา คงเกียรติขจร", email: "mallikab@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ลักขณา เหล่าไพบูลย์", email: "lakcha@kku.ac.th", type: "สายวิชาการ" },
-  { name: "วีระ ปิยธีรวงศ์", email: "weera@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ศิริพร ลุนพรม", email: "sirilun@kku.ac.th", type: "สายวิชาการ" },
-  { name: "อภิลักษณ์ สลักคำ", email: "apilsa@kku.ac.th", type: "สายวิชาการ" },
-  { name: "อลิศรา เรืองแสง", email: "alissara@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ธนวัฒน์ ธนาพรสิน", email: "ththan@kku.ac.th", type: "สายวิชาการ" },
-  { name: "จินตนา ศรีผุย", email: "jinsri@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ปฏิมากร คล้ายประสิทธิ์", email: "patpas@kku.ac.th", type: "สายวิชาการ" },
-  { name: "พิมพ์นิภา หิรัณย์สร", email: "juthkh@kku.ac.th", type: "สายวิชาการ" },
-  { name: "รัชฎา ตั้งวงค์ไชย", email: "ratchada@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ศุภวรรณ ถาวรชินสมบัติ", email: "suptha@kku.ac.th", type: "สายวิชาการ" },
-  { name: "อัมพร แซ่เอียว", email: "sampor@kku.ac.th", type: "สายวิชาการ" },
-  { name: "อารยา เชาว์เรืองฤทธิ์", email: "arayaa@kku.ac.th", type: "สายวิชาการ" },
-  { name: "นัฐวงค์ เฟื่องไพบูลย์", email: "nattavong@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ปนัดดา นนทนำ", email: "panano@kku.ac.th", type: "สายวิชาการ" },
-  { name: "กันติยา เพชรสง", email: "kantpe@kku.ac.th", type: "สายวิชาการ" },
-  { name: "จันทิมา ภูงามเงิน", email: "chanphu@kku.ac.th", type: "สายวิชาการ" },
-  { name: "พีระพงษ์ วงษ์ทหาร", email: "peerwo@kku.ac.th", type: "สายวิชาการ" },
-  { name: "วรนิษฐา สหชัยรุ่งเรือง", email: "wasaha@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ภัคนันท์ เจริญศรี", email: "pakach@kku.ac.th", type: "สายวิชาการ" },
-  { name: "ปกรณ์สวิส สระทองเดชวิสิฐ", email: "pakorns@kku.ac.th", type: "สายวิชาการ" },
-  { name: "สมพล จรรยากรณ์", email: "somchu1@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "นฤมล พิมพ์พงษ์ต้อน", email: "pnarue@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ส่งศรี ศรีพลเมือง", email: "sonloa@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "รัชนี ไกยสวน", email: "ratkai@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ศรีสวรรค์ ใจลึก", email: "srijai@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สมคิด พลตื้อ", email: "sompol@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "เฉลิมภรณ์ ป้านภูมิ", email: "chlpan@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ทรงกรด พิมพ์พันธ์กุล", email: "psongk@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ฐิติรัตน์ อินสาลี", email: "ithiti@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "อ่อนศรี แก้วศิริ", email: "konsri@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สุรพล คั่งคำภา", email: "suraka@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สมศักดิ์ ตระกาลไทย", email: "tsomsa@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ยุวดี ไพศาลพันธุ์", email: "cyuwad@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สีสุก เพียจันทร์", email: "sisuk@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สุพจน์ แสนสีลา", email: "ssupot@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สิราวรรณ สุระพร", email: "parjai@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สำรวย นางทะราช", email: "samnan@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "พิศมัย ศรีทอง", email: "pisssr@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "เทพฤทธิ์ ปิติฤทธิ์", email: "thepit@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ปิยะเมธ ทองละมุน", email: "piytho@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "รังรอง รัตนะ", email: "srungrong@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ยุวสิริ บุญหลาย", email: "yuwabo@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "นงลักษณ์ บุญโชติ", email: "nongke@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ประทีป เทวงษา", email: "pratte@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "อาทิตย์ เชียงเครือ", email: "artich@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สุพัฒน์ บุญแก้ว", email: "supatbo@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "พนิตนันท์ พานิชพัฒน์", email: "phanpha@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "กมลธิดา คงสมบัติ", email: "kamoltida@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ศศิธร คำพวง", email: "sasiku@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "กนกอร นีระ", email: "kanokne@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ญาดา ดาบพอ่อน", email: "yadada@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ฉวีวรรณ โพธิ์นวลศรี", email: "chawpon@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "อิทธิพล บุญศรี", email: "ittibo@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "วรการ ฮุนตระกูล", email: "worahu@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ปรารถนา ดวงวันทอง", email: "prabthana@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ผการัตน์ พีรกมล", email: "phphee@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ศศิวิมล คำสิงห์", email: "sasikam@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "สนธยา ปินะถา", email: "sontpi@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "อารียา พูลกลาง", email: "areeph@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ธีรวัฒน์ ปัญญา", email: "teerapa@kku.ac.th", type: "สายสนับสนุน" },
-  { name: "ปริยชาต ศรีสุธรรม", email: "prisri@kku.ac.th", type: "สายสนับสนุน" },
-];
-
-// ─── Contract Preview (print) ─────────────────────────────────
-function Blank({ val, w = 120 }) {
-  return (
-    <span style={{ display:"inline-block", borderBottom:"1px solid #000", width:w,
-      padding:"0 4px", minHeight:20, verticalAlign:"bottom", lineHeight:"22px",
-      whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", boxSizing:"border-box" }}>
-      {val || "\u00a0"}
-    </span>
-  );
-}
-function Chk({ on }) {
-  return (
-    <span style={{ display:"inline-block", width:12, height:12, border:"1px solid #000",
-      verticalAlign:"middle", textAlign:"center", lineHeight:"11px", fontSize:10, marginRight:2 }}>
-      {on ? "✓" : ""}
-    </span>
-  );
-}
-
-function ContractPreview({ d }) {
-  const font = "'Sarabun','TH Sarabun New',Tahoma,sans-serif";
-  const S = { fontFamily:font, fontSize:"9.5pt", color:"#000", lineHeight:1.5 };
-
-  const thaiDate = (iso, short=false) => {
-    if (!iso) return "";
-    const [y,m,day] = iso.split("-");
-    const ml = ["","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-    const ms = ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+  {name:"นายปิยะเมธ ทองละมุน",position:"ผู้ปฏิบัติงานวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"piytho@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวจิรวรรณ อภิรักษากร",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"jirapi@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายธัญญา จันทร์ประสพชัย",position:"อาจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"thacha3@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาววิมลทิพย์ สิงห์เถื่อน",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"vimosi@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายพลฤทธิ์ จุลมนต์",position:"ผู้ช่วยศาสตราจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"pholritt@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางมัลลิกา คงเกียรติขจร",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"mallikab@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวเพ็ญศรี ปลั่งกลาง",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"penspl@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายวีระ ปิยธีรวงศ์",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"weera@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวปรีย์กมล กลั่นฤทธิ์",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"kpreek@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวกฤติกา ตระกูลงาม",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"krittr@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายอาทิตย์ อภิโชติธนกุล",position:"ผู้ช่วยศาสตราจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"arthap@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวอัมพร แซ่เอียว",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"sampor@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายณัฐวุฒิ หอมทอง",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"nudth@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวยุวสิริ บุญหลาย",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"yuwabo@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางรังรอง รัตนะ",position:"นักวิชาการแผนและสารสนเทศ",department:"กองบริหารงานคณะเทคโนโลยี",email:"srungrong@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายรุ่งโรจน์ อาจเวทย์",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"rungroj@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวศิริพร ลุนพรม",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"sirilun@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายจิระโรจน์ สมจันทร์",position:"ผู้ช่วยศาสตราจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"jirasom@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวศศิธร คำพวง",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"sasiku@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางนงลักษณ์ บุญโชติ",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"nongke@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวกนกอร นีระ",position:"นักวิเทศสัมพันธ์",department:"กองบริหารงานคณะเทคโนโลยี",email:"kanokne@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายอภิลักษณ์ สลักคำ",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"apilsa@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวพิมพ์นิภา หิรัณย์สร",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"juthkh@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายณัฐวิโรจน์ ศิลารัตน์",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"natthawiroj@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวรัชฎา ตั้งวงค์ไชย",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"ratchada@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางนุศรา สุระโคตร",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"nussan@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายสมพล จรรยากรณ์",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"somchu1@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางศรีสวรรค์ ใจลึก",position:"นักวิชาการพัสดุ",department:"กองบริหารงานคณะเทคโนโลยี",email:"srijai@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายทรงกรด พิมพ์พันธ์กุล",position:"นักวิชาการศึกษา",department:"กองบริหารงานคณะเทคโนโลยี",email:"psongk@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายสำรวย นางทะราช",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"samnan@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางเฉลิมภรณ์ ป้านภูมิ",position:"พนักงานปฏิบัติงานทั่วไป",department:"กองบริหารงานคณะเทคโนโลยี",email:"chlpan@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางฐิติรัตน์ อินสาลี",position:"พนักงานวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"ithiti@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายเทพฤทธิ์ ปิติฤทธิ์",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"thepit@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางอลิศรา เรืองแสง",position:"ศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"alissara@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายสมคิด พลตื้อ",position:"ผู้อำนวยการกองบริหารงานคณะ",department:"กองบริหารงานคณะเทคโนโลยี",email:"sompol@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางนฤมล พิมพ์พงษ์ต้อน",position:"นักจัดการงานทั่วไป",department:"กองบริหารงานคณะเทคโนโลยี",email:"pnarue@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสิราวรรณ สุระพร",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"parjai@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายสมศักดิ์ ตระกาลไทย",position:"พนักงานวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"tsomsa@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวอารยา เชาว์เรืองฤทธิ์",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"arayaa@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายเกียรติศักดิ์ ศรภิรมย์",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"kiason@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางส่งศรี ศรีพลเมือง",position:"พนักงานปฏิบัติงานทั่วไป",department:"กองบริหารงานคณะเทคโนโลยี",email:"sonloa@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางลักขณา เหล่าไพบูลย์",position:"ศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"lakcha@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายนัฐวงค์ เฟื่องไพบูลย์",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"nattavong@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาววิมล สุขพลำ",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"wimosu@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางขนิษฐา เฟียล่า",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"khamoo@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางผกาวดี แก้วกันเนตร",position:"ศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"paknar@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวศรัญญา พรหมโคตร์",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"sarunya@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางพิศมัย ศรีทอง",position:"นักจัดการงานทั่วไป",department:"กองบริหารงานคณะเทคโนโลยี",email:"pisssr@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายพีระพงษ์ วงษ์ทหาร",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"peerwo@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายประทีป เทวงษา",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"pratte@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายสุพัฒน์ บุญแก้ว",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"supatbo@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายอาทิตย์ เชียงเครือ",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"arthap@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวยุวดี ไพศาลพันธุ์",position:"พนักงานวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"cyuwad@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายอ่อนศรี แก้วศิริ",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"konsri@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายสีสุก เพียจันทร์",position:"พนักงานช่าง",department:"กองบริหารงานคณะเทคโนโลยี",email:"sisuk@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายปกรณ์สวิส สระทองเดชวิสิฐ",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"pakorns@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวรัชนี ไกยสวน",position:"นักวิชาการพัสดุ",department:"กองบริหารงานคณะเทคโนโลยี",email:"ratkai@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวศุภวรรณ ถาวรชินสมบัติ",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"suptha@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวปฏิมากร คล้ายประสิทธิ์",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"patpas@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายสุพจน์ แสนสีลา",position:"พนักงานช่าง",department:"กองบริหารงานคณะเทคโนโลยี",email:"ssupot@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายพิทักษ์สิทธิ์ ดิษบรรจง",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"pitadi@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวกันติยา เพชรสง",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"kantpe@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายพรเทพ ถนนแก้ว",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"portha@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวปนัดดา นนทนำ",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"panano@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายพจน์ปรีชา พรไทย",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"potppo@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายสุทธิพงษ์ ทวีลาภ",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีธรณี",email:"sutthita@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายนฤเบศ หล่อวณิชไพศาล",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"narulo@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวจันทิมา ภูงามเงิน",position:"รองศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"chanphu@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายธีรวัฒน์ ปัญญา",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"teerapa@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายอธิพงษ์ อามาตย์สมบัติ",position:"ผู้ช่วยศาสตราจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"atipar@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นายวรการ ฮุนตระกูล",position:"นักวิชาการศึกษา",department:"กองบริหารงานคณะเทคโนโลยี",email:"worahu@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวญาดา ดาบพลอ่อน",position:"นักวิชาการแผนและสารสนเทศ",department:"กองบริหารงานคณะเทคโนโลยี",email:"yadada@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวฉวีวรรณ โพธิ์นวลศรี",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"chawpon@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายอิทธิพล บุญศรี",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"ittibo@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายธนวัฒน์ ธนาพรสิน",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีชีวภาพ",email:"ththan@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวพนิตนันท์ พานิชพัฒน์",position:"นักวิชาการเงินและบัญชี",department:"กองบริหารงานคณะเทคโนโลยี",email:"phanpha@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวกมลธิดา คงสมบัติ",position:"นักทรัพยากรบุคคล",department:"กองบริหารงานคณะเทคโนโลยี",email:"kamoltida@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาววรนิษฐา สหชัยรุ่งเรือง",position:"อาจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"wasaha@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวภัคนันท์ เจริญศรี",position:"อาจารย์",department:"หลักสูตรวิทยาศาสตรบัณฑิต สาขาวิทยาศาสตร์และเทคโนโลยีการประกอบอาหาร",email:"pakach@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวขวัญฤดี วชิรัตนพงษ์เมธี",position:"อาจารย์",department:"หลักสูตรวิทยาศาสตรบัณฑิต สาขาวิทยาศาสตร์และเทคโนโลยีการประกอบอาหาร",email:"kwanwac@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวอรียา พูลกลาง",position:"นักวิชาการวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"areeph@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวผการัตน์ พีรกมล",position:"นักวิชาการศึกษา",department:"กองบริหารงานคณะเทคโนโลยี",email:"phphee@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวปรารถนา ดวงวันทอง",position:"นักวิชาการเงินและบัญชี",department:"กองบริหารงานคณะเทคโนโลยี",email:"prabthana@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวศศิวิมล คำสิงห์",position:"นักเทคโนโลยีสารสนเทศ",department:"กองบริหารงานคณะเทคโนโลยี",email:"sasikam@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายสนธยา ปินะถา",position:"พนักงานขับรถยนต์",department:"กองบริหารงานคณะเทคโนโลยี",email:"sontpi@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางสาวปริยชาต ศรีสุธรรม",position:"นักประชาสัมพันธ์",department:"กองบริหารงานคณะเทคโนโลยี",email:"prisri@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นางอนาลยา หนานสายออ",position:"อาจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"rusamee@kku.ac.th",type:"สายวิชาการ"},
+  {name:"นางสาวยลดา สาเสน",position:"อาจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"yollsa@kku.ac.th",type:"สายวิชาการ"},
+];    const ms = ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
     return `${parseInt(day)} ${short?ms[parseInt(m)]:ml[parseInt(m)]} ${parseInt(y)+543}`;
   };
 
@@ -1113,7 +1083,7 @@ ${printEl.innerHTML}
                   </div>
                 </div>
               </Grid2>
-              <BorrowerSearch value={form.borrowerName} onSelect={s=>{ set("borrowerName",s.name); set("email",s.email); }} set={set}/>
+              <BorrowerSearch value={form.borrowerName} onSelect={s=>{ set("borrowerName",s.name); set("email",s.email||""); set("position",s.position||""); set("department",s.department||""); }} set={set}/>
               <Grid2>
                 <div style={{ marginBottom:14 }}>
                   <label style={LS_STYLE}>ตำแหน่ง</label>
