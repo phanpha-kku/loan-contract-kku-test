@@ -306,7 +306,7 @@ function ContractPreview({ d }) {
                 <div style={{display:"flex",flexWrap:"wrap",gap:"0 3px",alignItems:"baseline"}}>
                   <span>เป็นเงินจำนวน</span>
                   <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={100}/>
-                  <span>บาท (</span><F v={d.totalAmountText||""} w={178}/><span>) โดยมีแผนการยืมเงิน(ตามรายละเอียดแนบ)</span>
+                  <span>บาท (</span><F v={d.totalAmountText||(d.totalAmount?toThaiNum(parseFloat(d.totalAmount)):"")} w={178}/><span>) โดยมีแผนการยืมเงิน(ตามรายละเอียดแนบ)</span>
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:"0 3px",alignItems:"baseline"}}>
                   <span>&nbsp;&nbsp;<Chk/> งวดที่ 1 จำนวน</span>
