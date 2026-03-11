@@ -635,37 +635,34 @@ export default function App() {
   const currentYear = new Date().getFullYear() + 543;
   const [submitting, setSubmitting] = useState(false);
 
-  const generateContractNo = () => {
-    return new Promise((resolve) => {
-      const url = scriptUrl.trim();
-      if (!url) {
-        resolve(`${currentYear}000`);
-        return;
-      }
-      // Use JSONP-style: inject script tag to bypass CORS
-      const cbName = `_cb_${Date.now()}`;
-      const params = new URLSearchParams({ action: "getNextNo", year: String(currentYear), callback: cbName });
-      window[cbName] = (data) => {
-        delete window[cbName];
-        script.remove();
-        if (data && data.no) resolve(data.no);
-        else resolve(`${currentYear}000`);
-      };
-      const script = document.createElement("script");
-      script.src = `${url}?${params.toString()}`;
-      script.onerror = () => {
-        delete window[cbName];
-        resolve(`${currentYear}000`);
-      };
-      document.head.appendChild(script);
-      setTimeout(() => {
-        if (window[cbName]) {
+  const generateContractNo = async () => {
+    const url = scriptUrl.trim();
+    if (!url) return `${currentYear}000`;
+    const params = new URLSearchParams({ action: "getNextNo", year: String(currentYear) });
+    try {
+      const res = await fetch(`${url}?${params.toString()}`);
+      const json = await res.json();
+      if (json && json.no) return json.no;
+    } catch {
+      // CORS fallback: JSONP
+      return new Promise((resolve) => {
+        const cbName = `_cb_${Date.now()}`;
+        const p2 = new URLSearchParams({ action: "getNextNo", year: String(currentYear), callback: cbName });
+        window[cbName] = (data) => {
           delete window[cbName];
           script.remove();
-          resolve(`${currentYear}000`);
-        }
-      }, 5000);
-    });
+          resolve(data && data.no ? data.no : `${currentYear}000`);
+        };
+        const script = document.createElement("script");
+        script.src = `${url}?${p2.toString()}`;
+        script.onerror = () => { delete window[cbName]; resolve(`${currentYear}000`); };
+        document.head.appendChild(script);
+        setTimeout(() => {
+          if (window[cbName]) { delete window[cbName]; script.remove(); resolve(`${currentYear}000`); }
+        }, 8000);
+      });
+    }
+    return `${currentYear}000`;
   };
 
   // Auto-sync plan rows when entering step 3
