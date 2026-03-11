@@ -225,6 +225,12 @@ function ContractPreview({ d }) {
   const grandTotal = (d.planRows||[]).reduce((s,pr)=>
     s+(pr.items||[]).reduce((ss,it)=>ss+(parseFloat(it.amount)||0),0),0);
 
+  const S = {
+    fontFamily:"'Sarabun','TH Sarabun New',sans-serif",
+    fontSize:"10pt", color:"#000", background:"#fff",
+    lineHeight:1.4,
+  };
+
   return (
     <div id="contract-print" style={S}>
 
@@ -1130,7 +1136,17 @@ ${printEl.innerHTML}
             {/* ── STEP 2 ── */}
             {step===2 && <>
               <SH text="💰 รายละเอียดการยืมเงิน"/>
-              <Field label="เลขที่หนังสืออ้างอิง (อว...)" value={form.refDocNo} onChange={e=>set("refDocNo",e.target.value)} placeholder="เช่น 660301.12.1.1/123"/>
+              <div style={{ marginBottom:14 }}>
+                <label style={LS_STYLE}>เลขที่หนังสืออ้างอิง (อว...)</label>
+                <input type="text" value={form.refDocNo} onChange={e=>set("refDocNo",e.target.value)}
+                  placeholder="เช่น อว 660301.12.1.1.1/123 หรือ TRIP20260000000"
+                  list="refdoc-list"
+                  style={IS_STYLE}/>
+                <datalist id="refdoc-list">
+                  <option value="อว 660301.12"/>
+                  <option value="TRIP"/>
+                </datalist>
+              </div>
               <Field label="ชื่อกิจกรรม / โครงการ" value={form.project} onChange={e=>set("project",e.target.value)} placeholder="โครงการ..."/>
               <Grid2>
                 <Field label="วันที่จัดกิจกรรม" value={form.eventStartDate} onChange={e=>set("eventStartDate",e.target.value)} type="date"/>
