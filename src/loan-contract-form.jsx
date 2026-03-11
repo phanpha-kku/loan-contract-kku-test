@@ -1087,17 +1087,21 @@ ${printEl.innerHTML}
               <Grid2>
                 <div style={{ marginBottom:14 }}>
                   <label style={LS_STYLE}>ตำแหน่ง</label>
-                  <select value={form.position} onChange={e=>set("position",e.target.value)} style={DROP}>
-                    <option value="">-- เลือกตำแหน่ง --</option>
-                    {POSITIONS.map(p=><option key={p} value={p}>{p}</option>)}
-                  </select>
+                  <input type="text" value={form.position} onChange={e=>set("position",e.target.value)}
+                    list="position-list" placeholder="ตำแหน่ง..."
+                    style={IS_STYLE}/>
+                  <datalist id="position-list">
+                    {POSITIONS.map(p=><option key={p} value={p}/>)}
+                  </datalist>
                 </div>
                 <div style={{ marginBottom:14 }}>
                   <label style={LS_STYLE}>สังกัด</label>
-                  <select value={form.department} onChange={e=>set("department",e.target.value)} style={DROP}>
-                    <option value="">-- เลือกสังกัด --</option>
-                    {DEPARTMENTS.map(d=><option key={d} value={d}>{d}</option>)}
-                  </select>
+                  <input type="text" value={form.department} onChange={e=>set("department",e.target.value)}
+                    list="department-list" placeholder="สังกัด..."
+                    style={IS_STYLE}/>
+                  <datalist id="department-list">
+                    {[...new Set(STAFF_LIST.map(s=>s.department).filter(Boolean))].map(d=><option key={d} value={d}/>)}
+                  </datalist>
                 </div>
               </Grid2>
               <div style={{ marginBottom:14 }}>
