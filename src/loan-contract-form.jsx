@@ -616,6 +616,80 @@ function BorrowerSearch({ value, onSelect, set }) {
   );
 }
 
+
+// ─── Survey Popup ──────────────────────────────────────────────
+function SurveyPopup({ show, onClose, onSubmit, survey, setSurvey, done }) {
+  if (!show) return null;
+  const questions = [
+    { key: "ease",     label: "ความง่ายในการใช้งาน" },
+    { key: "complete", label: "ความครบถ้วนของฟอร์ม" },
+    { key: "overall",  label: "ความพึงพอใจโดยรวม" },
+  ];
+  const overlay = { position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:9999,
+    display:"flex", alignItems:"center", justifyContent:"center", padding:16 };
+  const box = { background:"#FFFAF6", borderRadius:16, padding:"28px 24px", maxWidth:420, width:"100%",
+    boxShadow:"0 8px 40px rgba(0,0,0,0.18)", fontFamily:"Sarabun, sans-serif" };
+
+  if (done) return (
+    <div style={overlay} onClick={onClose}>
+      <div style={{...box, textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+        <div style={{fontSize:48, marginBottom:12}}>🙏</div>
+        <div style={{fontSize:20, fontWeight:700, color:"#2D1010", marginBottom:8}}>ขอบคุณสำหรับการประเมิน!</div>
+        <div style={{fontSize:14, color:"#A05050", marginBottom:20}}>ความคิดเห็นของท่านมีคุณค่ามาก</div>
+        <button onClick={onClose} style={{ background:"#C0392B", color:"#fff", border:"none",
+          borderRadius:8, padding:"10px 32px", fontSize:15, cursor:"pointer", fontFamily:"inherit" }}>ปิด</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={overlay} onClick={onClose}>
+      <div style={box} onClick={e=>e.stopPropagation()}>
+        <div style={{fontWeight:700, fontSize:18, color:"#2D1010", marginBottom:4}}>📋 ประเมินความพึงพอใจ</div>
+        <div style={{fontSize:13, color:"#A05050", marginBottom:20}}>ใช้เวลาไม่ถึง 1 นาที</div>
+
+        {questions.map(q => (
+          <div key={q.key} style={{marginBottom:18}}>
+            <div style={{fontSize:14, fontWeight:600, color:"#2D1010", marginBottom:8}}>{q.label}</div>
+            <div style={{display:"flex", gap:8}}>
+              {[1,2,3,4,5].map(s => (
+                <button key={s} onClick={()=>setSurvey(p=>({...p,[q.key]:s}))}
+                  style={{ fontSize:26, background:"none", border:"none", cursor:"pointer",
+                    opacity: survey[q.key] >= s ? 1 : 0.25,
+                    transform: survey[q.key] === s ? "scale(1.2)" : "scale(1)",
+                    transition:"all 0.15s" }}>⭐</button>
+              ))}
+              <span style={{fontSize:13, color:"#C07070", alignSelf:"center", marginLeft:4}}>
+                {survey[q.key] > 0 ? ["","น้อยมาก","น้อย","ปานกลาง","มาก","มากที่สุด"][survey[q.key]] : ""}
+              </span>
+            </div>
+          </div>
+        ))}
+
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:14, fontWeight:600, color:"#2D1010", marginBottom:8}}>ข้อเสนอแนะ (ถ้ามี)</div>
+          <textarea value={survey.comment} onChange={e=>setSurvey(p=>({...p,comment:e.target.value}))}
+            placeholder="พิมพ์ข้อเสนอแนะได้เลย..."
+            rows={3}
+            style={{ width:"100%", background:"#FFF0E6", border:"1px solid #DDB8A8", borderRadius:8,
+              padding:"8px 12px", fontSize:13, fontFamily:"inherit", outline:"none", resize:"none", boxSizing:"border-box" }}/>
+        </div>
+
+        <div style={{display:"flex", gap:10}}>
+          <button onClick={onClose} style={{ flex:1, background:"#f0e8e0", color:"#A05050", border:"none",
+            borderRadius:8, padding:"10px", fontSize:14, cursor:"pointer", fontFamily:"inherit" }}>ข้ามไปก่อน</button>
+          <button onClick={onSubmit}
+            disabled={survey.ease===0 || survey.complete===0 || survey.overall===0}
+            style={{ flex:2, background: survey.ease&&survey.complete&&survey.overall ? "#C0392B" : "#ccc",
+              color:"#fff", border:"none", borderRadius:8, padding:"10px", fontSize:14,
+              cursor: survey.ease&&survey.complete&&survey.overall ? "pointer" : "not-allowed",
+              fontFamily:"inherit", fontWeight:600 }}>ส่งผลประเมิน ✓</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   useEffect(() => {
     let meta = document.querySelector('meta[name="viewport"]');
@@ -760,6 +834,9 @@ export default function App() {
   const [scriptUrl, setScriptUrl] = useState("https://script.google.com/macros/s/AKfycbxkJyzKI205FmLSjVQQlEksPi1InQTN1Hr0VxFDrGKiW9yk0TRK3yNT3B5q28wdFxb9ug/exec");
   const [sendStatus, setSendStatus] = useState(null); // null | "sending" | "ok" | "err"
   const [hasSent, setHasSent] = useState(false); // ป้องกันส่งซ้ำ
+  const [showSurvey, setShowSurvey] = useState(false);
+  const [survey, setSurvey] = useState({ ease: 0, complete: 0, overall: 0, comment: "" });
+  const [surveyDone, setSurveyDone] = useState(false);
 
   const sendToSheet = async (contractNo) => {
     const url = scriptUrl.trim();
@@ -822,6 +899,7 @@ export default function App() {
       setSendStatus("sending");
       await sendToSheet(contractNo);
       setHasSent(true);
+      setTimeout(() => setShowSurvey(true), 1200);
     }
 
     setSubmitting(false);
@@ -894,8 +972,26 @@ ${printEl.innerHTML}
 
 
 
+  const submitSurvey = () => {
+    const url = scriptUrl.trim();
+    if (url) {
+      const params = new URLSearchParams({
+        action: "survey",
+        contractNo: form.contractNo || "",
+        ease: survey.ease,
+        complete: survey.complete,
+        overall: survey.overall,
+        comment: survey.comment,
+      });
+      fetch(`${url}?${params.toString()}`).catch(()=>{});
+    }
+    setSurveyDone(true);
+  };
+
   return (
     <div style={{ fontFamily:"'Sarabun','TH Sarabun New',sans-serif", background:"#FFF8F0", minHeight:"100vh", color:"#2D1010" }}>
+      <SurveyPopup show={showSurvey} onClose={()=>setShowSurvey(false)}
+        onSubmit={submitSurvey} survey={survey} setSurvey={setSurvey} done={surveyDone}/>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
         *{box-sizing:border-box}
