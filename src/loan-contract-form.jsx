@@ -601,6 +601,63 @@ function BorrowerSearch({ value, onSelect, set }) {
 }
 
 
+
+// ─── FillerSearch ──────────────────────────────────────────────
+function FillerSearch({ value, onChange }) {
+  const [query, setQuery] = useState(value || "");
+  const [showSug, setShowSug] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => { setQuery(value || ""); }, [value]);
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setShowSug(false); };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const suggestions = query.length >= 1
+    ? STAFF_LIST.filter(s => s.name.includes(query)).slice(0, 8)
+    : [];
+
+  return (
+    <div style={{ position:"relative" }} ref={ref}>
+      <input type="text" value={query}
+        placeholder="พิมพ์ชื่อผู้กรอก..."
+        style={IS_STYLE}
+        onFocus={() => setShowSug(true)}
+        onChange={e => {
+          setQuery(e.target.value);
+          onChange(e.target.value, undefined);
+          setShowSug(true);
+        }}
+      />
+      {showSug && suggestions.length > 0 && (
+        <div style={{ position:"absolute", top:"100%", left:0, right:0, zIndex:999,
+          background:"#fff", border:"1px solid #C0A0A0", borderRadius:6,
+          boxShadow:"0 4px 16px rgba(0,0,0,.15)", maxHeight:220, overflowY:"auto" }}>
+          {suggestions.map((s,i) => (
+            <div key={i}
+              onMouseDown={() => {
+                setQuery(s.name);
+                onChange(s.name, s.email || "");
+                setShowSug(false);
+              }}
+              style={{ padding:"9px 14px", cursor:"pointer", fontSize:14,
+                borderBottom:"1px solid #F0E8E0", display:"flex", justifyContent:"space-between", alignItems:"center" }}
+              onMouseEnter={e => e.currentTarget.style.background="#FFF0E6"}
+              onMouseLeave={e => e.currentTarget.style.background="transparent"}
+            >
+              <span>{s.name}</span>
+              <span style={{ fontSize:12, color:"#A05050" }}>{s.position}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Survey Popup ──────────────────────────────────────────────
 function SurveyPopup({ show, onClose, onSubmit, survey, setSurvey, done }) {
   if (!show) return null;
@@ -826,7 +883,7 @@ export default function App() {
     const url = scriptUrl.trim();
     if (!url) return;
     const autoTotal = (parseFloat(form.inst1Amount)||0) + (form.useInst2 ? (parseFloat(form.inst2Amount)||0) : 0);
-    const params = new URLSearchParams({
+    const payload = {
       contractNo:      contractNo || "",
       contractDate:    form.contractDate,
       borrowerName:    form.borrowerName,
@@ -840,22 +897,32 @@ export default function App() {
       eventStartDate:  form.eventStartDate || "",
       eventEndDate:    form.eventEndDate || "",
       dueDate:         form.dueDate || "",
-      totalAmount:     autoTotal || form.totalAmount || "",
-    });
+      totalAmount:     String(autoTotal || form.totalAmount || ""),
+      totalAmountText: form.totalAmountText || (autoTotal ? toThaiNum(autoTotal) : ""),
+      inst1Amount:     form.inst1Amount || "",
+      inst1NeedDate:   form.inst1NeedDate || "",
+      inst2Amount:     form.useInst2 ? (form.inst2Amount || "") : "",
+      inst2NeedDate:   form.useInst2 ? (form.inst2NeedDate || "") : "",
+      budgetType:      form.budgetType || "",
+      planRows:        JSON.stringify(form.planRows || []),
+    };
+    const params = new URLSearchParams(payload);
     try {
-      // Try fetch first (no-cors won't throw on network success)
+      // Try fetch POST first
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000);
+      const timeout = setTimeout(() => controller.abort(), 15000);
       try {
-        await fetch(`${url}?${params.toString()}`, {
-          method: "GET",
+        await fetch(url, {
+          method: "POST",
           mode: "no-cors",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params.toString(),
           signal: controller.signal,
         });
         clearTimeout(timeout);
       } catch (fetchErr) {
         clearTimeout(timeout);
-        // Fallback: Image beacon (fire-and-forget)
+        // Fallback: GET with params (planRows may be truncated but better than nothing)
         await new Promise((resolve) => {
           const img = new Image();
           const timer = setTimeout(() => resolve(), 8000);
@@ -1144,18 +1211,13 @@ ${printEl.innerHTML}
                 <Grid2>
                   <div style={{ marginBottom:0 }}>
                     <label style={LS_STYLE}>ชื่อ-สกุล ผู้กรอกข้อมูล</label>
-                    <input type="text" value={form.fillerName}
-                      onChange={e=>{
-                        set("fillerName",e.target.value);
-                        const found = STAFF_LIST.find(s=>s.name===e.target.value);
-                        if (found) set("fillerEmail", found.email||"");
+                    <FillerSearch
+                      value={form.fillerName}
+                      onChange={(name, email) => {
+                        set("fillerName", name);
+                        if (email !== undefined) set("fillerEmail", email);
                       }}
-                      list="filler-name-list"
-                      placeholder="ระบุชื่อผู้กรอก (ถ้ามี)"
-                      style={IS_STYLE}/>
-                    <datalist id="filler-name-list">
-                      {STAFF_LIST.map(s=><option key={s.name} value={s.name}/>)}
-                    </datalist>
+                    />
                   </div>
                   <div style={{ marginBottom:0 }}>
                     <label style={LS_STYLE}>อีเมล ผู้กรอกข้อมูล</label>
