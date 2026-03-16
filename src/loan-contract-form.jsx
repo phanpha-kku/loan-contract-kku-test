@@ -51,6 +51,7 @@ const INIT = {
   contractDate: today(), contractNo: "",
   // ผู้ยืม
   borrowerName: "", position: "", department: "", email: "", eventStartDate: "", eventEndDate: "",
+  fillerName: "", fillerEmail: "",
   // หน้า 2: รายละเอียด
   refDocNo: "", project: "", budgetType: "งบประมาณเงินรายได้",
   totalAmount: "", totalAmountText: "", dueDate: "",
@@ -829,6 +830,8 @@ export default function App() {
       contractNo:      contractNo || "",
       contractDate:    form.contractDate,
       borrowerName:    form.borrowerName,
+      fillerName:      form.fillerName || "",
+      fillerEmail:     form.fillerEmail || "",
       position:        form.position || "",
       department:      form.department || "",
       email:           form.email || "",
@@ -1130,6 +1133,38 @@ ${printEl.innerHTML}
                     </span>
                   )}
                 </div>
+              </div>
+
+              {/* ── ผู้กรอกข้อมูล ── */}
+              <div style={{ background:"rgba(45,49,72,.04)", border:"1px solid rgba(45,49,72,.12)",
+                borderRadius:10, padding:"14px 16px", marginBottom:14 }}>
+                <div style={{ fontSize:13, color:"#A05050", fontWeight:600, marginBottom:12 }}>
+                  👤 ผู้กรอกข้อมูล (ถ้าไม่ใช่ผู้ยืม)
+                </div>
+                <Grid2>
+                  <div style={{ marginBottom:0 }}>
+                    <label style={LS_STYLE}>ชื่อ-สกุล ผู้กรอกข้อมูล</label>
+                    <input type="text" value={form.fillerName}
+                      onChange={e=>{
+                        set("fillerName",e.target.value);
+                        const found = STAFF_LIST.find(s=>s.name===e.target.value);
+                        if (found) set("fillerEmail", found.email||"");
+                      }}
+                      list="filler-name-list"
+                      placeholder="ระบุชื่อผู้กรอก (ถ้ามี)"
+                      style={IS_STYLE}/>
+                    <datalist id="filler-name-list">
+                      {STAFF_LIST.map(s=><option key={s.name} value={s.name}/>)}
+                    </datalist>
+                  </div>
+                  <div style={{ marginBottom:0 }}>
+                    <label style={LS_STYLE}>อีเมล ผู้กรอกข้อมูล</label>
+                    <input type="email" value={form.fillerEmail}
+                      onChange={e=>set("fillerEmail",e.target.value)}
+                      placeholder="name@kku.ac.th"
+                      style={IS_STYLE}/>
+                  </div>
+                </Grid2>
               </div>
             </>}
 
