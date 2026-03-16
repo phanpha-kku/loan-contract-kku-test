@@ -904,25 +904,26 @@ export default function App() {
       inst2Amount:     form.useInst2 ? (form.inst2Amount || "") : "",
       inst2NeedDate:   form.useInst2 ? (form.inst2NeedDate || "") : "",
       budgetType:      form.budgetType || "",
-      planRows:        JSON.stringify(form.planRows || []),
+      planRows:        JSON.stringify((form.planRows||[]).map(r=>({
+        no: r.no, needDate: r.needDate, reason: r.reason,
+        items: (r.items||[]).filter(it=>it.name||it.amount).map(it=>({name:it.name,amount:it.amount}))
+      }))),
     };
     const params = new URLSearchParams(payload);
     try {
-      // Try fetch POST first
+      // Use JSONP for cross-origin (Apps Script only supports GET from browser)
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
       try {
-        await fetch(url, {
-          method: "POST",
+        await fetch(`${url}?${params.toString()}`, {
+          method: "GET",
           mode: "no-cors",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: params.toString(),
           signal: controller.signal,
         });
         clearTimeout(timeout);
       } catch (fetchErr) {
         clearTimeout(timeout);
-        // Fallback: GET with params (planRows may be truncated but better than nothing)
+        // Fallback: Image beacon
         await new Promise((resolve) => {
           const img = new Image();
           const timer = setTimeout(() => resolve(), 8000);
