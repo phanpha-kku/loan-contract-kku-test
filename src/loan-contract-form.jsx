@@ -524,11 +524,12 @@ function formatDateInput(raw) {
   return digits.slice(0,2)+"/"+digits.slice(2,4)+"/"+digits.slice(4);
 }
 
-function Field({ label, value, onChange, type="text", placeholder="" }) {
+function Field({ label, value, onChange, type="text", placeholder="", min, max }) {
   return (
     <div style={{ marginBottom:14 }}>
       <label style={LS_STYLE}>{label}</label>
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder} style={IS_STYLE}/>
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder}
+        min={min} max={max} style={IS_STYLE}/>
     </div>
   );
 }
@@ -838,15 +839,33 @@ export default function App() {
       if (!form.eventStartDate) errs.push("กรุณาเลือกวันที่จัดกิจกรรม");
       if (!form.eventEndDate) errs.push("กรุณาเลือกวันที่สิ้นสุดกิจกรรม");
       if (!form.inst1Amount || parseFloat(form.inst1Amount) <= 0) errs.push("กรุณากรอกจำนวนเงินงวดที่ 1");
-      if (!form.inst1NeedDate) errs.push("กรุณาเลือกวันที่ต้องใช้เงินงวดที่ 1");
+      if (!form.inst1NeedDate) {
+        errs.push("กรุณาเลือกวันที่ต้องใช้เงินงวดที่ 1");
+      } else {
+        const d1 = new Date(form.inst1NeedDate); const dow1 = d1.getDay();
+        if (dow1===0||dow1===6) errs.push("วันที่ต้องใช้เงินงวดที่ 1 ต้องเป็นวันทำการ (จันทร์-ศุกร์)");
+        else if (d1 < new Date(addWorkdays(4))) errs.push("วันที่ต้องใช้เงินงวดที่ 1 ต้องหลังวันนี้อย่างน้อย 4 วันทำการ");
+      }
       if (form.useInst2) {
         if (!form.inst2Amount || parseFloat(form.inst2Amount) <= 0) errs.push("กรุณากรอกจำนวนเงินงวดที่ 2");
-        if (!form.inst2NeedDate) errs.push("กรุณาเลือกวันที่ต้องใช้เงินงวดที่ 2");
+        if (!form.inst2NeedDate) {
+          errs.push("กรุณาเลือกวันที่ต้องใช้เงินงวดที่ 2");
+        } else {
+          const d2 = new Date(form.inst2NeedDate); const dow2 = d2.getDay();
+          if (dow2===0||dow2===6) errs.push("วันที่ต้องใช้เงินงวดที่ 2 ต้องเป็นวันทำการ (จันทร์-ศุกร์)");
+          else if (d2 < new Date(addWorkdays(4))) errs.push("วันที่ต้องใช้เงินงวดที่ 2 ต้องหลังวันนี้อย่างน้อย 4 วันทำการ");
+        }
       }
     }
     if (s === 3) {
       form.planRows.forEach((r, ri) => {
-        if (!r.needDate) errs.push(`งวดที่ ${ri+1}: กรุณาเลือกวันที่ต้องใช้เงิน`);
+        if (!r.needDate) {
+          errs.push(`งวดที่ ${ri+1}: กรุณาเลือกวันที่ต้องใช้เงิน`);
+        } else {
+          const dn = new Date(r.needDate); const down = dn.getDay();
+          if (down===0||down===6) errs.push(`งวดที่ ${ri+1}: วันที่ต้องใช้เงินต้องเป็นวันทำการ (จันทร์-ศุกร์)`);
+          else if (dn < new Date(addWorkdays(4))) errs.push(`งวดที่ ${ri+1}: วันที่ต้องใช้เงินต้องหลังวันนี้อย่างน้อย 4 วันทำการ`);
+        }
         const hasItem = r.items.some(it => it.name.trim() && parseFloat(it.amount) > 0);
         if (!hasItem) errs.push(`งวดที่ ${ri+1}: กรุณากรอกรายการและจำนวนเงินอย่างน้อย 1 รายการ`);
         const total = r.items.reduce((s,it)=>s+(parseFloat(it.amount)||0),0);
@@ -1357,6 +1376,7 @@ ${printEl.innerHTML}
                   <div style={{ marginBottom:14 }}>
                     <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                     <input type="date" value={form.inst1NeedDate}
+                      min={addWorkdays(4)}
                       onChange={e=>set("inst1NeedDate",e.target.value)}
                       style={IS_STYLE}/>
                   </div>
@@ -1373,6 +1393,7 @@ ${printEl.innerHTML}
                   <div style={{ marginBottom:14 }}>
                     <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                     <input type="date" value={form.inst2NeedDate}
+                      min={addWorkdays(4)}
                       onChange={e=>set("inst2NeedDate",e.target.value)}
                       style={IS_STYLE}/>
                   </div>
@@ -1438,6 +1459,7 @@ ${printEl.innerHTML}
                       <div style={{ marginBottom:12 }}>
                         <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                         <input type="date" value={r.needDate}
+                          min={addWorkdays(4)}
                           onChange={e=>updateRow(ri,"needDate",e.target.value)}
                           style={{ ...IS, width:"100%", background:r.needDate?"rgba(192,57,43,.06)":"#FFF8F0",
                             border:`1px solid ${r.needDate?"rgba(192,57,43,.35)":"#E8C4B8"}` }}/>
