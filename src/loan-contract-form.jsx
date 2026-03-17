@@ -28,7 +28,7 @@ const toThaiNum = (num) => {
   return res + "บาทถ้วน";
 };
 
-const fmtNum = (n) => n !== "" && n !== undefined && n !== null ? Number(n).toLocaleString("th-TH") : "";
+const fmtNum = (n) => n !== "" && n !== undefined && n !== null ? Number(n).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}) : "";
 const today = () => new Date().toISOString().split("T")[0];
 
 // คำนวณ N วันทำการหลังจากวันนี้ (ข้ามเสาร์-อาทิตย์)
@@ -306,19 +306,19 @@ function ContractPreview({ d }) {
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:"0 3px",alignItems:"baseline"}}>
                   <span>เป็นเงินจำนวน</span>
-                  <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={100}/>
+                  <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}):""} w={100}/>
                   <span>บาท (</span><F v={d.totalAmountText||(d.totalAmount?toThaiNum(parseFloat(d.totalAmount)):"")} w={178}/><span>) โดยมีแผนการยืมเงิน(ตามรายละเอียดแนบ)</span>
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:"0 3px",alignItems:"baseline"}}>
                   <span>&nbsp;&nbsp;<Chk/> งวดที่ 1 จำนวน</span>
-                  <F v={d.inst1Amount?Number(d.inst1Amount).toLocaleString("th-TH"):""} w={88}/>
+                  <F v={d.inst1Amount?Number(d.inst1Amount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}):""} w={88}/>
                   <span>บาท มีความจำเป็นต้องใช้เงินวันที่</span>
                   <F v={thaiDate(d.inst1NeedDate,true)} w={90}/>
                   <span>ส่งคืนวันที่</span><F v={thaiDate(d.inst1ReturnDate,true)} w={96}/>
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:"0 3px",alignItems:"baseline"}}>
                   <span>&nbsp;&nbsp;<Chk/> งวดที่ 2 จำนวน</span>
-                  <F v={d.inst2Amount?Number(d.inst2Amount).toLocaleString("th-TH"):""} w={88}/>
+                  <F v={d.inst2Amount?Number(d.inst2Amount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}):""} w={88}/>
                   <span>บาท มีความจำเป็นต้องใช้เงินวันที่</span>
                   <F v={thaiDate(d.inst2NeedDate,true)} w={90}/>
                   <span>ส่งคืนวันที่</span><F v={thaiDate(d.inst2ReturnDate,true)} w={96}/>
@@ -374,7 +374,7 @@ function ContractPreview({ d }) {
               <td style={{...BOX}}>
                 <div style={BOXINNER}>
                 <div style={{fontWeight:700, textAlign:"center", marginBottom:3}}>[4] คำอนุมัติ</div>
-                <div><Chk/> อนุมัติให้ยืมตามคำขอ จำนวน <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={72}/> บาท</div>
+                <div><Chk/> อนุมัติให้ยืมตามคำขอ จำนวน <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}):""} w={72}/> บาท</div>
                 <div>(<F v={d.totalAmountText||(d.totalAmount?toThaiNum(parseFloat(d.totalAmount)):"")} w={192}/>)</div>
                 <div style={{marginTop:2}}><Chk/> ความเห็นเพิ่มเติม (ถ้ามี) <F v="" w={93}/></div>
                 <SigCenter name={d.approverName||""} label=""/>
@@ -390,7 +390,7 @@ function ContractPreview({ d }) {
                 <div style={{fontWeight:700,textAlign:"center"}}>การรับเงิน</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:"0 3px",alignItems:"baseline"}}>
                   <span>ได้รับเงินยืม</span>
-                  <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH"):""} w={98}/>
+                  <F v={d.totalAmount?Number(d.totalAmount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}):""} w={98}/>
                   <span>บาท (</span><F v={d.totalAmountText||(d.totalAmount?toThaiNum(parseFloat(d.totalAmount)):"")} w={196}/><span>) เป็นการถูกต้องแล้ว</span>
                 </div>
                 <div style={{display:"flex",gap:"0 3px",alignItems:"baseline"}}>
@@ -450,7 +450,7 @@ function ContractPreview({ d }) {
                   {ii===0&&<td rowSpan={(pr.items||[]).length} style={{...B,padding:"2px 4px",textAlign:"center",verticalAlign:"middle"}}>{pi+1}</td>}
                   <td style={{...B,padding:"2px 4px",textAlign:"center",fontSize:"8.5pt"}}>{pr.needDate?thaiDate(pr.needDate,true):""}</td>
                   <td style={{...B,padding:"2px 4px"}}>{it.name||""}</td>
-                  <td style={{...B,padding:"2px 4px",textAlign:"right"}}>{it.amount?Number(it.amount).toLocaleString("th-TH"):""}</td>
+                  <td style={{...B,padding:"2px 4px",textAlign:"right"}}>{it.amount?Number(it.amount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}):""}</td>
                   {ii===0&&<td rowSpan={(pr.items||[]).length} style={{...B,padding:"2px 4px",verticalAlign:"top"}}>{pr.reason||""}</td>}
                 </tr>
               ))
@@ -469,7 +469,7 @@ function ContractPreview({ d }) {
             <tr>
               <td colSpan={2} style={{...B,padding:"2px 8px",textAlign:"right",fontWeight:700}}>รวมทั้งสิ้น {grandTotal?`(${toThaiNum(grandTotal)})`:""}</td>
               <td style={{...B,padding:"2px 8px"}}>&nbsp;</td>
-              <td style={{...B,padding:"2px 8px",textAlign:"right",fontWeight:700}}>{grandTotal?grandTotal.toLocaleString("th-TH"):""}</td>
+              <td style={{...B,padding:"2px 8px",textAlign:"right",fontWeight:700}}>{grandTotal?grandTotal.toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}):""}</td>
               <td style={{...B}}>&nbsp;</td>
             </tr>
             {/* ผู้ยืมเท่านั้น */}
@@ -498,6 +498,31 @@ function ContractPreview({ d }) {
 const IS_STYLE = { width:"100%", maxWidth:"100%", minWidth:0, background:"#FFF8F0", border:"1px solid #2D3148", color:"#2D1010",
   borderRadius:8, padding:"10px 14px", fontSize:15, fontFamily:"inherit", outline:"none", WebkitAppearance:"none", appearance:"none", boxSizing:"border-box" };
 const LS_STYLE = { display:"block", fontSize:13, color:"#A05050", marginBottom:5, fontWeight:500 };
+
+// ── Thai Date Input Helpers ───────────────────────────────────
+// แปลง YYYY-MM-DD → DD/MM/YYYY+543
+function isoToThai(iso) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  if (!y || !m || !d) return iso;
+  return `${d}/${m}/${parseInt(y)+543}`;
+}
+// แปลง DD/MM/YYYY(พศ) → YYYY-MM-DD(คศ)
+function thaiToIso(thai) {
+  const clean = thai.replace(/[^0-9]/g, "");
+  if (clean.length < 8) return "";
+  const d = clean.slice(0,2), m = clean.slice(2,4), y = clean.slice(4,8);
+  const yearAD = parseInt(y) > 2500 ? parseInt(y)-543 : parseInt(y);
+  if (parseInt(m)<1||parseInt(m)>12||parseInt(d)<1||parseInt(d)>31) return "";
+  return `${yearAD}-${m}-${d}`;
+}
+// format ขณะพิมพ์: ใส่ / อัตโนมัติ
+function formatDateInput(raw) {
+  const digits = raw.replace(/[^0-9]/g, "").slice(0,8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return digits.slice(0,2)+"/"+digits.slice(2);
+  return digits.slice(0,2)+"/"+digits.slice(2,4)+"/"+digits.slice(4);
+}
 
 function Field({ label, value, onChange, type="text", placeholder="" }) {
   return (
@@ -1332,7 +1357,6 @@ ${printEl.innerHTML}
                   <div style={{ marginBottom:14 }}>
                     <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                     <input type="date" value={form.inst1NeedDate}
-                      min={addWorkdays(4)}
                       onChange={e=>set("inst1NeedDate",e.target.value)}
                       style={IS_STYLE}/>
                   </div>
@@ -1349,7 +1373,6 @@ ${printEl.innerHTML}
                   <div style={{ marginBottom:14 }}>
                     <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                     <input type="date" value={form.inst2NeedDate}
-                      min={addWorkdays(4)}
                       onChange={e=>set("inst2NeedDate",e.target.value)}
                       style={IS_STYLE}/>
                   </div>
@@ -1415,9 +1438,8 @@ ${printEl.innerHTML}
                       <div style={{ marginBottom:12 }}>
                         <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                         <input type="date" value={r.needDate}
-                          min={addWorkdays(4)}
                           onChange={e=>updateRow(ri,"needDate",e.target.value)}
-                          style={{ ...IS, background:r.needDate?"rgba(192,57,43,.06)":"#FFF8F0",
+                          style={{ ...IS, width:"100%", background:r.needDate?"rgba(192,57,43,.06)":"#FFF8F0",
                             border:`1px solid ${r.needDate?"rgba(192,57,43,.35)":"#E8C4B8"}` }}/>
                       </div>
                       {/* รวม */}
