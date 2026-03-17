@@ -495,8 +495,8 @@ function ContractPreview({ d }) {
 
 // ─── Main App ─────────────────────────────────────────────────
 // ── Reusable UI Components (defined OUTSIDE App to prevent re-render) ──
-const IS_STYLE = { width:"100%", background:"#FFF8F0", border:"1px solid #2D3148", color:"#2D1010",
-  borderRadius:8, padding:"10px 14px", fontSize:15, fontFamily:"inherit", outline:"none", boxSizing:"border-box" };
+const IS_STYLE = { width:"100%", maxWidth:"100%", minWidth:0, background:"#FFF8F0", border:"1px solid #2D3148", color:"#2D1010",
+  borderRadius:8, padding:"10px 14px", fontSize:15, fontFamily:"inherit", outline:"none", WebkitAppearance:"none", appearance:"none", boxSizing:"border-box" };
 const LS_STYLE = { display:"block", fontSize:13, color:"#A05050", marginBottom:5, fontWeight:500 };
 
 function Field({ label, value, onChange, type="text", placeholder="" }) {
@@ -1018,7 +1018,7 @@ ${printEl.innerHTML}
 
   // ─── Styles ─
   const IS = { width:"100%", background:"#FFF8F0", border:"1px solid #2D3148", color:"#2D1010",
-    borderRadius:8, padding:"10px 14px", fontSize:15, fontFamily:"inherit", outline:"none", boxSizing:"border-box" };
+    borderRadius:8, padding:"10px 14px", fontSize:15, fontFamily:"inherit", outline:"none", WebkitAppearance:"none", appearance:"none", maxWidth:"100%", minWidth:0, boxSizing:"border-box" };
   const LS = { display:"block", fontSize:13, color:"#A05050", marginBottom:5, fontWeight:500 };
   const dropArrow = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`;
   const DROP = { ...IS, cursor:"pointer", appearance:"none", backgroundImage:dropArrow,
@@ -1072,8 +1072,17 @@ ${printEl.innerHTML}
           input[type="number"], select, textarea {
             width: 100% !important;
             max-width: 100% !important;
+            min-width: 0 !important;
             box-sizing: border-box !important;
             font-size: 15px !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+          }
+          input[type="date"] {
+            display: block !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            overflow: hidden !important;
           }
           /* container padding บนมือถือ */
           .main-container {
