@@ -966,7 +966,7 @@ export default function App() {
     win.document.write(`<!DOCTYPE html>
 <html><head>
 <meta charset="utf-8"/>
-<title>สัญญาการยืมเงิน</title>
+<title> </title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -981,7 +981,7 @@ export default function App() {
   }
   @page{
     size:A4 portrait;
-    margin:0;
+    margin:0mm;
   }
   .print-page{
     width:210mm;
@@ -1518,6 +1518,23 @@ ${printEl.innerHTML}
                 {submitting ? "⏳ กำลังสร้างเลขที่สัญญา..." : "🖨️ พิมพ์ / บันทึกเป็น PDF"}
               </button>
               <div style={{ fontSize:13, color:"#C07070", textAlign:"center", marginTop:8 }}>เลือก "Save as PDF" ใน Dialog การพิมพ์ของ Browser</div>
+              {/* ตรวจจับ Line browser บน iOS */}
+              {/Line|KAKAOTALK/i.test(navigator.userAgent) && (
+                <div style={{ marginTop:10, background:"rgba(39,174,96,.1)", border:"1px solid rgba(39,174,96,.3)",
+                  borderRadius:8, padding:"10px 14px", textAlign:"center" }}>
+                  <div style={{ fontSize:13, color:"#27AE60", fontWeight:600, marginBottom:6 }}>
+                    📱 กำลังใช้งานใน Line Browser
+                  </div>
+                  <div style={{ fontSize:12, color:"#A0A0A0", marginBottom:8 }}>
+                    กรุณาเปิดในเบราว์เซอร์เพื่อพิมพ์/บันทึก PDF
+                  </div>
+                  <button onClick={()=> window.open(window.location.href, '_blank')}
+                    style={{ background:"#27AE60", border:"none", color:"white", borderRadius:8,
+                      padding:"8px 20px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
+                    🌐 เปิดใน Browser
+                  </button>
+                </div>
+              )}
             </>}
           </div>
 
