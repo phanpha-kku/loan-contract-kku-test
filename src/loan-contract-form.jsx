@@ -1053,18 +1053,36 @@ ${printEl.innerHTML}
         ::-webkit-scrollbar-track{background:#1A1D27}
         ::-webkit-scrollbar-thumb{background:#3A3D4D;border-radius:3px}
 
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
           .grid2 {
             grid-template-columns: 1fr !important;
           }
           .step-bar {
-            gap: 4px !important;
+            gap: 2px !important;
           }
           .step-label {
-            font-size: 10px !important;
+            font-size: 9px !important;
+            max-width: 52px !important;
           }
           .items-grid {
-            grid-template-columns: 1fr 90px 32px !important;
+            grid-template-columns: 1fr 80px 28px !important;
+          }
+          /* ช่อง input และ select เต็มความกว้าง */
+          input[type="date"], input[type="text"], input[type="email"],
+          input[type="number"], select, textarea {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            font-size: 15px !important;
+          }
+          /* container padding บนมือถือ */
+          .main-container {
+            padding: 12px 10px !important;
+          }
+          /* ปุ่มเต็มความกว้าง */
+          .nav-btn {
+            padding: 12px 16px !important;
+            font-size: 14px !important;
           }
         }
         @media print{
@@ -1095,7 +1113,7 @@ ${printEl.innerHTML}
       </div>
 
       {!preview ? (
-        <div style={{ maxWidth:800, margin:"0 auto", padding:"16px 12px" }}>
+        <div className="main-container" style={{ maxWidth:800, margin:"0 auto", padding:"16px 12px" }}>
 
           {/* Header */}
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:28, gap:12 }}>
@@ -1518,23 +1536,7 @@ ${printEl.innerHTML}
                 {submitting ? "⏳ กำลังสร้างเลขที่สัญญา..." : "🖨️ พิมพ์ / บันทึกเป็น PDF"}
               </button>
               <div style={{ fontSize:13, color:"#C07070", textAlign:"center", marginTop:8 }}>เลือก "Save as PDF" ใน Dialog การพิมพ์ของ Browser</div>
-              {/* ตรวจจับ Line browser บน iOS */}
-              {/Line|KAKAOTALK/i.test(navigator.userAgent) && (
-                <div style={{ marginTop:10, background:"rgba(39,174,96,.1)", border:"1px solid rgba(39,174,96,.3)",
-                  borderRadius:8, padding:"10px 14px", textAlign:"center" }}>
-                  <div style={{ fontSize:13, color:"#27AE60", fontWeight:600, marginBottom:6 }}>
-                    📱 กำลังใช้งานใน Line Browser
-                  </div>
-                  <div style={{ fontSize:12, color:"#A0A0A0", marginBottom:8 }}>
-                    กรุณาเปิดในเบราว์เซอร์เพื่อพิมพ์/บันทึก PDF
-                  </div>
-                  <button onClick={()=> window.open(window.location.href, '_blank')}
-                    style={{ background:"#27AE60", border:"none", color:"white", borderRadius:8,
-                      padding:"8px 20px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
-                    🌐 เปิดใน Browser
-                  </button>
-                </div>
-              )}
+
             </>}
           </div>
 
