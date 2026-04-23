@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 
 const SHEET_ID = "1xRrc4f-kpH6l7bgBudNx4stskGMIL5Zz0Bv1bE-_3FQ";
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=สัญญา`;
-
+const GAS_URL = "/api/send-email";
 function fmtNum(n) {
   if (!n && n !== 0) return "-";
   return Number(n).toLocaleString("th-TH");
@@ -142,8 +142,8 @@ async function sendAlert(r) {
   try {
     await fetch(GAS_URL, {
   method: "POST",
-  mode: "no-cors",
-  headers: { "Content-Type": "text/plain" },
+
+ headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     email:      r.email,
     borrower:   r.borrower,
