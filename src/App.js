@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 
 const SHEET_ID = "1xRrc4f-kpH6l7bgBudNx4stskGMIL5Zz0Bv1bE-_3FQ";
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=สัญญา`;
 
 function fmtNum(n) {
   if (!n && n !== 0) return "-";
