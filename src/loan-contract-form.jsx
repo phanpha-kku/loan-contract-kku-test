@@ -1565,7 +1565,6 @@ ${printEl.innerHTML}
     </div>
     );
   })}
-                    }}}
         <button onClick={()=>addItem(ri)}
           style={{ background:"#2e7d32", border:"none", color:"white",
             borderRadius:6, padding:"10px 0", width:"100%", cursor:"pointer", 
