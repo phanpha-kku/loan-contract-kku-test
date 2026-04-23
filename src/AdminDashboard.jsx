@@ -54,6 +54,7 @@ const MODAL_FORMS = {
       { label:"เลขที่สัญญา", key:"contractNo", type:"text" },
       { label:"จำนวนเงินที่รับคืน (บาท)", key:"returnAmount", type:"number" },
       { label:"วันที่รับคืน", key:"returnDate", type:"date" },
+      { label:"เลขที่เอกสารอ้างอิง", key:"refDocNo", type:"text" },
       { label:"หมายเหตุ", key:"note", type:"text" },
     ],
   },
@@ -142,6 +143,7 @@ export default function AdminDashboard() {
         amount:       parseFloat(r.c[2]?.v) || 0,
         date:         r.c[3]?.v || "",
         note:         r.c[4]?.v || "",
+        refDocNo:     r.c[5]?.v || "",
         recordedAt:   r.c[0]?.v || "",
       }));
 
@@ -303,7 +305,8 @@ export default function AdminDashboard() {
                     <span style={{ color:"#065F46", fontWeight:600 }}>+{fmtNum(h.amount)} บาท</span>
                     <span style={{ color:"#9ca3af", fontSize:12 }}>{h.date}</span>
                   </div>
-                  {h.note && h.note !== "-" && <div style={{ color:"#6b7280", fontSize:12, marginTop:4 }}>{h.note}</div>}
+                  {h.refDocNo && h.refDocNo !== "-" && <div style={{ color:"#6b7280", fontSize:12, marginTop:4 }}>เลขที่เอกสาร: {h.refDocNo}</div>}
+                  {h.note && h.note !== "-" && <div style={{ color:"#6b7280", fontSize:12, marginTop:2 }}>{h.note}</div>}
                 </div>
               ))}
             </>
