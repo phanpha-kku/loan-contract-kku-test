@@ -1500,40 +1500,45 @@ ${printEl.innerHTML}
       <div style={{ display:"flex", alignItems:"center", gap:6 }}>
         <span style={{ color:"#A05050", fontSize:13, minWidth:20, textAlign:"right", flexShrink:0 }}>{ii+1}.</span>
 
-        {/* Custom dropdown */}
-        <div style={{ flex:1, position:"relative" }}>
-          <input type="text" value={it.name}
-            onChange={e=>updateItem(ri,ii,"name",e.target.value)}
-            placeholder="ระบุรายการค่าใช้จ่าย"
-            style={{ width:"100%", boxSizing:"border-box", background:"#FFF0E6", border:"1px solid #374151",
-              color:"#2D1010", borderRadius:6, padding:"7px 28px 7px 8px",
-              fontSize:13, fontFamily:"inherit", outline:"none", cursor:"pointer" }}
-            onFocus={e=>{
-              const menu = e.target.nextSibling;
-              menu.style.display = "block";
-            }}
-            onBlur={e=>{
-              setTimeout(()=>{
-                const menu = e.target.nextSibling;
-                if (menu) menu.style.display = "none";
-              }, 150);
-            }}
-          />
-          <span style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)",
-            fontSize:11, color:"#999", pointerEvents:"none" }}>▼</span>
-        <div style={{ display:"none", position:"absolute", top:"calc(100% + 4px)", left:0, right:0,
-  background:"white", border:"1px solid #ddd", borderRadius:8,
-  boxShadow:"0 4px 12px rgba(0,0,0,0.1)", zIndex:9999, overflow:"hidden" }}>
-            {EXPENSE_ITEMS.map(item=>(
-              <div key={item}
-                onMouseDown={()=>updateItem(ri,ii,"name",item)}
-                style={{ padding:"9px 12px", fontSize:13, cursor:"pointer", color:"#2D1010" }}
-                onMouseEnter={e=>e.target.style.background="#f0f8f0"}
-                onMouseLeave={e=>e.target.style.background="white"}
-              >{item}</div>
-            ))}
-          </div>
-        </div>
+      {/* Custom dropdown */}
+<div style={{ flex:1, position:"relative" }}
+  onBlur={e=>{ 
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      const menu = e.currentTarget.querySelector('.dd-menu');
+      if (menu) menu.style.display = "none";
+    }
+  }}>
+  <input type="text" value={it.name}
+    onChange={e=>updateItem(ri,ii,"name",e.target.value)}
+    placeholder="ระบุรายการค่าใช้จ่าย"
+    style={{ width:"100%", boxSizing:"border-box", background:"#FFF0E6", border:"1px solid #374151",
+      color:"#2D1010", borderRadius:6, padding:"7px 28px 7px 8px",
+      fontSize:13, fontFamily:"inherit", outline:"none", cursor:"pointer" }}
+    onClick={e=>{
+      const menu = e.target.parentNode.querySelector('.dd-menu');
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }}
+    readOnly
+  />
+  <span style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)",
+    fontSize:11, color:"#999", pointerEvents:"none" }}>▼</span>
+  <div className="dd-menu" style={{ display:"none", position:"absolute", top:"calc(100% + 4px)", left:0, right:0,
+    background:"white", border:"1px solid #ddd", borderRadius:8,
+    boxShadow:"0 4px 12px rgba(0,0,0,0.1)", zIndex:9999, overflow:"hidden" }}>
+    {EXPENSE_ITEMS.map(item=>(
+      <div key={item} tabIndex={0}
+        onMouseDown={()=>{ 
+          updateItem(ri,ii,"name",item);
+          const menus = document.querySelectorAll('.dd-menu');
+          menus.forEach(m=>m.style.display="none");
+        }}
+        style={{ padding:"9px 12px", fontSize:13, cursor:"pointer", color:"#2D1010" }}
+        onMouseEnter={e=>e.target.style.background="#f0f8f0"}
+        onMouseLeave={e=>e.target.style.background="white"}
+      >{item}</div>
+    ))}
+  </div>
+</div>
       </div>
 
       {/* Amount input */}
