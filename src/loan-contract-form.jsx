@@ -1485,56 +1485,93 @@ ${printEl.innerHTML}
                             borderRadius:6, padding:"3px 12px", cursor:"pointer", fontSize:12, fontFamily:"inherit", flexShrink:0, marginLeft:8 }}>
                           + เพิ่มรายการ
                         </button>
-                      </div>
-                      {/* Items header */}
-                      <div className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:4 }}>
-                        <span style={{ fontSize:13, color:"#C07070", paddingLeft:22 }}>ชื่อรายการ</span>
-                        <span style={{ fontSize:13, color:"#C07070", textAlign:"right" }}>จำนวนเงิน (บาท)</span>
-                        <span/>
-                      </div>
-                      {r.items.map((it, ii) => {
-                        const otherTotal = r.items.reduce((s,x,j)=>j!==ii?s+(parseFloat(x.amount)||0):s,0);
-                        const maxForThis = instCap > 0 ? Math.max(0, instCap - otherTotal) : undefined;
-                        return (
-                        <div key={ii} className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:6, alignItems:"center" }}>
-                          <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                            <span style={{ color:"#A05050", fontSize:13, minWidth:20, textAlign:"right", flexShrink:0 }}>{ii+1}.</span>
-                            <input type="text" value={it.name}
-                              onChange={e=>updateItem(ri,ii,"name",e.target.value)}
-                              placeholder="ระบุรายการค่าใช้จ่าย"
-                              list={`expense-list-${ri}-${ii}`}
-                              style={{ flex:1, background:"#FFF0E6", border:"1px solid #374151", color:"#2D1010",
-                                borderRadius:6, padding:"7px 8px", fontSize:13, fontFamily:"inherit", outline:"none" }}/>
-                            <datalist id={`expense-list-${ri}-${ii}`}>
-                              {EXPENSE_ITEMS.map(item=><option key={item} value={item}/>)}
-                            </datalist>
-                          </div>
-                          <input type="number" value={it.amount}
-                            onChange={e=>{
-                              const val = e.target.value;
-                              if (instCap > 0 && maxForThis !== undefined && (parseFloat(val)||0) > maxForThis) return;
-                              updateItem(ri,ii,"amount",val);
-                            }}
-                            placeholder="0"
-                            min="0"
-                            style={{ width:"100%", background:"#FFF0E6", border:"1px solid #374151", color:"#2D1010",
-                              borderRadius:6, padding:"7px 8px", fontSize:13, fontFamily:"inherit", outline:"none", textAlign:"right" }}/>
-                          {r.items.length>1 ? (
-                            <button onClick={()=>delItem(ri,ii)}
-                              style={{ background:"rgba(239,68,68,.12)", border:"1px solid rgba(239,68,68,.25)", color:"#F87171",
-                                borderRadius:6, width:32, height:34, cursor:"pointer", fontSize:15, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"inherit" }}>×</button>
-                          ) : <span/>}
-                        </div>
-                        );
-                      })}
-                      {/* Total bar */}
-                      <div className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px",
-                        borderTop:"1px solid #2D3148", paddingTop:8, marginTop:4 }}>
-                        <span style={{ fontSize:13, color:"#7A3B3B", fontWeight:600, paddingLeft:24 }}>รวม</span>
-                        <div style={{ background:isOver?"rgba(231,76,60,.12)":"rgba(192,57,43,.08)",
-                          border:`1px solid ${isOver?"rgba(231,76,60,.6)":"rgba(37,99,235,.3)"}`,
-                          borderRadius:6, padding:"7px 10px", textAlign:"right", fontSize:14, fontWeight:700, color:"#E74C3C" }}>
-                          {fmtNum(total) || "0"}
+                    </div>
+  {/* Items header */}
+  <div className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:4 }}>
+    <span style={{ fontSize:13, color:"#C07070", paddingLeft:22 }}>ชื่อรายการ</span>
+    <span style={{ fontSize:13, color:"#C07070", textAlign:"right" }}>จำนวนเงิน (บาท)</span>
+    <span/>
+  </div>
+  {r.items.map((it, ii) => {
+    const otherTotal = r.items.reduce((s,x,j)=>j!==ii?s+(parseFloat(x.amount)||0):s,0);
+    const maxForThis = instCap > 0 ? Math.max(0, instCap - otherTotal) : undefined;
+    return (
+    <div key={ii} className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:6, alignItems:"center" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+        <span style={{ color:"#A05050", fontSize:13, minWidth:20, textAlign:"right", flexShrink:0 }}>{ii+1}.</span>
+
+        {/* Custom dropdown */}
+        <div style={{ flex:1, position:"relative" }}>
+          <input type="text" value={it.name}
+            onChange={e=>updateItem(ri,ii,"name",e.target.value)}
+            placeholder="ระบุรายการค่าใช้จ่าย"
+            style={{ width:"100%", boxSizing:"border-box", background:"#FFF0E6", border:"1px solid #374151",
+              color:"#2D1010", borderRadius:6, padding:"7px 28px 7px 8px",
+              fontSize:13, fontFamily:"inherit", outline:"none", cursor:"pointer" }}
+            onFocus={e=>{
+              const menu = e.target.nextSibling;
+              menu.style.display = "block";
+            }}
+            onBlur={e=>{
+              setTimeout(()=>{
+                const menu = e.target.nextSibling;
+                if (menu) menu.style.display = "none";
+              }, 150);
+            }}
+          />
+          <span style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)",
+            fontSize:11, color:"#999", pointerEvents:"none" }}>▼</span>
+          <div style={{ display:"none", position:"absolute", top:"calc(100% + 4px)", left:0, right:0,
+            background:"white", border:"1px solid #ddd", borderRadius:8,
+            boxShadow:"0 4px 12px rgba(0,0,0,0.1)", zIndex:100, overflow:"hidden" }}>
+            {EXPENSE_ITEMS.map(item=>(
+              <div key={item}
+                onMouseDown={()=>updateItem(ri,ii,"name",item)}
+                style={{ padding:"9px 12px", fontSize:13, cursor:"pointer", color:"#2D1010" }}
+                onMouseEnter={e=>e.target.style.background="#f0f8f0"}
+                onMouseLeave={e=>e.target.style.background="white"}
+              >{item}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Amount input */}
+      <input type="text" inputMode="decimal"
+        value={it.amount}
+        onFocus={e=>{ if (e.target.value === "0" || e.target.value === "0.00") e.target.value = ""; }}
+        onBlur={e=>{
+          const val = parseFloat(e.target.value);
+          updateItem(ri,ii,"amount", isNaN(val) ? "0" : String(val));
+        }}
+        onChange={e=>{
+          let val = e.target.value.replace(/[^0-9.]/g,"");
+          const parts = val.split(".");
+          if (parts.length > 2) val = parts[0] + "." + parts.slice(1).join("");
+          if (instCap > 0 && maxForThis !== undefined && (parseFloat(val)||0) > maxForThis) return;
+          updateItem(ri,ii,"amount",val);
+        }}
+        placeholder="0"
+        style={{ width:"100%", background:"#FFF0E6", border:"1px solid #374151", color:"#2D1010",
+          borderRadius:6, padding:"7px 8px", fontSize:13, fontFamily:"inherit", outline:"none", textAlign:"right" }}/>
+
+      {r.items.length>1 ? (
+        <button onClick={()=>delItem(ri,ii)}
+          style={{ background:"rgba(239,68,68,.12)", border:"1px solid rgba(239,68,68,.25)", color:"#F87171",
+            borderRadius:6, width:32, height:34, cursor:"pointer", fontSize:15, display:"flex",
+            alignItems:"center", justifyContent:"center", fontFamily:"inherit" }}>×</button>
+      ) : <span/>}
+    </div>
+    );
+  })}
+  {/* Total bar */}
+  <div className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px",
+    borderTop:"1px solid #2D3148", paddingTop:8, marginTop:4 }}>
+    <span style={{ fontSize:13, color:"#7A3B3B", fontWeight:600, paddingLeft:24 }}>รวม</span>
+    <div style={{ background:isOver?"rgba(231,76,60,.12)":"rgba(192,57,43,.08)",
+      border:`1px solid ${isOver?"rgba(231,76,60,.6)":"rgba(37,99,235,.3)"}`,
+      borderRadius:6, padding:"7px 10px", textAlign:"right", fontSize:14, fontWeight:700, color:"#E74C3C" }}>
+      {fmtNum(total) || "0"}
                         </div>
                         <span/>
                       </div>
