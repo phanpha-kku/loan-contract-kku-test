@@ -141,16 +141,18 @@ async function sendAlert(r) {
   setSending((prev) => ({ ...prev, [r.contractNo]: true }));
   try {
     await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        email:       r.email,
-        borrower:    r.borrower,
-        contractNo:  r.contractNo,
-        project:     r.project,
-        dueDate:     fmtDate(r.dueDate),
-        remaining:   fmtNum(remaining),
-      }),
-    });
+  method: "POST",
+  mode: "no-cors",
+  headers: { "Content-Type": "text/plain" },
+  body: JSON.stringify({
+    email:      r.email,
+    borrower:   r.borrower,
+    contractNo: r.contractNo,
+    project:    r.project,
+    dueDate:    fmtDate(r.dueDate),
+    remaining:  fmtNum(remaining),
+  }),
+});
     setSuccessMsg(`ส่งแจ้งเตือนถึง ${r.borrower} แล้ว`);
     setTimeout(() => setSuccessMsg(""), 4000);
   } catch {
