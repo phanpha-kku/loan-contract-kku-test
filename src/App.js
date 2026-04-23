@@ -8,18 +8,26 @@ function fmtNum(n) {
   return Number(n).toLocaleString("th-TH");
 }
 
-function fmtDate(d) {
-  if (!d) return "-";
-  try {
-    return new Date(d).toLocaleDateString("th-TH", { day: "2-digit", month: "2-digit", year: "numeric" });
-  } catch { return d; }
+function parseSheetDate(v) {
+  if (!v) return null;
+  const m = String(v).match(/Date\((\d+),(\d+),(\d+)\)/);
+  if (m) return new Date(+m[1], +m[2], +m[3]);
+  const d = new Date(v);
+  return isNaN(d) ? null : d;
 }
 
-function daysDiff(dateStr) {
-  if (!dateStr) return null;
+function fmtDate(v) {
+  const d = parseSheetDate(v);
+  if (!d) return "-";
+  return d.toLocaleDateString("th-TH", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function daysDiff(v) {
+  const d = parseSheetDate(v);
+  if (!d) return null;
   const today = new Date(); today.setHours(0,0,0,0);
-  const due = new Date(dateStr); due.setHours(0,0,0,0);
-  return Math.round((due - today) / 86400000);
+  d.setHours(0,0,0,0);
+  return Math.round((d - today) / 86400000);
 }
 
 function getLoanStatus(row) {
