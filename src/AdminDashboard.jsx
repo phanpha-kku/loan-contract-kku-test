@@ -131,7 +131,33 @@ export default function AdminDashboard() {
     !search || [r.borrower, r.contractNo, r.project, r.dept]
       .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
   );
+const [sending, setSending] = useState({});
 
+async function sendAlert(r) {
+  const principal = parseFloat(r.amount) || 0;
+  const returned  = parseFloat(r.returnAmount) || 0;
+  const doc       = parseFloat(r.docAmount) || 0;
+  const remaining = principal - returned - doc;
+  setSending((prev) => ({ ...prev, [r.contractNo]: true }));
+  try {
+    await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        email:       r.email,
+        borrower:    r.borrower,
+        contractNo:  r.contractNo,
+        project:     r.project,
+        dueDate:     fmtDate(r.dueDate),
+        remaining:   fmtNum(remaining),
+      }),
+    });
+    setSuccessMsg(`ส่งแจ้งเตือนถึง ${r.borrower} แล้ว`);
+    setTimeout(() => setSuccessMsg(""), 4000);
+  } catch {
+    alert("ส่ง email ไม่สำเร็จ กรุณาลองใหม่");
+  }
+  setSending((prev) => ({ ...prev, [r.contractNo]: false }));
+}
   function openModal(type, prefill={}) { setModal(type); setFormData(prefill); }
   function closeModal() { setModal(null); setFormData({}); }
   function handleSave() {
@@ -346,6 +372,11 @@ export default function AdminDashboard() {
                                 <button onClick={() => openModal("doc",{contractNo:r.contractNo})} style={actionBtnStyle}>
                                   📄 เบิกจ่าย
                                 </button>
+                                <button onClick={()=>sendAlert(r)}
+  disabled={sending[r.contractNo]}
+  style={{ ...actionBtnStyle, marginLeft:6, background:"#FEF3C7", color:"#92400E", border:"1.5px solid #FCD34D" }}>
+  {sending[r.contractNo] ? "กำลังส่ง..." : "📧 แจ้งเตือน"}
+</button>
                               </>
                             )}
                             {status === "closed" && (
