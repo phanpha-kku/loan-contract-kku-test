@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 
 const SHEET_ID = "1xRrc4f-kpH6l7bgBudNx4stskGMIL5Zz0Bv1bE-_3FQ";
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=สัญญา`;
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwk9rrJhgW-XhzujBKQfrhti8es0Oz6yzO5FzTPanqi58ZoMNm14E0D793DbgZ71abY/exec";
+const GAS_NOTIFY = "https://script.google.com/macros/s/AKfycbwk9rrJhgW-XhzujBKQfrhti8es0Oz6yzO5FzTPanqi58ZoMNm14E0D793DbgZ71abY/exec";
+const GAS_MAIN   = "https://script.google.com/macros/s/AKfycbxkJyzKI205FmLSjVQQlEksPi1InQTN1Hr0VxFDrGKiW9yk0TRK3yNT3B5q28wdFxb9ug/exec";
 
 function fmtNum(n) {
   if (!n && n !== 0) return "-";
@@ -57,6 +58,7 @@ const BADGE = {
 const MODAL_FORMS = {
   return: {
     title: "บันทึกการรับคืนเงินยืม",
+    action: "returnMoney",
     fields: [
       { label:"เลขที่สัญญา", key:"contractNo", type:"text" },
       { label:"จำนวนเงินที่รับคืน (บาท)", key:"returnAmount", type:"number" },
@@ -66,6 +68,7 @@ const MODAL_FORMS = {
   },
   doc: {
     title: "ส่งเอกสารเบิกจ่ายหักล้างเงินยืม",
+    action: "docPayment",
     fields: [
       { label:"เลขที่สัญญา", key:"contractNo", type:"text" },
       { label:"เลขที่เอกสารเบิกจ่าย", key:"docNo", type:"text" },
@@ -74,6 +77,19 @@ const MODAL_FORMS = {
     ],
   },
 };
+
+async function sendToGAS(params) {
+  return new Promise((resolve) => {
+    const cbName = `_cb_${Date.now()}`;
+    window[cbName] = (data) => { delete window[cbName]; resolve(data); };
+    const qs = new URLSearchParams({ ...params, callback: cbName });
+    const script = document.createElement("script");
+    script.src = `${GAS_MAIN}?${qs.toString()}`;
+    script.onerror = () => { delete window[cbName]; resolve({ success: false }); };
+    document.head.appendChild(script);
+    setTimeout(() => resolve({ success: false }), 10000);
+  });
+}
 
 export default function AdminDashboard() {
   const [loans, setLoans] = useState([]);
@@ -86,6 +102,7 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [sending, setSending] = useState({});
+  const [selectedLoan, setSelectedLoan] = useState(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true); setError(null);
@@ -142,40 +159,43 @@ export default function AdminDashboard() {
     setSending((prev) => ({ ...prev, [r.contractNo]: true }));
     try {
       const params = new URLSearchParams({
-        action:     "notify",
-        email:      r.email,
-        borrower:   r.borrower,
-        contractNo: r.contractNo,
-        project:    r.project,
-        dueDate:    fmtDate(r.dueDate),
-        remaining:  fmtNum(remaining),
+        action:"notify", email:r.email, borrower:r.borrower,
+        contractNo:r.contractNo, project:r.project,
+        dueDate:fmtDate(r.dueDate), remaining:fmtNum(remaining),
       });
       await new Promise((resolve) => {
         const cbName = `_cb_${Date.now()}`;
         window[cbName] = () => { delete window[cbName]; resolve(); };
         const script = document.createElement("script");
-        script.src = `${GAS_URL}?${params.toString()}&callback=${cbName}`;
+        script.src = `${GAS_NOTIFY}?${params.toString()}&callback=${cbName}`;
         script.onerror = () => { delete window[cbName]; resolve(); };
         document.head.appendChild(script);
         setTimeout(resolve, 8000);
       });
       setSuccessMsg(`ส่งแจ้งเตือนถึง ${r.borrower} แล้ว`);
       setTimeout(() => setSuccessMsg(""), 4000);
-    } catch {
-      alert("ส่ง email ไม่สำเร็จ กรุณาลองใหม่");
-    }
+    } catch { alert("ส่ง email ไม่สำเร็จ กรุณาลองใหม่"); }
     setSending((prev) => ({ ...prev, [r.contractNo]: false }));
   }
 
   function openModal(type, prefill={}) { setModal(type); setFormData(prefill); }
   function closeModal() { setModal(null); setFormData({}); }
-  function handleSave() {
+
+  async function handleSave() {
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false); closeModal();
-      setSuccessMsg("บันทึกข้อมูลเรียบร้อยแล้ว");
-      setTimeout(() => setSuccessMsg(""), 3000);
-    }, 800);
+    try {
+      const form = MODAL_FORMS[modal];
+      const result = await sendToGAS({ action: form.action, ...formData });
+      if (result.success !== false) {
+        setSuccessMsg("บันทึกข้อมูลเรียบร้อยแล้ว");
+        setTimeout(() => setSuccessMsg(""), 3000);
+        closeModal();
+        setTimeout(() => fetchData(), 1500);
+      } else {
+        alert("บันทึกไม่สำเร็จ กรุณาลองใหม่");
+      }
+    } catch { alert("เกิดข้อผิดพลาด กรุณาลองใหม่"); }
+    setSaving(false);
   }
 
   const menuItems = [
@@ -195,32 +215,106 @@ export default function AdminDashboard() {
     background:"white", cursor:"pointer", color:"#374151", fontFamily:"inherit",
   };
 
-  const TH = ({ children, right }) => (
-    <th style={{ textAlign: right?"right":"left", color:"#9ca3af", fontWeight:600, padding:"10px 12px", fontSize:13, whiteSpace:"nowrap", borderBottom:"2px solid #f3f4f6" }}>
-      {children}
-    </th>
-  );
+  const DetailPanel = ({ r, onClose }) => {
+    if (!r) return null;
+    const principal = parseFloat(r.amount) || 0;
+    const ret       = parseFloat(r.returnAmount) || 0;
+    const doc       = parseFloat(r.docAmount) || 0;
+    const remaining = principal - ret - doc;
+    const status    = getLoanStatus(r);
 
-  const TD = ({ children, right, bold, muted }) => (
-    <td style={{ padding:"13px 12px", fontSize: muted?13:14, color: muted?"#9ca3af": bold?"#111827":"#374151", fontWeight: bold?700:400, textAlign: right?"right":"left", whiteSpace:"nowrap" }}>
-      {children}
-    </td>
-  );
+    const timeline = [
+      { text: "สร้างสัญญา", date: fmtDate(r.contractDate), done: true },
+      { text: "อนุมัติสัญญา", date: fmtDate(r.contractDate), done: true },
+      ret > 0 ? { text: `รับคืนเงิน ${fmtNum(ret)} บาท`, date: "-", done: true } : null,
+      doc > 0 ? { text: `ส่งเอกสารเบิกจ่าย ${fmtNum(doc)} บาท`, date: "-", done: true } : null,
+      remaining <= 0
+        ? { text: "ปิดสัญญาแล้ว", date: "-", done: true }
+        : { text: `รอคืนเงิน ${fmtNum(remaining)} บาท`, date: fmtDate(r.dueDate), done: false },
+    ].filter(Boolean);
+
+    return (
+      <div style={{ width:300, flexShrink:0, background:"white", borderLeft:"1px solid #f0f0f0", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+        <div style={{ padding:"16px 18px 12px", borderBottom:"1px solid #f3f4f6", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <div>
+            <div style={{ fontSize:15, fontWeight:700, color:"#111827" }}>สัญญา {r.contractNo}</div>
+            <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>{r.borrower}</div>
+          </div>
+          <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", fontSize:18, color:"#9ca3af", lineHeight:1 }}>✕</button>
+        </div>
+        <div style={{ flex:1, overflowY:"auto", padding:"16px 18px" }}>
+          <div style={{ background: remaining<=0?"#F0FDF4":"#FEF2F2", borderRadius:12, padding:"14px 16px", marginBottom:16 }}>
+            <div style={{ fontSize:12, color: remaining<=0?"#065F46":"#991B1B", marginBottom:4 }}>ยอดคงเหลือ</div>
+            <div style={{ fontSize:24, fontWeight:700, color: remaining<=0?"#065F46":"#7B1F1F" }}>
+              {remaining<=0 ? "0" : fmtNum(remaining)} บาท
+            </div>
+            <div style={{ marginTop:8 }}>
+              <span style={{ ...BADGE[status], fontSize:11, padding:"3px 10px", borderRadius:20, fontWeight:600 }}>
+                {getStatusLabel(status)}
+              </span>
+            </div>
+          </div>
+
+          <div style={{ fontSize:11, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:10 }}>ยอดเงิน</div>
+          {[
+            { label:"เงินต้น", val: fmtNum(principal)+" บาท" },
+            { label:"ยอดคืนเงิน", val: ret>0 ? fmtNum(ret)+" บาท" : "-" },
+            { label:"ยอดเบิกจ่าย", val: doc>0 ? fmtNum(doc)+" บาท" : "-" },
+          ].map((item,i) => (
+            <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:"1px solid #f9fafb", fontSize:13 }}>
+              <span style={{ color:"#9ca3af" }}>{item.label}</span>
+              <span style={{ color:"#111827", fontWeight:500 }}>{item.val}</span>
+            </div>
+          ))}
+
+          <div style={{ fontSize:11, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:10, marginTop:18 }}>ข้อมูลผู้ยืม</div>
+          {[
+            { label:"ชื่อ", val: r.borrower },
+            { label:"ตำแหน่ง", val: r.position||"-" },
+            { label:"สังกัด", val: r.dept||"-" },
+            { label:"อีเมล", val: r.email||"-" },
+          ].map((item,i) => (
+            <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:"1px solid #f9fafb", fontSize:13 }}>
+              <span style={{ color:"#9ca3af", flexShrink:0 }}>{item.label}</span>
+              <span style={{ color:"#111827", fontWeight:500, textAlign:"right", marginLeft:8, wordBreak:"break-word", maxWidth:170 }}>{item.val}</span>
+            </div>
+          ))}
+
+          <div style={{ fontSize:11, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:10, marginTop:18 }}>โครงการ</div>
+          {[
+            { label:"กิจกรรม", val: r.project||"-" },
+            { label:"วันจัดกิจกรรม", val: fmtDate(r.startDate) },
+            { label:"วันสิ้นสุด", val: fmtDate(r.endDate) },
+            { label:"วันครบกำหนด", val: fmtDate(r.dueDate) },
+          ].map((item,i) => (
+            <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:"1px solid #f9fafb", fontSize:13 }}>
+              <span style={{ color:"#9ca3af", flexShrink:0 }}>{item.label}</span>
+              <span style={{ color:"#111827", fontWeight:500, textAlign:"right", marginLeft:8, wordBreak:"break-word", maxWidth:170 }}>{item.val}</span>
+            </div>
+          ))}
+
+          <div style={{ fontSize:11, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:12, marginTop:18 }}>ความเคลื่อนไหว</div>
+          {timeline.map((t,i) => (
+            <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", marginBottom:12 }}>
+              <div style={{ width:10, height:10, borderRadius:"50%", background: t.done?"#7B1F1F":"#e5e7eb", flexShrink:0, marginTop:3 }}></div>
+              <div>
+                <div style={{ fontSize:13, color:"#374151" }}>{t.text}</div>
+                <div style={{ fontSize:11, color:"#9ca3af" }}>{t.date}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div style={{ display:"flex", minHeight:"100vh", fontFamily:"'IBM Plex Sans Thai', 'Sarabun', sans-serif", background:"#F8F7F4" }}>
-
-      {/* Sidebar */}
       <div style={{ width:220, background:"#7B1F1F", flexShrink:0, display:"flex", flexDirection:"column", minHeight:"100vh" }}>
         <div style={{ padding:"20px 16px 16px", borderBottom:"1px solid rgba(255,255,255,0.12)" }}>
-          <img
-            src="/web-logo-2022-5.png"
-            alt="TE KKU"
+          <img src="/web-logo-2022-5.png" alt="TE KKU"
             style={{ width:"100%", maxWidth:160, display:"block" }}
-            onError={(e) => {
-              e.target.style.display = "none";
-              e.target.nextSibling.style.display = "block";
-            }}
+            onError={(e) => { e.target.style.display="none"; e.target.nextSibling.style.display="block"; }}
           />
           <div style={{ display:"none", fontSize:18, fontWeight:700, color:"white" }}>TE KKU</div>
           <div style={{ fontSize:13, color:"rgba(255,255,255,0.55)", marginTop:8 }}>Admin · ระบบยืมเงิน</div>
@@ -231,10 +325,10 @@ export default function AdminDashboard() {
               onClick={() => { if (m.action) m.action(); else setActiveMenu(m.key); }}
               style={{
                 display:"flex", alignItems:"center", gap:12, padding:"13px 18px",
-                color: activeMenu===m.key ? "white" : "rgba(255,255,255,0.65)",
+                color: activeMenu===m.key?"white":"rgba(255,255,255,0.65)",
                 cursor:"pointer", fontSize:15,
-                borderLeft: activeMenu===m.key ? "3px solid white" : "3px solid transparent",
-                background: activeMenu===m.key ? "rgba(255,255,255,0.15)" : "transparent",
+                borderLeft: activeMenu===m.key?"3px solid white":"3px solid transparent",
+                background: activeMenu===m.key?"rgba(255,255,255,0.15)":"transparent",
                 transition:"background 0.15s",
               }}>
               <span style={{ fontSize:15 }}>{m.icon}</span>
@@ -247,9 +341,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Main */}
       <div style={{ flex:1, padding:"32px 36px", overflow:"auto" }}>
-
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:28 }}>
           <div>
             <div style={{ fontSize:26, fontWeight:700, color:"#111827" }}>Dashboard</div>
@@ -271,19 +363,16 @@ export default function AdminDashboard() {
             {error}
           </div>
         )}
-        {loading && (
-          <div style={{ textAlign:"center", padding:80, color:"#9ca3af", fontSize:17 }}>กำลังโหลดข้อมูล...</div>
-        )}
+        {loading && <div style={{ textAlign:"center", padding:80, color:"#9ca3af", fontSize:17 }}>กำลังโหลดข้อมูล...</div>}
 
         {!loading && !error && (
           <>
-            {/* Stat cards */}
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:18, marginBottom:26 }}>
               {[
-                { icon:"📄", label:"สัญญาทั้งหมด",      val:loans.length,               sub:"ทุกสถานะ",      color:"#7B1F1F" },
-                { icon:"💰", label:"ยอดค้างเงินยืม",     val:`${fmtNum(outstanding)} ฿`, sub:"ยังไม่ได้คืน",  color:"#991B1B" },
-                { icon:"⏰", label:"ใกล้/เกินกำหนด",    val:pending.length+overdue.length, sub:"รายการ",      color:"#92400E" },
-                { icon:"📊", label:"ยอดเงินรวมทั้งหมด",  val:`${fmtNum(totalAmount)} ฿`, sub:"บาท",           color:"#065F46" },
+                { icon:"📄", label:"สัญญาทั้งหมด",      val:loans.length,               sub:"ทุกสถานะ",     color:"#7B1F1F" },
+                { icon:"💰", label:"ยอดค้างเงินยืม",     val:`${fmtNum(outstanding)} ฿`, sub:"ยังไม่ได้คืน", color:"#991B1B" },
+                { icon:"⏰", label:"ใกล้/เกินกำหนด",    val:pending.length+overdue.length, sub:"รายการ",     color:"#92400E" },
+                { icon:"📊", label:"ยอดเงินรวมทั้งหมด",  val:`${fmtNum(totalAmount)} ฿`, sub:"บาท",          color:"#065F46" },
               ].map((s,i) => (
                 <div key={i} style={{ background:"white", borderRadius:18, padding:"22px 24px", border:"1px solid #f0f0f0" }}>
                   <div style={{ fontSize:26, marginBottom:12 }}>{s.icon}</div>
@@ -294,20 +383,19 @@ export default function AdminDashboard() {
               ))}
             </div>
 
-            {/* Alerts */}
             {alerts.length > 0 && (
               <div style={{ background:"#FFFBEB", border:"1px solid #FCD34D", borderRadius:18, padding:"20px 24px", marginBottom:26 }}>
                 <div style={{ fontSize:16, fontWeight:700, color:"#92400E", marginBottom:14 }}>⚠ แจ้งเตือน — ใกล้/เกินกำหนดคืนเงิน</div>
                 {alerts.map((r,i) => {
                   const diff = daysDiff(r.dueDate);
                   return (
-                    <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"11px 0", borderBottom: i<alerts.length-1 ? "1px solid rgba(252,211,77,0.35)" : "none" }}>
+                    <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"11px 0", borderBottom: i<alerts.length-1?"1px solid rgba(252,211,77,0.35)":"none" }}>
                       <div>
                         <span style={{ fontSize:15, fontWeight:700, color:"#78350F" }}>{r.contractNo}</span>
                         <span style={{ fontSize:15, color:"#92400E", marginLeft:10 }}>{r.borrower} · {r.project}</span>
                       </div>
-                      <div style={{ fontSize:14, fontWeight:700, color: diff<0?"#991B1B":"#92400E", flexShrink:0, marginLeft:16, background: diff<0?"#FEE2E2":"#FEF3C7", padding:"5px 14px", borderRadius:20 }}>
-                        {diff<0 ? `เกินกำหนด ${Math.abs(diff)} วัน` : `อีก ${diff} วัน`}
+                      <div style={{ fontSize:14, fontWeight:700, color:diff<0?"#991B1B":"#92400E", flexShrink:0, marginLeft:16, background:diff<0?"#FEE2E2":"#FEF3C7", padding:"5px 14px", borderRadius:20 }}>
+                        {diff<0?`เกินกำหนด ${Math.abs(diff)} วัน`:`อีก ${diff} วัน`}
                       </div>
                     </div>
                   );
@@ -315,104 +403,87 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Table */}
-            <div style={{ background:"white", borderRadius:18, padding:"24px 26px", border:"1px solid #f0f0f0" }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-                <div style={{ fontSize:18, fontWeight:700, color:"#111827" }}>
-                  รายการสัญญาทั้งหมด
-                  <span style={{ fontSize:15, fontWeight:400, color:"#9ca3af", marginLeft:10 }}>({filtered.length} รายการ)</span>
+            <div style={{ display:"flex", gap:0, background:"white", borderRadius:18, border:"1px solid #f0f0f0", overflow:"hidden" }}>
+              <div style={{ flex:1, overflow:"auto", padding:"24px 26px" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+                  <div style={{ fontSize:18, fontWeight:700, color:"#111827" }}>
+                    รายการสัญญาทั้งหมด
+                    <span style={{ fontSize:15, fontWeight:400, color:"#9ca3af", marginLeft:10 }}>({filtered.length} รายการ)</span>
+                  </div>
+                  <input
+                    placeholder="🔍 ค้นหาชื่อผู้ยืม / เลขที่สัญญา..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    style={{ ...inputStyle, width:260, padding:"9px 16px", fontSize:14 }}
+                  />
                 </div>
-                <input
-                  placeholder="🔍 ค้นหาชื่อผู้ยืม / เลขที่สัญญา..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  style={{ ...inputStyle, width:280, padding:"9px 16px", fontSize:14 }}
-                />
+                <div style={{ overflowX:"auto" }}>
+                  <table style={{ width:"100%", borderCollapse:"collapse" }}>
+                    <thead>
+                      <tr>
+                        {["เลขที่สัญญา","ผู้ยืม","โครงการ","เงินต้น (฿)","ยอดคงเหลือ (฿)","วันครบกำหนด","สถานะ","จัดการ"].map((h,i) => (
+                          <th key={i} style={{ textAlign:i>=3&&i<=4?"right":"left", color:"#9ca3af", fontWeight:600, padding:"10px 12px", fontSize:13, whiteSpace:"nowrap", borderBottom:"2px solid #f3f4f6" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.length === 0 && (
+                        <tr><td colSpan={8} style={{ padding:40, textAlign:"center", color:"#d1d5db", fontSize:16 }}>ไม่พบข้อมูล</td></tr>
+                      )}
+                      {filtered.map((r,i) => {
+                        const status    = getLoanStatus(r);
+                        const principal = parseFloat(r.amount) || 0;
+                        const ret       = parseFloat(r.returnAmount) || 0;
+                        const doc       = parseFloat(r.docAmount) || 0;
+                        const remaining = principal - ret - doc;
+                        const isSelected = selectedLoan?.contractNo === r.contractNo;
+                        return (
+                          <tr key={i}
+                            onClick={() => setSelectedLoan(isSelected?null:r)}
+                            onMouseEnter={(e) => { if(!isSelected) e.currentTarget.style.background="#fafafa"; }}
+                            onMouseLeave={(e) => { if(!isSelected) e.currentTarget.style.background="white"; }}
+                            style={{ borderBottom:"1px solid #f9fafb", transition:"background 0.1s", cursor:"pointer", background:isSelected?"#FFF5F5":"white" }}>
+                            <td style={{ padding:"13px 12px", fontSize:14, fontWeight:700, color:"#374151", whiteSpace:"nowrap" }}>{r.contractNo||"-"}</td>
+                            <td style={{ padding:"13px 12px", fontSize:14, color:"#111827", whiteSpace:"nowrap" }}>{r.borrower||"-"}</td>
+                            <td style={{ padding:"13px 12px", fontSize:13, color:"#374151", maxWidth:160, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.project||"-"}</td>
+                            <td style={{ padding:"13px 12px", fontSize:14, fontWeight:700, textAlign:"right", whiteSpace:"nowrap", color:"#111827" }}>{fmtNum(principal)}</td>
+                            <td style={{ padding:"13px 12px", fontSize:14, fontWeight:700, textAlign:"right", whiteSpace:"nowrap", color:remaining<=0?"#065F46":remaining>principal*0.5?"#991B1B":"#92400E" }}>
+                              {remaining<=0?"0":fmtNum(remaining)}
+                            </td>
+                            <td style={{ padding:"13px 12px", fontSize:13, color:"#374151", whiteSpace:"nowrap" }}>{fmtDate(r.dueDate)}</td>
+                            <td style={{ padding:"13px 12px" }}>
+                              <span style={{ ...BADGE[status], display:"inline-block", fontSize:11, padding:"3px 10px", borderRadius:20, fontWeight:600, whiteSpace:"nowrap" }}>
+                                {getStatusLabel(status)}
+                              </span>
+                            </td>
+                            <td style={{ padding:"13px 12px", whiteSpace:"nowrap" }} onClick={(e)=>e.stopPropagation()}>
+                              {status !== "closed" && (
+                                <>
+                                  <button onClick={()=>openModal("return",{contractNo:r.contractNo})} style={{ ...actionBtnStyle, marginRight:4 }}>↩ รับคืน</button>
+                                  <button onClick={()=>openModal("doc",{contractNo:r.contractNo})} style={{ ...actionBtnStyle, marginRight:4 }}>📄 เบิกจ่าย</button>
+                                  <button onClick={()=>sendAlert(r)} disabled={sending[r.contractNo]}
+                                    style={{ ...actionBtnStyle, background:"#FEF3C7", color:"#92400E", border:"1.5px solid #FCD34D" }}>
+                                    {sending[r.contractNo]?"กำลังส่ง...":"📧 แจ้งเตือน"}
+                                  </button>
+                                </>
+                              )}
+                              {status==="closed" && <span style={{ fontSize:13, color:"#9ca3af" }}>ปิดแล้ว</span>}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div style={{ overflowX:"auto" }}>
-                <table style={{ width:"100%", borderCollapse:"collapse" }}>
-                  <thead>
-                    <tr>
-                      <TH>เลขที่สัญญา</TH>
-                      <TH>ผู้ยืม</TH>
-                      <TH>สังกัด</TH>
-                      <TH>โครงการ</TH>
-                      <TH right>เงินต้น (฿)</TH>
-                      <TH right>ยอดคืนเงิน (฿)</TH>
-                      <TH right>ยอดเบิกจ่าย (฿)</TH>
-                      <TH right>ยอดคงเหลือ (฿)</TH>
-                      <TH>วันครบกำหนด</TH>
-                      <TH>สถานะ</TH>
-                      <TH>จัดการ</TH>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.length === 0 && (
-                      <tr><td colSpan={11} style={{ padding:40, textAlign:"center", color:"#d1d5db", fontSize:16 }}>ไม่พบข้อมูล</td></tr>
-                    )}
-                    {filtered.map((r,i) => {
-                      const status    = getLoanStatus(r);
-                      const principal = parseFloat(r.amount) || 0;
-                      const ret       = parseFloat(r.returnAmount) || 0;
-                      const doc       = parseFloat(r.docAmount) || 0;
-                      const remaining = principal - ret - doc;
-                      return (
-                        <tr key={i}
-                          onMouseEnter={(e) => e.currentTarget.style.background="#fafafa"}
-                          onMouseLeave={(e) => e.currentTarget.style.background="white"}
-                          style={{ borderBottom:"1px solid #f9fafb", transition:"background 0.1s" }}>
-                          <TD bold>{r.contractNo||"-"}</TD>
-                          <TD>{r.borrower||"-"}</TD>
-                          <TD muted>{r.dept||"-"}</TD>
-                          <td style={{ padding:"13px 12px", fontSize:14, color:"#374151", maxWidth:180, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.project||"-"}</td>
-                          <TD right bold>{fmtNum(principal)}</TD>
-                          <TD right>{ret > 0 ? fmtNum(ret) : "-"}</TD>
-                          <TD right>{doc > 0 ? fmtNum(doc) : "-"}</TD>
-                          <TD right bold>
-                            <span style={{ color: remaining<=0?"#065F46": remaining>principal*0.5?"#991B1B":"#92400E" }}>
-                              {remaining<=0 ? "0" : fmtNum(remaining)}
-                            </span>
-                          </TD>
-                          <TD>{fmtDate(r.dueDate)}</TD>
-                          <td style={{ padding:"13px 12px" }}>
-                            <span style={{ ...BADGE[status], display:"inline-block", fontSize:11, padding:"3px 10px", borderRadius:20, fontWeight:600, whiteSpace:"nowrap" }}>
-                              {getStatusLabel(status)}
-                            </span>
-                          </td>
-                          <td style={{ padding:"13px 12px", whiteSpace:"nowrap" }}>
-                            {status !== "closed" && (
-                              <>
-                                <button onClick={() => openModal("return",{contractNo:r.contractNo})} style={{ ...actionBtnStyle, marginRight:4 }}>
-                                  ↩ รับคืน
-                                </button>
-                                <button onClick={() => openModal("doc",{contractNo:r.contractNo})} style={{ ...actionBtnStyle, marginRight:4 }}>
-                                  📄 เบิกจ่าย
-                                </button>
-                                <button onClick={() => sendAlert(r)}
-                                  disabled={sending[r.contractNo]}
-                                  style={{ ...actionBtnStyle, background:"#FEF3C7", color:"#92400E", border:"1.5px solid #FCD34D" }}>
-                                  {sending[r.contractNo] ? "กำลังส่ง..." : "📧 แจ้งเตือน"}
-                                </button>
-                              </>
-                            )}
-                            {status === "closed" && (
-                              <span style={{ fontSize:13, color:"#9ca3af" }}>ปิดแล้ว</span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              {selectedLoan && <DetailPanel r={selectedLoan} onClose={()=>setSelectedLoan(null)} />}
             </div>
           </>
         )}
       </div>
 
-      {/* Modal */}
       {modal && (
-        <div onClick={(e) => { if(e.target===e.currentTarget) closeModal(); }}
+        <div onClick={(e)=>{if(e.target===e.currentTarget)closeModal();}}
           style={{ position:"fixed", top:0, left:0, right:0, bottom:0, background:"rgba(0,0,0,0.35)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:100 }}>
           <div style={{ background:"white", borderRadius:22, padding:32, width:420, maxWidth:"90vw", maxHeight:"85vh", overflowY:"auto" }}>
             <div style={{ fontSize:20, fontWeight:700, color:"#111827", marginBottom:22 }}>{MODAL_FORMS[modal].title}</div>
@@ -420,7 +491,7 @@ export default function AdminDashboard() {
               <div key={f.key} style={{ marginBottom:16 }}>
                 <label style={{ fontSize:14, color:"#6b7280", marginBottom:7, display:"block" }}>{f.label}</label>
                 <input type={f.type} value={formData[f.key]||""}
-                  onChange={(e) => setFormData({...formData,[f.key]:e.target.value})}
+                  onChange={(e)=>setFormData({...formData,[f.key]:e.target.value})}
                   style={inputStyle} />
               </div>
             ))}
@@ -431,7 +502,7 @@ export default function AdminDashboard() {
               </button>
               <button onClick={handleSave} disabled={saving}
                 style={{ border:"none", borderRadius:12, padding:"11px 28px", fontSize:15, cursor:"pointer", fontFamily:"inherit", background:"#7B1F1F", color:"white", fontWeight:700 }}>
-                {saving ? "กำลังบันทึก..." : "บันทึก"}
+                {saving?"กำลังบันทึก...":"บันทึก"}
               </button>
             </div>
           </div>
