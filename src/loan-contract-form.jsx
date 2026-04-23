@@ -1480,12 +1480,7 @@ ${printEl.innerHTML}
                     <div>
                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
                         <label style={{ ...LS, marginBottom:0 }}>รายการ <span style={{ color:"#C07070", fontWeight:400 }}>เช่น ค่าอาหาร ค่าลงทะเบียน ค่าที่พัก ค่าตั๋วเครื่องบิน เป็นต้น</span></label>
-                     <button onClick={()=>addItem(ri)}
-  style={{ background:"#2e7d32", border:"none", color:"white",
-    borderRadius:6, padding:"10px 0", width:"100%", cursor:"pointer", 
-    fontSize:14, fontFamily:"inherit", fontWeight:500, marginTop:8 }}>
-  + เพิ่มรายการ
-</button>
+                
                     </div>
   {/* Items header */}
   <div className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px", marginBottom:4 }}>
@@ -1570,7 +1565,14 @@ ${printEl.innerHTML}
     </div>
     );
   })}
-  {/* Total bar */}
+                    }}}
+        <button onClick={()=>addItem(ri)}
+          style={{ background:"#2e7d32", border:"none", color:"white",
+            borderRadius:6, padding:"10px 0", width:"100%", cursor:"pointer", 
+            fontSize:14, fontFamily:"inherit", fontWeight:500, marginTop:8 }}>
+          + เพิ่มรายการ
+        </button>
+        {/* Total bar */}  
   <div className="items-grid" style={{ display:"grid", gridTemplateColumns:"1fr 120px 32px", gap:"0 6px",
     borderTop:"1px solid #2D3148", paddingTop:8, marginTop:4 }}>
     <span style={{ fontSize:13, color:"#7A3B3B", fontWeight:600, paddingLeft:24 }}>รวม</span>
