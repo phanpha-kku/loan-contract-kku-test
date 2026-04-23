@@ -134,32 +134,38 @@ export default function AdminDashboard() {
 const [sending, setSending] = useState({});
 
 async function sendAlert(r) {
-  const principal = parseFloat(r.amount) || 0;
-  const returned  = parseFloat(r.returnAmount) || 0;
-  const doc       = parseFloat(r.docAmount) || 0;
-  const remaining = principal - returned - doc;
-  setSending((prev) => ({ ...prev, [r.contractNo]: true }));
-  try {
-    await fetch(GAS_URL, {
-  method: "POST",
-
- headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email:      r.email,
-    borrower:   r.borrower,
-    contractNo: r.contractNo,
-    project:    r.project,
-    dueDate:    fmtDate(r.dueDate),
-    remaining:  fmtNum(remaining),
-  }),
-});
-    setSuccessMsg(`ส่งแจ้งเตือนถึง ${r.borrower} แล้ว`);
-    setTimeout(() => setSuccessMsg(""), 4000);
-  } catch {
-    alert("ส่ง email ไม่สำเร็จ กรุณาลองใหม่");
+    const principal = parseFloat(r.amount) || 0;
+    const returned  = parseFloat(r.returnAmount) || 0;
+    const doc       = parseFloat(r.docAmount) || 0;
+    const remaining = principal - returned - doc;
+    setSending((prev) => ({ ...prev, [r.contractNo]: true }));
+    try {
+      const GAS_NOTIFY = "https://script.google.com/macros/s/AKfycbwk9rrJhgW-XhzujBKQfrhti8es0Oz6yzO5FzTPanqi58ZoMNm14E0D793DbgZ71abY/exec";
+      const params = new URLSearchParams({
+        action:     "notify",
+        email:      r.email,
+        borrower:   r.borrower,
+        contractNo: r.contractNo,
+        project:    r.project,
+        dueDate:    fmtDate(r.dueDate),
+        remaining:  fmtNum(remaining),
+      });
+      await new Promise((resolve) => {
+        const cbName = `_cb_${Date.now()}`;
+        window[cbName] = () => { delete window[cbName]; resolve(); };
+        const script = document.createElement("script");
+        script.src = `${GAS_NOTIFY}?${params.toString()}&callback=${cbName}`;
+        script.onerror = () => { delete window[cbName]; resolve(); };
+        document.head.appendChild(script);
+        setTimeout(resolve, 8000);
+      });
+      setSuccessMsg(`ส่งแจ้งเตือนถึง ${r.borrower} แล้ว`);
+      setTimeout(() => setSuccessMsg(""), 4000);
+    } catch {
+      alert("ส่ง email ไม่สำเร็จ กรุณาลองใหม่");
+    }
+    setSending((prev) => ({ ...prev, [r.contractNo]: false }));
   }
-  setSending((prev) => ({ ...prev, [r.contractNo]: false }));
-}
   function openModal(type, prefill={}) { setModal(type); setFormData(prefill); }
   function closeModal() { setModal(null); setFormData({}); }
   function handleSave() {
