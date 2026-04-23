@@ -1621,18 +1621,13 @@ ${printEl.innerHTML}
                   </div>
                 ))}
               </div>
-              <button onClick={()=>setPreview(true)}
-                style={{ width:"100%", background:"#FFF0E6", border:"1px solid #374151", color:"#7A3B3B",
-                  borderRadius:8, padding:11, cursor:"pointer", fontSize:15, marginBottom:10, fontFamily:"inherit" }}>
-                👁️ ดู Preview สัญญาก่อนพิมพ์
-              </button>
               <button onClick={handlePrint} disabled={submitting}
                 style={{ width:"100%", background: submitting ? "#A05050" : "linear-gradient(135deg,#C0392B,#7B241C)", border:"none", color:"white",
                   borderRadius:10, padding:14, cursor: submitting ? "not-allowed" : "pointer", fontSize:17, fontWeight:700, fontFamily:"inherit",
                   display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
-                {submitting ? "⏳ กำลังสร้างเลขที่สัญญา..." : "🖨️ พิมพ์ / บันทึกเป็น PDF"}
+                {submitting ? "⏳ กำลังสร้างเลขที่สัญญา..." : "🖨️ ส่งและพิมพ์สัญญา"}
               </button>
-              <div style={{ fontSize:13, color:"#C07070", textAlign:"center", marginTop:8 }}>เลือก "Save as PDF" ใน Dialog การพิมพ์ของ Browser</div>
+             
 
             </>}
           </div>
