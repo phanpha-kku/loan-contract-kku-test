@@ -1,0 +1,21 @@
+<svg width="200" height="200" viewBox="0 0 200 200" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>โลโก้ TE ระบบยืมเงิน</title>
+  <desc>โลโก้รูปเหรียญเงินสีแดงมีตัวอักษร TE</desc>
+
+  <circle cx="100" cy="100" r="95" fill="#7B1F1F"/>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#C0392B" stroke-width="3"/>
+  <circle cx="100" cy="100" r="72" fill="#9B2222"/>
+
+  <path d="M58 75 L80 60 L120 60 L142 75 L142 125 L120 140 L80 140 L58 125 Z" fill="#7B1F1F" stroke="#E8A0A0" stroke-width="1.5"/>
+
+  <text x="100" y="117" text-anchor="middle" font-family="'Arial Black', sans-serif" font-size="46" font-weight="900" fill="white" letter-spacing="2">TE</text>
+
+  <path d="M100 22 L100 14" stroke="#E8A0A0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M100 186 L100 178" stroke="#E8A0A0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M22 100 L14 100" stroke="#E8A0A0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M186 100 L178 100" stroke="#E8A0A0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M36 36 L30 30" stroke="#E8A0A0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M164 164 L170 170" stroke="#E8A0A0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M164 36 L170 30" stroke="#E8A0A0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M36 164 L30 170" stroke="#E8A0A0" stroke-width="2" stroke-linecap="round"/>
+</svg>
