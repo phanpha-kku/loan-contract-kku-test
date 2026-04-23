@@ -149,7 +149,7 @@ const STAFF_LIST = [
   {name:"นายพีระพงษ์ วงษ์ทหาร",position:"ผู้ช่วยศาสตราจารย์",department:"สาขาวิชาเทคโนโลยีการอาหาร",email:"peerwo@kku.ac.th",type:"สายวิชาการ"},
   {name:"นายประทีป เทวงษา",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"pratte@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นายสุพัฒน์ บุญแก้ว",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"supatbo@kku.ac.th",type:"สายสนับสนุน"},
-  {name:"นายอาทิตย์ เชียงเครือ",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"arthap@kku.ac.th",type:"สายสนับสนุน"},
+  {name:"นายอาทิตย์ เชียงเครือ",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"artich@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นางสาวยุวดี ไพศาลพันธุ์",position:"พนักงานวิทยาศาสตร์",department:"กองบริหารงานคณะเทคโนโลยี",email:"cyuwad@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นายอ่อนศรี แก้วศิริ",position:"พนักงานช่างเทคนิค",department:"กองบริหารงานคณะเทคโนโลยี",email:"konsri@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นายสีสุก เพียจันทร์",position:"พนักงานช่าง",department:"กองบริหารงานคณะเทคโนโลยี",email:"sisuk@kku.ac.th",type:"สายสนับสนุน"},
