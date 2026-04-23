@@ -1521,9 +1521,9 @@ ${printEl.innerHTML}
           />
           <span style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)",
             fontSize:11, color:"#999", pointerEvents:"none" }}>▼</span>
-          <div style={{ display:"none", position:"absolute", top:"calc(100% + 4px)", left:0, right:0,
-            background:"white", border:"1px solid #ddd", borderRadius:8,
-            boxShadow:"0 4px 12px rgba(0,0,0,0.1)", zIndex:100, overflow:"hidden" }}>
+        <div style={{ display:"none", position:"absolute", top:"calc(100% + 4px)", left:0, right:0,
+  background:"white", border:"1px solid #ddd", borderRadius:8,
+  boxShadow:"0 4px 12px rgba(0,0,0,0.1)", zIndex:9999, overflow:"hidden" }}>
             {EXPENSE_ITEMS.map(item=>(
               <div key={item}
                 onMouseDown={()=>updateItem(ri,ii,"name",item)}
