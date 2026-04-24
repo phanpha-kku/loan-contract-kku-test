@@ -393,7 +393,7 @@ export default function AdminDashboard() {
   return (
     <div style={{ display:"flex", minHeight:"100vh", fontFamily:"'IBM Plex Sans Thai','Sarabun',sans-serif", background:"#F8F7F4" }}>
       {/* Sidebar */}
-      <div style={{ width:230,background:"#e8aa97" flexShrink:0, display:"flex", flexDirection:"column", minHeight:"100vh", position:"sticky", top:0, height:"100vh", overflowY:"auto" }}>
+      <div style={{ width:230,background:"#e8aa97", flexShrink:0, display:"flex", flexDirection:"column", minHeight:"100vh", position:"sticky", top:0, height:"100vh", overflowY:"auto" }}>
         <div style={{ padding:"22px 16px 16px", borderBottom:"1px solid rgba(255,255,255,0.12)", display:"flex", flexDirection:"column", alignItems:"center" }}>
           <img src="logo.png" alt="TE KKU"
             style={{ width:"100%", maxWidth:120, display:"block" }}
