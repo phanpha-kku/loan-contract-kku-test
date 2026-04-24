@@ -564,7 +564,7 @@ export default function AdminDashboard() {
                 ยกเลิก
               </button>
               <button onClick={handleSave} disabled={saving}
-                style={{ border:"none", borderRadius:12, padding:"12px 28px", fontSize:16, cursor:"pointer", fontFamily:"inherit",background:"#B03A3A", color:"white", fontWeight:700 }}>
+                style={{ border:"none", borderRadius:12, padding:"12px 28px", fontSize:16, cursor:"pointer", fontFamily:"inherit",background:"#fcd5c7", color:"white", fontWeight:700 }}>
                 {saving?"กำลังบันทึก...":"บันทึก"}
               </button>
             </div>
