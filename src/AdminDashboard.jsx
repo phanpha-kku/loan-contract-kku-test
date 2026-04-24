@@ -385,7 +385,7 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <div style={{ width:230, background:"#7B1F1F", flexShrink:0, display:"flex", flexDirection:"column", minHeight:"100vh" }}>
         <div style={{ padding:"22px 18px 16px", borderBottom:"1px solid rgba(255,255,255,0.12)" }}>
-          <img src="te-logo.svg" alt="TE KKU"
+          <img src="logo.png" alt="TE KKU"
             style={{ width:"100%", maxWidth:170, display:"block" }}
             onError={(e) => { e.target.style.display="none"; e.target.nextSibling.style.display="block"; }}
           />
