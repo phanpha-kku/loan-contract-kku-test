@@ -408,7 +408,7 @@ export default function AdminDashboard() {
               onClick={() => { if (m.action) m.action(); else setActiveMenu(m.key); }}
               style={{
                 display:"flex", alignItems:"center", gap:12, padding:"14px 20px",
-                color:activeMenu===m.key?"white":"rgba(255,255,255,0.65)",
+                color: activeMenu===m.key ? "white" : "#1a1a1a",
                 cursor:"pointer", fontSize:16,
                 borderLeft:activeMenu===m.key?"3px solid white":"3px solid transparent",
                 background:activeMenu===m.key?"rgba(255,255,255,0.15)":"transparent",
