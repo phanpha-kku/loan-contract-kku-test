@@ -257,6 +257,16 @@ export default function AdminDashboard() {
     const remaining = principal - ret - doc;
     const status    = getLoanStatus(r);
 
+
+
+
+
+
+
+
+
+
+    
     return (
       <div style={{ width:320, flexShrink:0, background:"white", borderLeft:"1px solid #f0f0f0", display:"flex", flexDirection:"column", overflow:"hidden" }}>
         <div style={{ padding:"18px 20px 14px", borderBottom:"1px solid #f3f4f6", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
@@ -384,7 +394,7 @@ export default function AdminDashboard() {
     <div style={{ display:"flex", minHeight:"100vh", fontFamily:"'IBM Plex Sans Thai','Sarabun',sans-serif", background:"#F8F7F4" }}>
       {/* Sidebar */}
       <div style={{ width:230, background:"#f5bba6", flexShrink:0, display:"flex", flexDirection:"column", minHeight:"100vh" }}>
-        <div style={{ padding:"22px 18px 16px", borderBottom:"1px solid rgba(255,255,255,0.12)" }}>
+        <div style={{ padding:"22px 16px 16px", borderBottom:"1px solid rgba(255,255,255,0.12)", display:"flex", flexDirection:"column", alignItems:"center" }}>
           <img src="logo.png" alt="TE KKU"
             style={{ width:"100%", maxWidth:120, display:"block" }}
             onError={(e) => { e.target.style.display="none"; e.target.nextSibling.style.display="block"; }}
