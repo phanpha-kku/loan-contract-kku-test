@@ -1514,7 +1514,7 @@ ${printEl.innerHTML}
       const menu = e.target.parentNode.querySelector('.dd-menu');
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }}
-    readOnly
+  
   />
   <span style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)",
     fontSize:11, color:"#999", pointerEvents:"none" }}>▼</span>
