@@ -1177,21 +1177,12 @@ ${printEl.innerHTML}
             </div>
           </div>
 
-          {/* Google Sheet Integration */}
-          <div style={{ background:"#FFF0E6", border:"1px solid #DDB8A8", borderRadius:10, padding:"12px 16px", marginBottom:20, fontSize:14 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
-              <span style={{ fontSize:15 }}>📊</span>
-              <span style={{ fontWeight:600, color:"#7A3B3B" }}>บันทึกอัตโนมัติ → Google Sheet + Email</span>
-              {sendStatus==="sending" && <span style={{ color:"#C0392B", fontSize:13 }}>⏳ กำลังส่ง...</span>}
-              {sendStatus==="ok"      && <span style={{ color:"#27AE60", fontSize:13 }}>✅ ส่งข้อมูลสำเร็จแล้ว (ไม่ส่งซ้ำ)</span>}
-              {sendStatus==="err"     && <span style={{ color:"#E74C3C", fontSize:13 }}>❌ ส่งไม่สำเร็จ ตรวจสอบ URL</span>}
-              {hasSent && sendStatus!=="sending" && sendStatus!=="err" && sendStatus==="ok" && <span style={{ fontSize:11, color:"#888" }}> · พิมพ์ได้หลายรอบโดยไม่ส่งข้อมูลซ้ำ</span>}
-            </div>
-            <div style={{ fontSize:11, color:"#27AE60", marginTop:4, padding:"6px 10px",
-              background:"rgba(39,174,96,.08)", border:"1px solid rgba(39,174,96,.25)", borderRadius:6 }}>
-              🔗 เชื่อมต่อ Google Apps Script แล้ว
-            </div>
-          </div>
+         {/* Google Sheet Integration - hidden */}
+<div style={{ display:"none" }}>
+  {sendStatus==="sending" && <span/>}
+  {sendStatus==="ok" && <span/>}
+  {sendStatus==="err" && <span/>}
+</div>
 
           {/* Stepper */}
           <div className="step-bar" style={{ display:"flex", alignItems:"flex-start", marginBottom:28, overflowX:"auto", paddingBottom:4 }}>
