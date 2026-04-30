@@ -182,7 +182,6 @@ const STAFF_LIST = [
   {name:"นางสาวผการัตน์ พีรกมล",position:"นักวิชาการศึกษา",department:"กองบริหารงานคณะเทคโนโลยี",email:"phphee@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นางสาวปรารถนา ดวงวันทอง",position:"นักวิชาการเงินและบัญชี",department:"กองบริหารงานคณะเทคโนโลยี",email:"prabthana@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นางสาวศศิวิมล คำสิงห์",position:"นักเทคโนโลยีสารสนเทศ",department:"กองบริหารงานคณะเทคโนโลยี",email:"sasikam@kku.ac.th",type:"สายสนับสนุน"},
-  {name:"นายสนธยา ปินะถา",position:"พนักงานขับรถยนต์",department:"กองบริหารงานคณะเทคโนโลยี",email:"sontpi@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นางสาวปริยชาต ศรีสุธรรม",position:"นักประชาสัมพันธ์",department:"กองบริหารงานคณะเทคโนโลยี",email:"prisri@kku.ac.th",type:"สายสนับสนุน"},
   {name:"นางอนาลยา หนานสายออ",position:"อาจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"rusamee@kku.ac.th",type:"สายวิชาการ"},
   {name:"นางสาวยลดา สาเสน",position:"อาจารย์",department:"หลักสูตรสาขาวิชาเทคโนโลยีระบบการผลิตและการจัดการอุตสาหกรรม",email:"yollsa@kku.ac.th",type:"สายวิชาการ"},
