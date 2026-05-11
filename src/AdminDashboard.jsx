@@ -177,7 +177,7 @@ export default function AdminDashboard() {
         project:     r.c[4]?.v || "",
         amount:      r.c[5]?.v || 0,
         dueDate:     r.c[6]?.v || "",
-        closedDate:  fmtDate(r.c[7]?.v) || "-",
+        closedDate: r.c[7]?.v ? String(r.c[7].v) : "-",
         lateDays:    r.c[8]?.v || 0,
         email:       r.c[9]?.v || "",
       }));
