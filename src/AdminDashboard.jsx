@@ -176,8 +176,8 @@ export default function AdminDashboard() {
         dept:        r.c[3]?.v || "",
         project:     r.c[4]?.v || "",
         amount:      r.c[5]?.v || 0,
-        dueDate:     r.c[6]?.v ? String(r.c[6].v) : "-",
-        closedDate:  r.c[7]?.v ? String(r.c[7].v) : "-",
+        dueDate:     (() => { const v = r.c[6]?.v; if (!v) return "-"; const m = String(v).match(/Date\((\d+),(\d+),(\d+)\)/); if (m) { return `${String(+m[3]).padStart(2,"0")}/${String(+m[2]+1).padStart(2,"0")}/${+m[1]+543}`; } return String(v); })(),
+closedDate:  (() => { const v = r.c[7]?.v; if (!v) return "-"; const m = String(v).match(/Date\((\d+),(\d+),(\d+)\)/); if (m) { return `${String(+m[3]).padStart(2,"0")}/${String(+m[2]+1).padStart(2,"0")}/${+m[1]+543}`; } return String(v); })(),
         lateDays:    r.c[8]?.v || 0,
         email:       r.c[9]?.v || "",
       }));
