@@ -195,10 +195,14 @@ closedDate:  (() => { const v = r.c[7]?.v; if (!v) return "-"; const m = String(
   const outstanding = loans.filter((r) => getLoanStatus(r) !== "closed").reduce((s,r) => s + ((parseFloat(r.amount)||0) - (parseFloat(r.returnAmount)||0) - (parseFloat(r.docAmount)||0)), 0);
   const alerts      = [...overdue, ...pending].slice(0, 6);
 
-  const filtered = loans.filter((r) =>
-    !search || [r.borrower, r.contractNo, r.project, r.dept]
-      .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
-  );
+ const filtered = loans
+  .slice()
+  .reverse()
+  .filter((r) => {
+    if (filterStatus !== "all" && getLoanStatus(r) !== filterStatus) return false;
+    return !search || [r.borrower, r.contractNo, r.project, r.dept]
+      .some((v) => v?.toLowerCase().includes(search.toLowerCase()));
+  });
 
   const filteredLate = lateStats.filter((r) =>
     !lateSearch || [r.borrower, r.contractNo, r.project, r.dept]
@@ -442,12 +446,19 @@ closedDate:  (() => { const v = r.c[7]?.v; if (!v) return "-"; const m = String(
                 <div style={{ fontSize:14, color:"#9ca3af", marginTop:4 }}>นับจากวันครบกำหนดถึงวันที่ปิดสัญญาจริง</div>
               </div>
               <div style={{ display:"flex", gap:12, alignItems:"center" }}>
-                <input
-                  placeholder="🔍 ค้นหาชื่อ / เลขที่สัญญา..."
-                  value={lateSearch}
-                  onChange={(e) => setLateSearch(e.target.value)}
-                  style={{ ...inputStyle, width:240, padding:"9px 16px", fontSize:14 }}
-                />
+              <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+  <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
+    style={{ border:"1.5px solid #e5e7eb", borderRadius:10, padding:"10px 14px", fontSize:15, fontFamily:"inherit", background:"white", color:"#374151", cursor:"pointer" }}>
+    <option value="all">ทุกสถานะ</option>
+    <option value="ok">อนุมัติแล้ว</option>
+    <option value="wait">ใกล้ครบกำหนด</option>
+    <option value="over">เกินกำหนด</option>
+    <option value="closed">ปิดสัญญา</option>
+  </select>
+  <input placeholder="🔍 ค้นหาชื่อผู้ยืม / เลขที่สัญญา..."
+    value={search} onChange={(e) => setSearch(e.target.value)}
+    style={{ ...inputStyle, width:280, padding:"10px 16px", fontSize:15 }} />
+</div>
                 <div style={{ background:"#FEE2E2", border:"1px solid #FCA5A5", borderRadius:12, padding:"10px 20px", fontSize:15, fontWeight:700, color:"#991B1B", whiteSpace:"nowrap" }}>
                   ทั้งหมด {filteredLate.length} ราย
                 </div>
