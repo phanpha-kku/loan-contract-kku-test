@@ -167,7 +167,7 @@ export default function AdminDashboard() {
       });
       setLoans(merged);
 
-      // ดึง Sheet สถิติการคืนช้า
+     // ดึง Sheet สถิติการคืนช้า
       const lateRows = await fetchSheet("สถิติการคืนช้า");
       const lateList = lateRows.map((r) => ({
         recordedAt:  r.c[0]?.v || "",
@@ -176,21 +176,8 @@ export default function AdminDashboard() {
         dept:        r.c[3]?.v || "",
         project:     r.c[4]?.v || "",
         amount:      r.c[5]?.v || 0,
-        dueDate:     r.c[6]?.v || "",
-        closedDate: (() => {
-  const v = r.c[7]?.v;
-  if (!v) return "-";
-  // ถ้าเป็น Date object format
-  const m = String(v).match(/Date\((\d+),(\d+),(\d+)\)/);
-  if (m) {
-    const d = new Date(+m[1], +m[2], +m[3]);
-    const day = String(d.getDate()).padStart(2,"0");
-    const month = String(d.getMonth()+1).padStart(2,"0");
-    const year = d.getFullYear() + 543;
-    return `${day}/${month}/${year}`;
-  }
-  return String(v);
-})(),
+        dueDate:     r.c[6]?.v ? String(r.c[6].v) : "-",
+        closedDate:  r.c[7]?.v ? String(r.c[7].v) : "-",
         lateDays:    r.c[8]?.v || 0,
         email:       r.c[9]?.v || "",
       }));
