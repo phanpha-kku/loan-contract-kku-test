@@ -105,7 +105,7 @@ export default function AdminDashboard() {
   const [successMsg, setSuccessMsg]     = useState("");
   const [sending, setSending]           = useState({});
   const [selectedLoan, setSelectedLoan] = useState(null);
-
+const [filterStatus, setFilterStatus] = useState("all");
   const fetchData = useCallback(async () => {
     setLoading(true); setError(null);
     try {
