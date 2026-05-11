@@ -92,24 +92,23 @@ async function sendToGAS(params) {
 }
 
 export default function AdminDashboard() {
-  const [loans, setLoans]         = useState([]);
-  const [returns, setReturns]     = useState([]);
-  const [docs, setDocs]           = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState(null);
-  const [search, setSearch]       = useState("");
-  const [modal, setModal]         = useState(null);
-  const [formData, setFormData]   = useState({});
-  const [activeMenu, setActiveMenu] = useState("dashboard");
-  const [saving, setSaving]       = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
-  const [sending, setSending]     = useState({});
+  const [loans, setLoans]               = useState([]);
+  const [lateStats, setLateStats]       = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
+  const [search, setSearch]             = useState("");
+  const [lateSearch, setLateSearch]     = useState("");
+  const [modal, setModal]               = useState(null);
+  const [formData, setFormData]         = useState({});
+  const [activeMenu, setActiveMenu]     = useState("dashboard");
+  const [saving, setSaving]             = useState(false);
+  const [successMsg, setSuccessMsg]     = useState("");
+  const [sending, setSending]           = useState({});
   const [selectedLoan, setSelectedLoan] = useState(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true); setError(null);
     try {
-      // ดึง Sheet สัญญา
       const rows = await fetchSheet("สัญญา");
       const loanList = rows.map((r) => {
         const c = r.c;
@@ -136,28 +135,25 @@ export default function AdminDashboard() {
         };
       });
 
-      // ดึง Sheet การคืนเงิน
       const returnRows = await fetchSheet("การคืนเงิน");
       const returnList = returnRows.map((r) => ({
-        contractNo:   String(r.c[1]?.v || ""),
-        amount:       parseFloat(r.c[2]?.v) || 0,
-        date:         r.c[3]?.v || "",
-        note:         r.c[4]?.v || "",
-        refDocNo:     r.c[5]?.v || "",
-        recordedAt:   r.c[0]?.v || "",
+        contractNo: String(r.c[1]?.v || ""),
+        amount:     parseFloat(r.c[2]?.v) || 0,
+        date:       r.c[3]?.v || "",
+        note:       r.c[4]?.v || "",
+        refDocNo:   r.c[5]?.v || "",
+        recordedAt: r.c[0]?.v || "",
       }));
 
-      // ดึง Sheet เอกสารเบิกจ่าย
       const docRows = await fetchSheet("เอกสารเบิกจ่าย");
       const docList = docRows.map((r) => ({
-        contractNo:   String(r.c[1]?.v || ""),
-        docNo:        r.c[2]?.v || "",
-        amount:       parseFloat(r.c[3]?.v) || 0,
-        date:         r.c[4]?.v || "",
-        recordedAt:   r.c[0]?.v || "",
+        contractNo: String(r.c[1]?.v || ""),
+        docNo:      r.c[2]?.v || "",
+        amount:     parseFloat(r.c[3]?.v) || 0,
+        date:       r.c[4]?.v || "",
+        recordedAt: r.c[0]?.v || "",
       }));
 
-      // รวมยอดเข้าในสัญญา
       const merged = loanList.map((loan) => {
         const ret = returnList.filter((r) => r.contractNo === loan.contractNo);
         const doc = docList.filter((d) => d.contractNo === loan.contractNo);
@@ -169,10 +165,24 @@ export default function AdminDashboard() {
           docHistory:    doc,
         };
       });
-
       setLoans(merged);
-      setReturns(returnList);
-      setDocs(docList);
+
+      // ดึง Sheet สถิติการคืนช้า
+      const lateRows = await fetchSheet("สถิติการคืนช้า");
+      const lateList = lateRows.map((r) => ({
+        recordedAt:  r.c[0]?.v || "",
+        contractNo:  String(r.c[1]?.v || ""),
+        borrower:    r.c[2]?.v || "",
+        dept:        r.c[3]?.v || "",
+        project:     r.c[4]?.v || "",
+        amount:      r.c[5]?.v || 0,
+        dueDate:     r.c[6]?.v || "",
+        closedDate:  r.c[7]?.v || "",
+        lateDays:    r.c[8]?.v || 0,
+        email:       r.c[9]?.v || "",
+      }));
+      setLateStats(lateList);
+
     } catch { setError("ไม่สามารถดึงข้อมูลได้ กรุณาตรวจสอบการเชื่อมต่อ"); }
     setLoading(false);
   }, []);
@@ -188,6 +198,11 @@ export default function AdminDashboard() {
   const filtered = loans.filter((r) =>
     !search || [r.borrower, r.contractNo, r.project, r.dept]
       .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  const filteredLate = lateStats.filter((r) =>
+    !lateSearch || [r.borrower, r.contractNo, r.project, r.dept]
+      .some((v) => v?.toLowerCase().includes(lateSearch.toLowerCase()))
   );
 
   async function sendAlert(r) {
@@ -236,6 +251,7 @@ export default function AdminDashboard() {
 
   const menuItems = [
     { key:"dashboard", label:"Dashboard",         icon:"▪" },
+    { key:"stats",     label:"สถิติการคืนช้า",    icon:"📉" },
     { key:"return",    label:"รับคืนเงินยืม",      icon:"↩", action:() => openModal("return") },
     { key:"doc",       label:"ส่งเอกสารเบิกจ่าย", icon:"📄", action:() => openModal("doc") },
     { key:"sheets",    label:"Google Sheets",      icon:"↗", action:() => window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}`,"_blank") },
@@ -256,17 +272,6 @@ export default function AdminDashboard() {
     const doc       = parseFloat(r.docAmount) || 0;
     const remaining = principal - ret - doc;
     const status    = getLoanStatus(r);
-
-
-
-
-
-
-
-
-
-
-    
     return (
       <div style={{ width:320, flexShrink:0, background:"white", borderLeft:"1px solid #f0f0f0", display:"flex", flexDirection:"column", overflow:"hidden" }}>
         <div style={{ padding:"18px 20px 14px", borderBottom:"1px solid #f3f4f6", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
@@ -277,8 +282,6 @@ export default function AdminDashboard() {
           <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", fontSize:20, color:"#9ca3af" }}>✕</button>
         </div>
         <div style={{ flex:1, overflowY:"auto", padding:"18px 20px" }}>
-
-          {/* ยอดคงเหลือ */}
           <div style={{ background:remaining<=0?"#F0FDF4":"#FEF2F2", borderRadius:14, padding:"16px 18px", marginBottom:18 }}>
             <div style={{ fontSize:13, color:remaining<=0?"#065F46":"#991B1B", marginBottom:6 }}>ยอดคงเหลือ</div>
             <div style={{ fontSize:28, fontWeight:700, color:remaining<=0?"#065F46":"#7B1F1F" }}>
@@ -290,8 +293,6 @@ export default function AdminDashboard() {
               </span>
             </div>
           </div>
-
-          {/* สรุปยอดเงิน */}
           <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:10 }}>สรุปยอดเงิน</div>
           {[
             { label:"เงินต้น",     val:fmtNum(principal)+" บาท", color:"#111827" },
@@ -304,8 +305,6 @@ export default function AdminDashboard() {
               <span style={{ color:item.color, fontWeight:600 }}>{item.val}</span>
             </div>
           ))}
-
-          {/* ประวัติการคืนเงิน */}
           {r.returnHistory && r.returnHistory.length > 0 && (
             <>
               <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:10, marginTop:20 }}>ประวัติการรับคืนเงิน</div>
@@ -321,8 +320,6 @@ export default function AdminDashboard() {
               ))}
             </>
           )}
-
-          {/* ประวัติเอกสารเบิกจ่าย */}
           {r.docHistory && r.docHistory.length > 0 && (
             <>
               <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:10, marginTop:20 }}>ประวัติเอกสารเบิกจ่าย</div>
@@ -337,8 +334,6 @@ export default function AdminDashboard() {
               ))}
             </>
           )}
-
-          {/* ข้อมูลผู้ยืม */}
           <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:10, marginTop:20 }}>ข้อมูลผู้ยืม</div>
           {[
             { label:"ชื่อ", val:r.borrower },
@@ -351,8 +346,6 @@ export default function AdminDashboard() {
               <span style={{ color:"#111827", fontWeight:500, textAlign:"right", marginLeft:8, wordBreak:"break-word", maxWidth:180 }}>{item.val}</span>
             </div>
           ))}
-
-          {/* โครงการ */}
           <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:10, marginTop:20 }}>โครงการ</div>
           {[
             { label:"กิจกรรม", val:r.project||"-" },
@@ -365,8 +358,6 @@ export default function AdminDashboard() {
               <span style={{ color:"#111827", fontWeight:500, textAlign:"right", marginLeft:8, wordBreak:"break-word", maxWidth:180 }}>{item.val}</span>
             </div>
           ))}
-
-          {/* ความเคลื่อนไหว */}
           <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", letterSpacing:0.5, marginBottom:12, marginTop:20 }}>ความเคลื่อนไหว</div>
           {[
             { text:"สร้างสัญญา", date:fmtDate(r.contractDate), done:true },
@@ -393,14 +384,14 @@ export default function AdminDashboard() {
   return (
     <div style={{ display:"flex", minHeight:"100vh", fontFamily:"'IBM Plex Sans Thai','Sarabun',sans-serif", background:"#F8F7F4" }}>
       {/* Sidebar */}
-      <div style={{ width:230,background:"#e8aa97", flexShrink:0, display:"flex", flexDirection:"column", minHeight:"100vh", position:"sticky", top:0, height:"100vh", overflowY:"auto" }}>
+      <div style={{ width:230, background:"#e8aa97", flexShrink:0, display:"flex", flexDirection:"column", minHeight:"100vh", position:"sticky", top:0, height:"100vh", overflowY:"auto" }}>
         <div style={{ padding:"22px 16px 16px", borderBottom:"1px solid rgba(255,255,255,0.12)", display:"flex", flexDirection:"column", alignItems:"center" }}>
           <img src="logo.png" alt="TE KKU"
             style={{ width:"100%", maxWidth:120, display:"block" }}
             onError={(e) => { e.target.style.display="none"; e.target.nextSibling.style.display="block"; }}
           />
           <div style={{ display:"none", fontSize:20, fontWeight:700, color:"white" }}>TE KKU</div>
-          <div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginTop:8 }}>Admin · ระบบยืมเงิน</div>
+          <div style={{ fontSize:14, color:"#333", marginTop:8 }}>Admin · ระบบยืมเงิน</div>
         </div>
         <div style={{ padding:"14px 0", flex:1 }}>
           {menuItems.map((m) => (
@@ -418,7 +409,7 @@ export default function AdminDashboard() {
             </div>
           ))}
         </div>
-        <div style={{ padding:"16px 20px", borderTop:"1px solid rgba(255,255,255,0.1)", fontSize:15, color:"rgba(255,255,255,0.4)", cursor:"pointer" }}>
+        <div style={{ padding:"16px 20px", borderTop:"1px solid rgba(255,255,255,0.1)", fontSize:15, color:"#333", cursor:"pointer" }}>
           ออกจากระบบ
         </div>
       </div>
@@ -427,7 +418,9 @@ export default function AdminDashboard() {
       <div style={{ flex:1, padding:"32px 36px", overflow:"auto" }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:28 }}>
           <div>
-            <div style={{ fontSize:28, fontWeight:700, color:"#111827" }}>Dashboard</div>
+            <div style={{ fontSize:28, fontWeight:700, color:"#111827" }}>
+              {activeMenu === "stats" ? "สถิติการคืนเงินช้า" : "Dashboard"}
+            </div>
             <div style={{ fontSize:16, color:"#9ca3af", marginTop:5 }}>ระบบสัญญายืมเงิน คณะเทคโนโลยี มข.</div>
           </div>
           <button onClick={fetchData}
@@ -440,14 +433,74 @@ export default function AdminDashboard() {
         {error && <div style={{ background:"#FEE2E2", border:"1px solid #FCA5A5", borderRadius:14, padding:"14px 20px", marginBottom:22, fontSize:16, color:"#991B1B" }}>{error}</div>}
         {loading && <div style={{ textAlign:"center", padding:80, color:"#9ca3af", fontSize:18 }}>กำลังโหลดข้อมูล...</div>}
 
-        {!loading && !error && (
+        {/* หน้าสถิติการคืนช้า */}
+        {!loading && !error && activeMenu === "stats" && (
+          <div style={{ background:"white", borderRadius:18, padding:"24px 26px", border:"1px solid #f0f0f0" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+              <div>
+                <div style={{ fontSize:18, fontWeight:700, color:"#111827" }}>รายชื่อผู้ยืมที่เกินกำหนดคืนเงิน</div>
+                <div style={{ fontSize:14, color:"#9ca3af", marginTop:4 }}>นับจากวันครบกำหนดถึงวันที่ปิดสัญญาจริง</div>
+              </div>
+              <div style={{ display:"flex", gap:12, alignItems:"center" }}>
+                <input
+                  placeholder="🔍 ค้นหาชื่อ / เลขที่สัญญา..."
+                  value={lateSearch}
+                  onChange={(e) => setLateSearch(e.target.value)}
+                  style={{ ...inputStyle, width:240, padding:"9px 16px", fontSize:14 }}
+                />
+                <div style={{ background:"#FEE2E2", border:"1px solid #FCA5A5", borderRadius:12, padding:"10px 20px", fontSize:15, fontWeight:700, color:"#991B1B", whiteSpace:"nowrap" }}>
+                  ทั้งหมด {filteredLate.length} ราย
+                </div>
+              </div>
+            </div>
+            {filteredLate.length === 0 ? (
+              <div style={{ textAlign:"center", padding:60, color:"#d1d5db", fontSize:16 }}>ยังไม่มีข้อมูลการคืนช้า 🎉</div>
+            ) : (
+              <div style={{ overflowX:"auto" }}>
+                <table style={{ width:"100%", borderCollapse:"collapse" }}>
+                  <thead>
+                    <tr>
+                      {["เลขที่สัญญา","ชื่อผู้ยืม","สังกัด","โครงการ","จำนวนเงิน (฿)","วันครบกำหนด","วันที่ปิดสัญญา","เกินกำหนด (วัน)"].map((h,i) => (
+                        <th key={i} style={{ textAlign:i>=4&&i<=7?"right":"left", color:"#9ca3af", fontWeight:600, padding:"11px 12px", fontSize:14, whiteSpace:"nowrap", borderBottom:"2px solid #f3f4f6" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredLate.map((r,i) => (
+                      <tr key={i}
+                        onMouseEnter={(e) => e.currentTarget.style.background="#fafafa"}
+                        onMouseLeave={(e) => e.currentTarget.style.background="white"}
+                        style={{ borderBottom:"1px solid #f9fafb", transition:"background 0.1s" }}>
+                        <td style={{ padding:"13px 12px", fontSize:15, fontWeight:700, color:"#374151", whiteSpace:"nowrap" }}>{r.contractNo||"-"}</td>
+                        <td style={{ padding:"13px 12px", fontSize:15, color:"#111827", whiteSpace:"nowrap" }}>{r.borrower||"-"}</td>
+                        <td style={{ padding:"13px 12px", fontSize:13, color:"#9ca3af" }}>{r.dept||"-"}</td>
+                        <td style={{ padding:"13px 12px", fontSize:14, color:"#374151", maxWidth:160, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.project||"-"}</td>
+                        <td style={{ padding:"13px 12px", fontSize:15, fontWeight:700, textAlign:"right", color:"#991B1B" }}>{fmtNum(r.amount)}</td>
+                        <td style={{ padding:"13px 12px", fontSize:14, color:"#374151", textAlign:"right", whiteSpace:"nowrap" }}>{r.dueDate||"-"}</td>
+                        <td style={{ padding:"13px 12px", fontSize:14, color:"#374151", textAlign:"right", whiteSpace:"nowrap" }}>{r.closedDate||"-"}</td>
+                        <td style={{ padding:"13px 12px", textAlign:"right" }}>
+                          <span style={{ background:"#FEE2E2", color:"#991B1B", border:"1px solid #FCA5A5", fontSize:13, padding:"4px 12px", borderRadius:20, fontWeight:700 }}>
+                            {r.lateDays} วัน
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* หน้า Dashboard */}
+        {!loading && !error && activeMenu === "dashboard" && (
           <>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:18, marginBottom:26 }}>
               {[
-                { icon:"📄", label:"สัญญาทั้งหมด",      val:loans.length,               sub:"ทุกสถานะ",     color:"#7B1F1F" },
+                { icon:"📄", label:"สัญญาทั้งหมด",      val:loans.length,                            sub:"ทุกสถานะ",     color:"#7B1F1F" },
                 { icon:"💰", label:"ยอดค้างเงินยืม",     val:`${fmtNum(Math.max(0,outstanding))} ฿`, sub:"ยังไม่ได้คืน", color:"#991B1B" },
-                { icon:"⏰", label:"ใกล้/เกินกำหนด",    val:pending.length+overdue.length, sub:"รายการ",     color:"#92400E" },
-                { icon:"📊", label:"ยอดเงินรวมทั้งหมด",  val:`${fmtNum(totalAmount)} ฿`, sub:"บาท",          color:"#065F46" },
+                { icon:"⏰", label:"ใกล้/เกินกำหนด",    val:pending.length+overdue.length,           sub:"รายการ",       color:"#92400E" },
+                { icon:"📊", label:"ยอดเงินรวมทั้งหมด",  val:`${fmtNum(totalAmount)} ฿`,             sub:"บาท",          color:"#065F46" },
               ].map((s,i) => (
                 <div key={i} style={{ background:"white", borderRadius:18, padding:"24px 26px", border:"1px solid #f0f0f0" }}>
                   <div style={{ fontSize:28, marginBottom:12 }}>{s.icon}</div>
@@ -574,7 +627,7 @@ export default function AdminDashboard() {
                 ยกเลิก
               </button>
               <button onClick={handleSave} disabled={saving}
-                style={{ border:"none", borderRadius:12, padding:"12px 28px", fontSize:16, cursor:"pointer", fontFamily:"inherit",background:"#fcd5c7", color:"white", fontWeight:700 }}>
+                style={{ border:"none", borderRadius:12, padding:"12px 28px", fontSize:16, cursor:"pointer", fontFamily:"inherit", background:"#7B1F1F", color:"white", fontWeight:700 }}>
                 {saving?"กำลังบันทึก...":"บันทึก"}
               </button>
             </div>
