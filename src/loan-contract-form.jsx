@@ -1529,16 +1529,14 @@ ${printEl.innerHTML}
 
       {/* Amount input */}
       <input type="text" inputMode="decimal"
-        value={it.amount && it.amount !== "0" ? fmtNum(parseFloat(it.amount)||0) : it.amount}
-        onFocus={e=>{ 
-  const val = e.target.value.replace(/,/g,"");
-  e.target.value = val === "0" || val === "0.00" ? "" : val;
+        value={it.amount || ""}
+       onFocus={e=>{ 
+  if (e.target.value === "0") e.target.value = "";
   setTimeout(() => e.target.select(), 0);
 }}
-      onBlur={e=>{
-  const val = parseFloat(e.target.value.replace(/,/g,""));
-  updateItem(ri,ii,"amount", isNaN(val) ? "0" : String(val));
-  e.target.value = isNaN(val) ? "0" : fmtNum(val);
+     onBlur={e=>{
+  const val = parseFloat(e.target.value);
+  updateItem(ri,ii,"amount", isNaN(val) ? "0" : val.toFixed(2));
 }}
         onChange={e=>{
           let val = e.target.value.replace(/[^0-9.]/g,"");
