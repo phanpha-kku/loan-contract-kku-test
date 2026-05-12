@@ -1362,7 +1362,7 @@ ${printEl.innerHTML}
               </Grid2>
               <Card title="📅 งวดที่ 1" color="#C0392B">
                 <Grid2>
-                  <Field label="จำนวนเงิน (บาท)" value={form.inst1Amount} onChange={e=>set("inst1Amount",e.target.value)} type="number"/>
+                 <Field label="จำนวนเงิน (บาท)" value={form.inst1Amount ? Number(form.inst1Amount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}) : ""} onChange={e=>set("inst1Amount", e.target.value.replace(/,/g,""))} type="text"/>
                   <div style={{ marginBottom:14 }}>
                     <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                     <input type="date" value={form.inst1NeedDate}
@@ -1379,7 +1379,7 @@ ${printEl.innerHTML}
                   <span style={{ fontSize:13, fontWeight:600, color:"#7A3B3B" }}>📅 มีงวดที่ 2</span>
                 </label>
                 {form.useInst2 && <Grid2>
-                  <Field label="จำนวนเงิน (บาท)" value={form.inst2Amount} onChange={e=>set("inst2Amount",e.target.value)} type="number"/>
+                 <Field label="จำนวนเงิน (บาท)" value={form.inst2Amount ? Number(form.inst2Amount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}) : ""} onChange={e=>set("inst2Amount", e.target.value.replace(/,/g,""))} type="text"/>
                   <div style={{ marginBottom:14 }}>
                     <label style={LS_STYLE}>วันที่ต้องใช้เงิน</label>
                     <input type="date" value={form.inst2NeedDate}
