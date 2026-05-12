@@ -524,20 +524,31 @@ function formatDateInput(raw) {
 }
 
 function Field({ label, value, onChange, onFocus, onBlur, type="text", placeholder="", min, max }) {
+  const [focused, setFocused] = React.useState(false);
+  const [rawVal, setRawVal] = React.useState("");
+  
+  const handleFocus = (e) => {
+    setFocused(true);
+    const raw = String(value).replace(/,/g,"");
+    setRawVal(raw === "0" ? "" : raw);
+    setTimeout(() => e.target.select(), 0);
+    if (onFocus) onFocus(e);
+  };
+  
+  const handleBlur = (e) => {
+    setFocused(false);
+    if (onBlur) onBlur(e);
+  };
+
   return (
     <div style={{ marginBottom:14 }}>
       <label style={LS_STYLE}>{label}</label>
-      <input type={type} value={value} onChange={onChange} 
-        onFocus={onFocus} onBlur={onBlur}
+      <input type={type}
+        value={focused ? rawVal : value}
+        onChange={e => { setRawVal(e.target.value); if (onChange) onChange(e); }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         placeholder={placeholder} min={min} max={max} style={IS_STYLE}/>
-    </div>
-  );
-}
-  return (
-    <div style={{ marginBottom:14 }}>
-      <label style={LS_STYLE}>{label}</label>
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder}
-        min={min} max={max} style={IS_STYLE}/>
     </div>
   );
 }
