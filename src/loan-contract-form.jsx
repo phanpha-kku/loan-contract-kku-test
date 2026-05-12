@@ -1432,7 +1432,12 @@ ${printEl.innerHTML}
                   <span style={{ fontSize:11, color:"#C07070", flexShrink:0 }}>ดึงอัตโนมัติ</span>
                 </div>
               </div>
-              <Field label="จำนวนเงินโครงการที่ได้รับอนุมัติ (บาท)" value={form.planTotalAmount} onChange={e=>set("planTotalAmount",e.target.value)} type="number" placeholder="ดึงจากหน้าหลักถ้าว่าง"/>
+             <Field label="จำนวนเงินโครงการที่ได้รับอนุมัติ (บาท)"
+  value={form.planTotalAmount ? Number(form.planTotalAmount).toLocaleString("th-TH", {minimumFractionDigits:2, maximumFractionDigits:2}) : ""}
+  onChange={e=>set("planTotalAmount", e.target.value.replace(/,/g,""))}
+  onFocus={e=>{ const raw = String(form.planTotalAmount).replace(/,/g,""); e.target.value = raw === "0" ? "" : raw; setTimeout(()=>e.target.select(),0); }}
+  onBlur={e=>{ const v = parseFloat(e.target.value); set("planTotalAmount", isNaN(v)?"":String(v)); }}
+  type="text" placeholder="ดึงจากหน้าหลักถ้าว่าง"/>
 
               {/* Sync button */}
               <div style={{ display:"flex", justifyContent:"flex-end", marginBottom:12 }}>
