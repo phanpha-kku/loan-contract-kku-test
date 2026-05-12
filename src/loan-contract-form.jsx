@@ -1529,25 +1529,25 @@ ${printEl.innerHTML}
 
       {/* Amount input */}
       <input type="text" inputMode="decimal"
-       value={it.amount && it.amount !== "0" ? fmtNum(parseFloat(it.amount)||0) : it.amount || ""}
-       value={it.amount || ""}
+      value={(() => {
+  const v = String(it.amount || "");
+  if (!v || v === "0") return v;
+  const parts = v.split(".");
+  const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.length > 1 ? intPart + "." + parts[1] : intPart;
+})()}
 onFocus={e=>{ 
   setTimeout(() => e.target.select(), 0);
 }}
 onBlur={e=>{
-  const val = parseFloat(e.target.value.replace(/,/g,""));
-  const formatted = isNaN(val) ? "" : val.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const val = parseFloat(String(it.amount).replace(/,/g,""));
   updateItem(ri,ii,"amount", isNaN(val) ? "0" : val.toFixed(2));
-  e.target.value = formatted;
 }}
 onChange={e=>{
-  let val = e.target.value.replace(/[^0-9.]/g,"");
+  let val = e.target.value.replace(/,/g,"").replace(/[^0-9.]/g,"");
   const parts = val.split(".");
   if (parts.length > 2) val = parts[0] + "." + parts.slice(1).join("");
   if (parts[1]?.length > 2) val = parts[0] + "." + parts[1].slice(0,2);
-  const numPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  const display = parts.length > 1 ? numPart + "." + (parts[1]||"") : numPart;
-  e.target.value = display;
   if (instCap > 0 && maxForThis !== undefined && (parseFloat(val)||0) > maxForThis) return;
   updateItem(ri,ii,"amount", val);
 }}
