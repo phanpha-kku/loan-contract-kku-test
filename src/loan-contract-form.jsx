@@ -1529,22 +1529,28 @@ ${printEl.innerHTML}
 
       {/* Amount input */}
       <input type="text" inputMode="decimal"
-        value={it.amount || ""}
-       onFocus={e=>{ 
-  if (e.target.value === "0") e.target.value = "";
+       value={it.amount && it.amount !== "0" ? fmtNum(parseFloat(it.amount)||0) : it.amount || ""}
+       value={it.amount || ""}
+onFocus={e=>{ 
   setTimeout(() => e.target.select(), 0);
 }}
-     onBlur={e=>{
-  const val = parseFloat(e.target.value);
+onBlur={e=>{
+  const val = parseFloat(e.target.value.replace(/,/g,""));
+  const formatted = isNaN(val) ? "" : val.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   updateItem(ri,ii,"amount", isNaN(val) ? "0" : val.toFixed(2));
+  e.target.value = formatted;
 }}
-        onChange={e=>{
-          let val = e.target.value.replace(/[^0-9.]/g,"");
-          const parts = val.split(".");
-          if (parts.length > 2) val = parts[0] + "." + parts.slice(1).join("");
-          if (instCap > 0 && maxForThis !== undefined && (parseFloat(val)||0) > maxForThis) return;
-          updateItem(ri,ii,"amount",val);
-        }}
+onChange={e=>{
+  let val = e.target.value.replace(/[^0-9.]/g,"");
+  const parts = val.split(".");
+  if (parts.length > 2) val = parts[0] + "." + parts.slice(1).join("");
+  if (parts[1]?.length > 2) val = parts[0] + "." + parts[1].slice(0,2);
+  const numPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const display = parts.length > 1 ? numPart + "." + (parts[1]||"") : numPart;
+  e.target.value = display;
+  if (instCap > 0 && maxForThis !== undefined && (parseFloat(val)||0) > maxForThis) return;
+  updateItem(ri,ii,"amount", val);
+}}
         placeholder="0"
         style={{ width:"100%", background:"#FFF0E6", border:"1px solid #374151", color:"#2D1010",
           borderRadius:6, padding:"7px 8px", fontSize:13, fontFamily:"inherit", outline:"none", textAlign:"right" }}/>
